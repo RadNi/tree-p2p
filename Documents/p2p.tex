@@ -1,0 +1,78 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{tabu}
+\usepackage{float}
+\renewcommand{\baselinestretch}{1.5}
+\title{A Simple Peer To Peer Network Implementation}
+\author{Hoora Abootalebi\\Nariman Aryan\\Amin Isaai\\Amirhossein Khaje\\Mahdis Tahdari\\Ali Zeynali}
+\date{ November 2018}
+
+\begin{document}
+
+
+\large
+\maketitle
+\clearpage
+\tableofcontents
+\clearpage
+\section{Introdeuction}
+\paragraph{}This project aims to implement a peer to peer network.
+\section{Objects}
+\paragraph{}First of all, we need to specify the objects in order to make the project more understandable and clear.
+\subsection{Streem}
+\begin{itemize}
+    \item \textbf{server}
+    \item \textbf{nClient}:
+    \item \textbf{dict(client:msg)} a dictionary to specify every client's message(s). 
+    \item \textbf{addClient(ip,port)}
+    \item \textbf{removeClient(ip,port)}
+    \item \textbf{randInBuff()}
+    \item \textbf{parent}
+    \item \textbf{sendMessage()}
+\end{itemize}
+\subsection{Peer}
+\begin{itemize}
+    \item \textbf{stream()}
+    \item \textbf{userInterface()}: Which the user or client sees and works with. 
+    \item \textbf{run()}: This method runs every time to see whether there is new messages or not.
+    \item \textbf{packetFactory()}
+    \item \textbf{handlePackets()}
+\end{itemize}
+\subsection{Packet Factory}
+\paragraph{packetFactory} would generate the packets every node needs to connect another with.
+\begin{itemize}
+    \item \textbf{parseBuf()}
+    \item \textbf{newReunion()}
+    \item \textbf{newAdv()} make a new advertise packet.
+    \item \textbf{newReg()} make a new register packet.
+\end{itemize}
+\subsection{Packet}
+\paragraph{}Every packet consists seven differntes parts: :\textbf{PlainText} which is the raw text message in the packet.\\
+ \textbf{Node} \textbf{Sender} \textbf{Validator} which make the packet valid.\\ \textbf{Header} where the information such as type of the packet and etc. are going to be there.\\ \textbf{Body}  \textbf{Action}
+\subsection{Reunion}
+\paragraph{reunion(packet)} checks the connection of the nodes to the root.
+\begin{itemize}
+    \item \textbf{type}
+    \item \textbf{getDest()}
+\end{itemize}
+\subsection{Node}
+\paragraph{}Every node has twp parameters: \textbf{IP} and \textbf{Port}.
+\subsection{Resgister Request}
+\paragraph{regReq()} sends IP/Port of a node to the root to ask if it can register it. 
+\subsection{Register Response}
+\paragraph{regRes()} should just send an from the root $Ack$ to inform a node that it has been registerd in the root if the regReq() was successful.
+\subsection{Advertise}
+\paragraph{adv(packet)}
+\subsection{Mesasge}
+\paragraph{msg(packet)}
+\clearpage
+
+
+
+
+
+\end{document}
