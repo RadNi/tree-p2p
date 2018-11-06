@@ -6,9 +6,32 @@
 \usepackage{array}
 \usepackage{tabu}
 \usepackage{float}
-\renewcommand{\baselinestretch}{1.5}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{tikz-uml}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
 \title{A Simple Peer To Peer Network Implementation}
-\author{Hoora Abootalebi\\Nariman Aryan\\Amin Isaai\\Amirhossein Khaje\\Mahdis Tahdari\\Ali Zeynali}
+\author{Hoora Abootalebi\\Nariman Aryan\\Amin Isaai\\Amirhossein Khajepour\\Mahdis Tajdari\\Ali Zeynali}
 \date{ November 2018}
 
 \begin{document}
@@ -20,47 +43,70 @@
 \tableofcontents
 \clearpage
 \section{Introdeuction}
-\paragraph{}This project aims to implement a peer to peer network.
+\paragraph{}This project aims to implement a peer to peer network. In the first step we design UML model and then we are going to explain each objects' attributes and methods. 
+\section{UML model}
+\paragraph{}We design the UML model in order to make the project more understandable, clearer and professional.
+\clearpage
+\begin{tikzpicture} 
+\umlclass[x=-5, y=3, anchor=north]{Stream}{server : dictionary \\nClient : dictionary\\ clientMsg :dict}{addClient(ip,port)\\removeClient(ip,port)\\randInBuff()\\sendMessage()\\randInBuff()} 
+\umlclass[x=-9, y=-4, anchor=north]{Packet Factory}{}{parseBud()\\newReunion()\\newAdv()\\newReg()} 
+\umlclass[x=-1, y=-4, anchor=north]{Peer}{}{userInterface()\\run()\\packetFactory()\\handlePackets()} 
+\umlVHVinherit[arm2=-1.2cm]{Packet Factory}{Stream} 
+\umlVHVinherit[arm2=-1.2cm]{Peer}{Stream}
+\umlclass[x=-4, y=-8, anchor=north]{Packet}{type: String\\node:\\header: String\\body: String\\}{}
+\umlclass[x=+1.5, y=-11, anchor=north]{Reunion}{}{getDest()}  
+\umlclass[x=0, y=-14 ,anchor=north]{Advertise}{ip: String\\port: String}{}  
+\umlclass[x=-3, y=-14, anchor=north]{Message}{plainText : String}{}
+\umlclass[x=-7, y=-14 ,anchor=north]{Register Request}{ip: String\\port: String}{}  
+\umlclass[x=-9.5, y=-11, anchor=north]{Register Response}{ack : String}{}
+\umlVHVinherit[arm2=-1.2cm]{Reunion}{Packet} 
+\umlVHVinherit[arm2=-1.2cm]{Advertise}{Packet}
+\umlVHVinherit[arm2=-1.2cm]{Message}{Packet}
+\umlVHVinherit[arm2=-1.2cm]{Register Request}{Packet}
+\umlVHVinherit[arm2=-1.2cm]{Register Response}{Packet}
+\end{tikzpicture}
 \section{Objects}
-\paragraph{}First of all, we need to specify the objects in order to make the project more understandable and clear.
+\paragraph{}Now it's time to explain every obejct's duty.
 \subsection{Streem}
-\begin{itemize}
-    \item \textbf{server}
-    \item \textbf{nClient}:
-    \item \textbf{dict(client:msg)} a dictionary to specify every client's message(s). 
-    \item \textbf{addClient(ip,port)}
-    \item \textbf{removeClient(ip,port)}
-    \item \textbf{randInBuff()}
-    \item \textbf{parent}
-    \item \textbf{sendMessage()}
-\end{itemize}
+\begin{lstlisting}
+#stream()
+addClient(ip,port)
+removeClient(ip,port)
+randInBuff()
+sendMessage()
+randInBuff()
+\end{lstlisting}
+\paragraph{}We also need to add a dictionary to specify every client's message(s)
 \subsection{Peer}
-\begin{itemize}
-    \item \textbf{stream()}
-    \item \textbf{userInterface()}: Which the user or client sees and works with. 
-    \item \textbf{run()}: This method runs every time to see whether there is new messages or not.
-    \item \textbf{packetFactory()}
-    \item \textbf{handlePackets()}
-\end{itemize}
+\begin{lstlisting}
+#Peer()
+stream()
+userInterface()   #Which the user or client sees and works with. 
+run() 				#This method runs every time to see 
+				     #whether there is new messages or not.
+packetFactory()
+handlePackets()
+\end{lstlisting}
 \subsection{Packet Factory}
-\paragraph{packetFactory} would generate the packets every node needs to connect another with.
-\begin{itemize}
-    \item \textbf{parseBuf()}
-    \item \textbf{newReunion()}
-    \item \textbf{newAdv()} make a new advertise packet.
-    \item \textbf{newReg()} make a new register packet.
-\end{itemize}
+\paragraph{packetFactory()} would generate the packets every node needs to connect another with.
+\begin{lstlisting}
+#packetFactory
+parseBuf()
+newReunion()
+newAdv() #make a new advertise packet.
+newReg() #make a new register packet.
+\end{lstlisting}
 \subsection{Packet}
 \paragraph{}Every packet consists seven differntes parts: :\textbf{PlainText} which is the raw text message in the packet.\\
  \textbf{Node} \textbf{Sender} \textbf{Validator} which make the packet valid.\\ \textbf{Header} where the information such as type of the packet and etc. are going to be there.\\ \textbf{Body}  \textbf{Action}
 \subsection{Reunion}
 \paragraph{reunion(packet)} checks the connection of the nodes to the root.
-\begin{itemize}
-    \item \textbf{type}
-    \item \textbf{getDest()}
-\end{itemize}
+\begin{lstlisting}
+#reunion(packet)
+ getDest()
+\end{lstlisting}
 \subsection{Node}
-\paragraph{}Every node has twp parameters: \textbf{IP} and \textbf{Port}.
+\paragraph{}Every node has two parameters: \textbf{IP} and \textbf{Port}.
 \subsection{Resgister Request}
 \paragraph{regReq()} sends IP/Port of a node to the root to ask if it can register it. 
 \subsection{Register Response}
