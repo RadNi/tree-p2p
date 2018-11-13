@@ -1,4 +1,4 @@
-from simpletcp.serversocket import ServerSocket
+from src.tools.simpletcp.serversocket import ServerSocket
 
 class TCPServer:
     # Mode specifies the IP address the server socket binds to.

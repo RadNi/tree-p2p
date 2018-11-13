@@ -1,5 +1,6 @@
 from simpletcp.tcpserver import TCPServer
-from simpletcp.clientsocket import ClientSocket
+
+from src.tools.simpletcp.clientsocket import ClientSocket
 
 
 class Stream:
