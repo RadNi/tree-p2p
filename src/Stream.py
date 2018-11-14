@@ -6,7 +6,6 @@ from src.tools.simpletcp.clientsocket import ClientSocket
 class Stream:
 
     def __init__(self, ip, port):
-
         self.messages_dic = {}
 
         def cb(ip, queue, data):

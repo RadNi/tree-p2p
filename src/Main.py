@@ -7,8 +7,8 @@ from Listener import Listener
 def read_conf(file):
     return None
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     ls = Listener()
 
     cl = Client(ls)
