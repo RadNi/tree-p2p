@@ -51,8 +51,8 @@
 \umlclass[x=0, y=1, anchor=north]{Stream}{server : dictionary \\nClient : dictionary\\ client\underline{\hspace{.05in}}msg :dict}{add\underline{\hspace{.05in}}client(ip,port)\\remove\underline{\hspace{.05in}}client(ip,port)\\rand\underline{\hspace{.05in}}inBuff()\\send\underline{\hspace{.05in}}message()\\server\underline{\hspace{.05in}}buffer()} 
 \umlclass[x=-6, y=1, anchor=north]{Packet Factory}{}{parse\underline{\hspace{.05in}}bud()\\new\underline{\hspace{.05in}}reunion()\\new\underline{\hspace{.05in}}adv()\\new\underline{\hspace{.05in}}reg()} 
 \umlclass[x=-3, y=-4, anchor=north]{Peer}{}{user\underline{\hspace{.05in}}interface()\\run()\\packetFactory()\\handle\underline{\hspace{.05in}}packets()} 
-\umlinherit[arm2=-1.2cm]{Peer}{Packet Factory}
-\umlinherit[arm2=-1.2cm]{Peer}{Stream}
+\umlassoc[arm2=-1.2cm]{Peer}{Packet Factory}
+\umlassoc[arm2=-1.2cm]{Peer}{Stream}
 \umlclass[x=-4, y=-8, anchor=north]{Packet}{type: String\\node:\\header: String\\body: String\\}{}
 \umlclass[x=+1.5, y=-11, anchor=north]{Reunion}{}{get\underline{\hspace{.05in}}destination()}  
 \umlclass[x=0, y=-14 ,anchor=north]{Advertise}{ip: String\\port: String}{}  
