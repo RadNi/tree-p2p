@@ -1,5 +1,6 @@
 from src.tools.simpletcp.tcpserver import TCPServer
 
+
 def echo(ip, queue, data):
     queue.put(bytes(input(data), 'utf8'))
 
