@@ -48,7 +48,7 @@
 \paragraph{}We design the UML model in order to make the project more understandable, clearer and professional.
 \clearpage
 \begin{tikzpicture}
-\umlclass[x=0, y=1, anchor=north]{Stream}{server : dictionary \\nClient : dictionary\\ client\underline{\hspace{.05in}}msg :dict}{add\underline{\hspace{.05in}}client(ip,port)\\remove\underline{\hspace{.05in}}client(ip,port)\\rand\underline{\hspace{.05in}}inBuff()\\send\underline{\hspace{.05in}}message()\\server\underline{\hspace{.05in}}buffer()} 
+\umlclass[x=0, y=1, anchor=north]{Stream}{server : dictionary \\nClient : dictionary\\ client\underline{\hspace{.05in}}msg :dict}{add\underline{\hspace{.05in}}client(ip,port)\\remove\underline{\hspace{.05in}}client(ip,port)\\read\underline{\hspace{.05in}}inBuff()\\send\underline{\hspace{.05in}}message()\\server\underline{\hspace{.05in}}buffer()} 
 \umlclass[x=-6, y=1, anchor=north]{Packet Factory}{}{parse\underline{\hspace{.05in}}bud()\\new\underline{\hspace{.05in}}reunion()\\new\underline{\hspace{.05in}}adv()\\new\underline{\hspace{.05in}}reg()} 
 \umlclass[x=-3, y=-4, anchor=north]{Peer}{}{user\underline{\hspace{.05in}}interface()\\run()\\packetFactory()\\handle\underline{\hspace{.05in}}packets()} 
 \umlassoc[arm2=-1.2cm]{Peer}{Packet Factory}
@@ -67,17 +67,24 @@
 \end{tikzpicture}
 \section{Objects}
 \paragraph{}Now it's time to explain every obejct's duty.
-\subsection{Streem}
+\subsection{Streem}This objects has one server and n clients. Servers are always open for reading and clients will be open whenever we want to write on a socket. \\
+There is a clientMsg dictionary in this object to handle messages. This means that there is an array assigned to a specific client for all clients. If we need to add a new client to this object, we use add\underline{\hspace{.05in}}client() method. Consequently, an array will be assigned to this new client in clientMsg.\\
+There is also a remove\underline{\hspace{.05in}}client() method for the times when we want to remove a client from this object. This method is mostly used  when reunion fails.\\
+The read\underline{\hspace{.05in}}inBuf reads the buffer and transform it into a packet formation.\\
+The send\underline{\hspace{.05in}}msg() method is used when peer wants to send a message to a specific client.\\
+Byte\underline{\hspace{.05in}}ack() is used to reply to the receives messages. We must reply all of the receives messages by sending Ack (which is a string).\\
 \begin{lstlisting}
 #stream()
 add_client(ip,port)
 remove_client(ip,port)
 send_message()
-rand_inBuff()
+read_inBuff()
 server_buffer()
 \end{lstlisting}
 \paragraph{}We also need to add a dictionary to specify every client's message(s)
-\subsection{Peer}
+\subsection{Peer}This object is the main object that we are working with. It must have a Stream object which provides the connection to the socket; This means that reading and writing are done using the Stream object. Peer must also have a userInterface object in order to facilitate commanding by users.(.e.g. for connecting or sending message to a specific node)\\
+The run method handles all of the events included in stream in an infinite loop and it also handles the received messages; This means that it does a certain action based on the type of the received packet.
+
 \begin{lstlisting}
 #Peer()
 stream()
@@ -88,7 +95,7 @@ packetFactory()
 handle_packets()
 \end{lstlisting}
 \subsection{Packet Factory}
-\paragraph{packetFactory()} would generate the packets every node needs to connect another with.
+\paragraph{packetFactory()}The main functionality of this object is to create different types of packet and return them. To be more specific, we read data from buffer and we pass it through pars\underline{\hspace{.05in}}buff() method in order to get a packet.
 \begin{lstlisting}
 #packetFactory
 parse_buf()
@@ -98,7 +105,7 @@ new_reg() #makes a new register packet.
 \end{lstlisting}
 \subsection{Packet}
 \paragraph{}Every packet consists seven differntes parts: \textbf{plain\underline{\hspace{.05in}}text} which is the raw text message in the packet.\\
-\textbf{Node}: Specifies to which node the packet sent to. \textbf{Sender} specifies who sent the packet \textbf{Validator} which makes the packet valid.\\ \textbf{Header} where the information such as type of the packet and etc. are going to be there.\\ \textbf{Body} body of our packet  \textbf{Action} says what the packet does.
+\textbf{Node}: Specifies to which node the packet sent to. \textbf{Sender} specifies who sent the packet \textbf{Validator} which makes the packet valid.\\ \textbf{Header} where the information such as type of the packet and etc. are going to be there.\\ \textbf{Body} body of our packet .
 \subsection{Reunion}
 \paragraph{reunion(packet)} checks the connection of the nodes to the root.
 \begin{lstlisting}
