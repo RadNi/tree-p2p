@@ -48,22 +48,22 @@
 \paragraph{}We design the UML model in order to make the project more understandable, clearer and professional.
 \clearpage
 \begin{tikzpicture}
-\umlclass[x=-5, y=3, anchor=north]{Stream}{server : dictionary \\nClient : dictionary\\ client\underline{\hspace{.05in}}msg :dict}{add\underline{\hspace{.05in}}client(ip,port)\\remove\underline{\hspace{.05in}}client(ip,port)\\rand\underline{\hspace{.05in}}inBuff()\\send\underline{\hspace{.05in}}message()} 
-\umlclass[x=-9, y=-4, anchor=north]{Packet Factory}{}{parse\underline{\hspace{.05in}}bud()\\new\underline{\hspace{.05in}}reunion()\\new\underline{\hspace{.05in}}adv()\\new\underline{\hspace{.05in}}reg()} 
-\umlclass[x=-1, y=-4, anchor=north]{Peer}{}{user\underline{\hspace{.05in}}interface()\\run()\\packetFactory()\\handle\underline{\hspace{.05in}}packets()} 
-\umlVHVinherit[arm2=-1.2cm]{Packet Factory}{Stream} 
-\umlVHVinherit[arm2=-1.2cm]{Peer}{Stream}
+\umlclass[x=0, y=1, anchor=north]{Stream}{server : dictionary \\nClient : dictionary\\ client\underline{\hspace{.05in}}msg :dict}{add\underline{\hspace{.05in}}client(ip,port)\\remove\underline{\hspace{.05in}}client(ip,port)\\rand\underline{\hspace{.05in}}inBuff()\\send\underline{\hspace{.05in}}message()\\server\underline{\hspace{.05in}}buffer()} 
+\umlclass[x=-6, y=1, anchor=north]{Packet Factory}{}{parse\underline{\hspace{.05in}}bud()\\new\underline{\hspace{.05in}}reunion()\\new\underline{\hspace{.05in}}adv()\\new\underline{\hspace{.05in}}reg()} 
+\umlclass[x=-3, y=-4, anchor=north]{Peer}{}{user\underline{\hspace{.05in}}interface()\\run()\\packetFactory()\\handle\underline{\hspace{.05in}}packets()} 
+\umlinherit[arm2=-1.2cm]{Peer}{Packet Factory}
+\umlinherit[arm2=-1.2cm]{Peer}{Stream}
 \umlclass[x=-4, y=-8, anchor=north]{Packet}{type: String\\node:\\header: String\\body: String\\}{}
 \umlclass[x=+1.5, y=-11, anchor=north]{Reunion}{}{get\underline{\hspace{.05in}}destination()}  
 \umlclass[x=0, y=-14 ,anchor=north]{Advertise}{ip: String\\port: String}{}  
 \umlclass[x=-3, y=-14, anchor=north]{Message}{plain\underline{\hspace{.05in}}text : String}{}
 \umlclass[x=-7, y=-14 ,anchor=north]{Register Request}{ip: String\\port: String}{}  
 \umlclass[x=-9.5, y=-11, anchor=north]{Register Response}{ack : String}{}
-\umlVHVinherit[arm2=-1.2cm]{Reunion}{Packet} 
-\umlVHVinherit[arm2=-1.2cm]{Advertise}{Packet}
-\umlVHVinherit[arm2=-1.2cm]{Message}{Packet}
-\umlVHVinherit[arm2=-1.2cm]{Register Request}{Packet}
-\umlVHVinherit[arm2=-1.2cm]{Register Response}{Packet}
+\umlinherit[arm2=-1.2cm]{Reunion}{Packet} 
+\umlinherit[arm2=-1.2cm]{Advertise}{Packet}
+\umlinherit[arm2=-1.2cm]{Message}{Packet}
+\umlinherit[arm2=-1.2cm]{Register Request}{Packet}
+\umlinherit[arm2=-1.2cm]{Register Response}{Packet}
 \end{tikzpicture}
 \section{Objects}
 \paragraph{}Now it's time to explain every obejct's duty.
@@ -72,9 +72,9 @@
 #stream()
 add_client(ip,port)
 remove_client(ip,port)
-rand_inBuff()
 send_message()
 rand_inBuff()
+server_buffer()
 \end{lstlisting}
 \paragraph{}We also need to add a dictionary to specify every client's message(s)
 \subsection{Peer}
@@ -93,12 +93,12 @@ handle_packets()
 #packetFactory
 parse_buf()
 new_reunion()
-new_adv() #make a new advertise packet.
-new_reg() #make a new register packet.
+new_adv() #makes a new advertise packet.
+new_reg() #makes a new register packet.
 \end{lstlisting}
 \subsection{Packet}
-\paragraph{}Every packet consists seven differntes parts: :\textbf{plain\underline{\hspace{.05in}}text} which is the raw text message in the packet.\\
- \textbf{Node} \textbf{Sender} \textbf{Validator} which make the packet valid.\\ \textbf{Header} where the information such as type of the packet and etc. are going to be there.\\ \textbf{Body}  \textbf{Action}
+\paragraph{}Every packet consists seven differntes parts: \textbf{plain\underline{\hspace{.05in}}text} which is the raw text message in the packet.\\
+\textbf{Node}: Specifies to which node the packet sent to. \textbf{Sender} specifies who sent the packet \textbf{Validator} which makes the packet valid.\\ \textbf{Header} where the information such as type of the packet and etc. are going to be there.\\ \textbf{Body} body of our packet  \textbf{Action} says what the packet does.
 \subsection{Reunion}
 \paragraph{reunion(packet)} checks the connection of the nodes to the root.
 \begin{lstlisting}
