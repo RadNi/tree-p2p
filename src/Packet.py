@@ -1,5 +1,6 @@
 # implementation of Packet and PacketFactory classes
 # packetFactory
+from src.Peer import Node
 
 
 class PacketFactory:
@@ -19,11 +20,6 @@ class PacketFactory:
         pass
 
 
-class Node:
-    ip = str
-    port = str
-
-
 class Packet:
     type = str
     header = str
@@ -37,11 +33,11 @@ class Reunion(Packet):
         pass
 
 
-class RegisterRequest:
+class RegisterRequest(Packet):
     ack = str
 
 
-class RegisterResponse:
+class RegisterResponse(Packet):
     ip = str
     port = str
 
