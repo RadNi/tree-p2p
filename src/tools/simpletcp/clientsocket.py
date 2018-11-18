@@ -36,7 +36,10 @@ class ClientSocket:
         # Keep track of whether this socket has been used, so we can
         # warn single-use sockets not to send data twice.
         self.used = False
-
+    def get_port(self):
+        return self.connect_port
+    def get_ip(self):
+        return self.connect_ip
     def send(self, data):
         # This method takes one argument: data
         # data is the data to be sent to the server at the address
