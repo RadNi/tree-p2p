@@ -70,7 +70,7 @@
 \subsection{Stream}This objects has one server and n clients. Servers are always open for reading and clients will be open whenever we want to write on a socket. \\
 There is a clientMsg dictionary in this object to handle messages. This means that there is an array assigned to a specific client for all clients. If we need to add a new client to this object, we use add\_client() method. Consequently, an array will be assigned to this new client in clientMsg.\\
 There is also a remove\_client() method for the times when we want to remove a client from this object. This method is mostly used  when reunion fails.\\
-The read\_inBuf returns the buffer of the server.\\
+The read\_in_buf returns the buffer of the server.\\
 The send\_msg() method is used when peer wants to send a message to a specific client.\\
 Byte\_ack() is used to reply to the receives messages. We must reply all of the receives messages by sending Ack (which is a string).\\
 \begin{lstlisting}
