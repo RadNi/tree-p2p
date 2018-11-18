@@ -43,23 +43,23 @@
 \tableofcontents
 \clearpage
 \section{Introdeuction}
-\paragraph{}This project aims to implement a peer to peer network. In the first step we design UML model and then we are going to explain each objects' attributes and methods.
+\paragraph{}This project aims to implement a peer to peer network. In the first step we design UML model and then we are going to explain each objects' attributes and methods. 
 \section{UML model}
 \paragraph{}We design the UML model in order to make the project more understandable, clearer and professional.
 \clearpage
 \begin{tikzpicture}
-\umlclass[x=0, y=1, anchor=north]{Stream}{server : dictionary \\nClient : dictionary\\ clientMsg :dict \\serverBuffer : string}{add\underline{\hspace{.05in}}client(ip,port)\\remove\underline{\hspace{.05in}}client(ip,port)\\read\underline{\hspace{.05in}}inBuff()\\send\underline{\hspace{.05in}}message()}
-\umlclass[x=-6, y=1, anchor=north]{Packet Factory}{}{parse\_buf()\\new\_reunion()\\new\_adv()\\new\_reg()}
-\umlclass[x=-3, y=-4, anchor=north]{Peer}{}{user\_interface()\\run()\\packetFactory()\\handle\_packets()}
+\umlclass[x=0, y=1, anchor=north]{Stream}{server : dictionary \\nClient : dictionary\\ clientMsg :dict \\serverBuffer : string}{add\underline{\hspace{.05in}}client(ip,port)\\remove\underline{\hspace{.05in}}client(ip,port)\\read\underline{\hspace{.05in}}inBuff()\\send\underline{\hspace{.05in}}message()} 
+\umlclass[x=-6, y=1, anchor=north]{Packet Factory}{}{parse\underline{\hspace{.05in}}buf()\\new\underline{\hspace{.05in}}reunion()\\new\underline{\hspace{.05in}}adv()\\new\underline{\hspace{.05in}}reg()} 
+\umlclass[x=-3, y=-4, anchor=north]{Peer}{}{user\underline{\hspace{.05in}}interface()\\run()\\packetFactory()\\handle\underline{\hspace{.05in}}packets()} 
 \umlassoc[arm2=-1.2cm]{Peer}{Packet Factory}
 \umlassoc[arm2=-1.2cm]{Peer}{Stream}
 \umlclass[x=-4, y=-8, anchor=north]{Packet}{type: String\\node:\\header: String\\body: String\\}{}
-\umlclass[x=+1.5, y=-11, anchor=north]{Reunion}{}{get\_destination()}
-\umlclass[x=0, y=-14 ,anchor=north]{Advertise}{ip: String\\port: String}{}
-\umlclass[x=-3, y=-14, anchor=north]{Message}{plain\_text : String}{}
-\umlclass[x=-7, y=-14 ,anchor=north]{Register Request}{ip: String\\port: String}{}
+\umlclass[x=+1.5, y=-11, anchor=north]{Reunion}{}{get\underline{\hspace{.05in}}destination()}  
+\umlclass[x=0, y=-14 ,anchor=north]{Advertise}{ip: String\\port: String}{}  
+\umlclass[x=-3, y=-14, anchor=north]{Message}{plain\underline{\hspace{.05in}}text : String}{}
+\umlclass[x=-7, y=-14 ,anchor=north]{Register Request}{ip: String\\port: String}{}  
 \umlclass[x=-9.5, y=-11, anchor=north]{Register Response}{ack : String}{}
-\umlinherit[arm2=-1.2cm]{Reunion}{Packet}
+\umlinherit[arm2=-1.2cm]{Reunion}{Packet} 
 \umlinherit[arm2=-1.2cm]{Advertise}{Packet}
 \umlinherit[arm2=-1.2cm]{Message}{Packet}
 \umlinherit[arm2=-1.2cm]{Register Request}{Packet}
@@ -68,11 +68,11 @@
 \section{Objects}
 \paragraph{}Now it's time to explain every obejct's duty.
 \subsection{Stream}This objects has one server and n clients. Servers are always open for reading and clients will be open whenever we want to write on a socket. \\
-There is a clientMsg dictionary in this object to handle messages. This means that there is an array assigned to a specific client for all clients. If we need to add a new client to this object, we use add\_client() method. Consequently, an array will be assigned to this new client in clientMsg.\\
-There is also a remove\_client() method for the times when we want to remove a client from this object. This method is mostly used  when reunion fails.\\
-The read\_in_buf returns the buffer of the server.\\
-The send\_msg() method is used when peer wants to send a message to a specific client.\\
-Byte\_ack() is used to reply to the receives messages. We must reply all of the receives messages by sending Ack (which is a string).\\
+There is a clientMsg dictionary in this object to handle messages. This means that there is an array assigned to a specific client for all clients. If we need to add a new client to this object, we use add\underline{\hspace{.05in}}client() method. Consequently, an array will be assigned to this new client in clientMsg.\\
+There is also a remove\underline{\hspace{.05in}}client() method for the times when we want to remove a client from this object. This method is mostly used  when reunion fails.\\
+The read\underline{\hspace{.05in}}inBuf returns the buffer of the server.\\
+The send\underline{\hspace{.05in}}msg() method is used when peer wants to send a message to a specific client.\\
+Byte\underline{\hspace{.05in}}ack() is used to reply to the receives messages. We must reply all of the receives messages by sending Ack (which is a string).\\
 \begin{lstlisting}
 #stream()
 serverBuffer
@@ -84,30 +84,18 @@ read_inBuff()
 \paragraph{}We also need to add a dictionary to specify every client's message(s)
 \subsection{Peer}This object is the main object that we are working with. It must have a Stream object which provides the connection to the socket; This means that reading and writing are done using the Stream object. Peer must also have a userInterface object in order to facilitate commanding by users.(.e.g. for connecting or sending message to a specific node)\\
 The run method handles all of the events included in stream in an infinite loop and it also handles the received messages; This means that it does a certain action based on the type of the received packet.
-\\
-The handle\_packet function is a wrapper for doing each packets action; this function uses several internal functions that implemented for each type of packets as listed below:
-\\
-\begin{enumerate}
-  \item handle\_advertise\_packet
-  \item handle\_reunion\_packet
-  \item handle\_register\_packet
-  \item handle\_message\_packet
-\end{enumerate}
 
 \begin{lstlisting}
 #Peer()
 stream()
-user_interface()   #Which the user or client sees and works with.
-run() 				#This method runs every time to see
+user_interface()   #Which the user or client sees and works with. 
+run() 				#This method runs every time to see 
 				     #whether there is new messages or not.
 packetFactory()
 handle_packets()
 \end{lstlisting}
 \subsection{Packet Factory}
-\paragraph{packetFactory()}The main functionality of this object is to create different types of packet and return them. To be more specific, we read data from buffer and we pass it through pars\_buff() method in order to get a packet.
-\\
-In addition this object has some methods to create our specified packet type like: advertise, reunion, register, message; for each packet type we have a separate function.
-
+\paragraph{packetFactory()}The main functionality of this object is to create different types of packet and return them. To be more specific, we read data from buffer and we pass it through pars\underline{\hspace{.05in}}buff() method in order to get a packet.
 \begin{lstlisting}
 #packetFactory
 parse_buf()
@@ -116,7 +104,7 @@ new_adv() #makes a new advertise packet.
 new_reg() #makes a new register packet.
 \end{lstlisting}
 \subsection{Packet}
-\paragraph{}Every packet consists seven differntes parts: \textbf{plain\_text} which is the raw text message in the packet.\\
+\paragraph{}Every packet consists seven differntes parts: \textbf{plain\underline{\hspace{.05in}}text} which is the raw text message in the packet.\\
 \textbf{Node}: Specifies to which node the packet sent to. \textbf{Sender} specifies who sent the packet \textbf{Validator} which makes the packet valid.\\ \textbf{Header} where the information such as type of the packet and etc. are going to be there.\\ \textbf{Body} body of our packet .
 \subsection{Reunion}
 \paragraph{reunion(packet)} checks the connection of the nodes to the root.
@@ -127,9 +115,9 @@ new_reg() #makes a new register packet.
 \subsection{Node}
 \paragraph{}Every node has two parameters: \textbf{IP} and \textbf{Port}.
 \subsection{Resgister Request}
-\paragraph{reg\_req()} sends IP/Port of a node to the root to ask if it can register it.
+\paragraph{reg\underline{\hspace{.05in}}req()} sends IP/Port of a node to the root to ask if it can register it. 
 \subsection{Register Response}
-\paragraph{reg\_res()} should just send an $Ack$ from the root  to inform a node that it has been registered in the root if the reg\_req() was successful.
+\paragraph{reg\underline{\hspace{.05in}}res()} should just send an from the root $Ack$ to inform a node that it has been registerd in the root if the reg\underline{\hspace{.05in}}req() was successful.
 \subsection{Advertise}
 \paragraph{adv(packet)}
 \subsection{Mesasge}
