@@ -158,7 +158,7 @@ class Packet:
         """
 
         :return: Packet header
-        :rtype: String
+        :rtype: str
         """
 
         return self.header
@@ -167,7 +167,7 @@ class Packet:
         """
 
         :return: Packet Version
-        :rtype: Integer
+        :rtype: int
         """
         return self.version
 
@@ -175,7 +175,7 @@ class Packet:
         """
 
         :return: Packet type
-        :rtype: Integer
+        :rtype: int
         """
         return self.type
 
@@ -183,7 +183,7 @@ class Packet:
         """
 
         :return: Packet length
-        :rtype: Integer
+        :rtype: int
         """
         return self.length
 
@@ -191,10 +191,9 @@ class Packet:
         """
 
         :return: Packet body
-        :rtype: String
+        :rtype: str
         """
         return self.body
-
 
 
 class PacketFactory:
@@ -203,7 +202,9 @@ class PacketFactory:
 
         """
         :param buffer: The buffer that should be parse to a validate packet format
-        :return packet
+
+        :return new packet
+        :rtype Packet
 
         """
         pass
@@ -213,17 +214,55 @@ class PacketFactory:
         :param destination: (ip, port) of destination want to send reunion packet.
         :param nodes_array: [(ip0, port0), (ip1, port1), ...] It is the path to the 'destination'.
 
-        :return new reunion packet.
+        :return New reunion packet.
+        :rtype Packet
 
         """
         pass
 
-    def new_advertise_packet(self):
+    def new_advertise_packet(self, type, neighbor=None):
         """
-        :param buffer:
+        :param type: Type of Advertise packet
+        :param neighbor: The neighbor for advertise response packet; The format is like ('192.168.001.001', '05335').
+
+        :type type: str
+        :type neighbor: tuple
+
+        :return New advertise packet.
+        :rtype Packet
 
         """
-        pass
+        version = '1'
+        packet_type = '02'
+
+        if type == 'Request':
+            body = 'REQ'
+            length = '00003'
+            return Packet(version+packet_type+length+body)
+
+        elif type == 'Response':
+            try:
+                body = 'RES'
+                body += neighbor[0]
+                body += neighbor[1]
+                length = '00023'
+                return Packet(version+packet_type+length+body)
+            except Exception as e:
+                print(str(e))
+
+    def new_join_packet(self):
+        """
+        :return New join packet.
+        :rtype Packet
+
+        """
+        version = '1'
+        packet_type = '03'
+        length = '00004'
+        body = 'JOIN'
+
+        return Packet(version+packet_type+length+body)
+
 
     def new_register_packet(self):
         # make a new register packet.
