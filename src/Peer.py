@@ -15,7 +15,14 @@ class Peer:
     def packet_factory(self):
         pass
 
-    def handle_packets(self):
+    def handle_packets(self, packet):
+        """
+        :param packet: The arrived packet that should be handled.
+
+        In this function we will use the other handle_###_packet methods to handle the 'packet'.
+
+        :return:
+        """
         pass
 
     def run(self):
@@ -33,6 +40,8 @@ class Peer:
     def __handle_reunion_packet(self):
         pass
 
+    def __handle_join_packet(self):
+        pass
 
 class Node:
     ip = str
