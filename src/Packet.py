@@ -1,40 +1,3 @@
-# implementation of Packet and PacketFactory classes
-# packetFactory
-
-
-class PacketFactory:
-
-    def parse_buffer(self, buffer):
-
-        """
-        :param buffer: The buffer that should be parse to a validate packet format
-        :return packet
-
-        """
-        pass
-
-    def new_reunion_packet(self, destination, nodes_array):
-        """
-        :param destination: (ip, port) of destination want to send reunion packet.
-        :param nodes_array: [(ip0, port0), (ip1, port1), ...] It is the path to the 'destination'.
-
-        :return new reunion packet.
-
-        """
-        pass
-
-    def new_advertise_packet(self):
-        """
-        :param buffer:
-
-        """
-        pass
-
-    def new_register_packet(self):
-        # make a new register packet.
-        pass
-
-
 """
 
     This is the format of packets in our network:
@@ -126,6 +89,7 @@ class PacketFactory:
                  ________________________________________________
                 |                     Message                    |
                 |________________________________________________|
+
             The message that want to broadcast to hole network. Right now this type only includes a plain text.
         
         Reunion:
@@ -173,6 +137,7 @@ class PacketFactory:
                 |------------------------------------------------|
                 |                 Port1 (5 char)                 |
                 |________________________________________________|
+
                 Root in answer of the Reunion Hello message will send this packet to the target node.
                 In this packet all the nodes (ip, port) exist in order by path traversal to target.
             
@@ -229,3 +194,37 @@ class Packet:
         :rtype: String
         """
         return self.body
+
+
+
+class PacketFactory:
+
+    def parse_buffer(self, buffer):
+
+        """
+        :param buffer: The buffer that should be parse to a validate packet format
+        :return packet
+
+        """
+        pass
+
+    def new_reunion_packet(self, destination, nodes_array):
+        """
+        :param destination: (ip, port) of destination want to send reunion packet.
+        :param nodes_array: [(ip0, port0), (ip1, port1), ...] It is the path to the 'destination'.
+
+        :return new reunion packet.
+
+        """
+        pass
+
+    def new_advertise_packet(self):
+        """
+        :param buffer:
+
+        """
+        pass
+
+    def new_register_packet(self):
+        # make a new register packet.
+        pass
