@@ -11,15 +11,16 @@ class Stream:
         :param port: 5 characters
         """
         if not self.is_valid(ip, port):
-            #TODO
-            pass
+            raise Exception("Invalid format of ip or port for TCPServer.")
+            #   TODO    Error handling
+
         self.messages_dic = {}
         self.server_in_buf = {}
         # self.parent = None
         #   TODO    Parent should be in Peer object not here
 
         def cb(ip, queue, data):
-            queue.put(bytes('ACK'))
+            queue.put(bytes('ACK', 'utf8'))
             # self.messages_dic.update({ip: self.messages_dic.get(ip).append(data)})
             self.server_in_buf.update({ip, data})
 
@@ -34,7 +35,7 @@ class Stream:
             print("This client currently exists")
             return
         else:
-            self.messages_dic.update({(ip, port):[]})
+            self.messages_dic.update({(ip, port): []})
             self.clients.append(ClientSocket(ip, port))
 
     def is_valid(self, ip, port):
@@ -59,7 +60,36 @@ class Stream:
     def read_in_buf(self):
         return self.server_in_buf
 
-    def send_message(self, client, message):
+    def send_messages_to_client(self, client):
+        """
+        Send buffered messages to the 'client'
+
+        :param client:
+        :type client ClientSocket
+
+        :return:
+        """
+        message = self.messages_dic.get(('.'.join(str(int(part)).zfill(3) for part in client.get_ip().split('.'))),
+                                        client.get_port().zfill(5))
+
+        response = client.send(message)
+
+        if response.decode("UTF-8") != bytes('ACK'):
+            print("The ", client.get_ip(), ": ", client.get_port(), " did not response with b'ACK'.")
+
+    def send_out_buf_messages(self):
+        """
+        In this function we will send hole out buffers to their own clients.
+
+        :return:
+        """
+
+        for c in self.clients:
+            self.send_messages_to_client(c)
+        
+        # self.messages_dic.update({client, self.messages_dic.pop(client).append(message)})
+
+    def add_message_to_out_buf(self, client, message):
         self.messages_dic.update({client, self.messages_dic.pop(client).append(message)})
 
     # def set_parent(self, ip ,port):

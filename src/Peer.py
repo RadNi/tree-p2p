@@ -110,14 +110,14 @@ class Peer:
         """
         if packet.get_body()[0:3] == "REQ":
             p = self.packet_factory.new_advertise_packet(type="RES", neighbor=self.__get_neighbour(sender))
-            self.stream.send_message(sender, p.get_buf())
+            self.stream.add_message_to_out_buf(sender, p.get_buf())
         elif packet.get_body()[0:3] == "RES":
             ip = packet.get_body()[3:18]
             port = packet.get_body()[18:23]
             self.stream.add_client(ip, port)
             self.parent = (ip, port)
             join_packet = self.packet_factory.new_join_packet()
-            self.stream.send_message(self.parent, join_packet.get_buf())
+            self.stream.add_message_to_out_buf(self.parent, join_packet.get_buf())
         else:
             raise Exception("Unexpected Type.")
 
@@ -140,7 +140,7 @@ class Peer:
                 res = self.packet_factory.new_register_packet(type="RES")
                 self.network_nodes.append(Node(pbody[3:18], pbody[18:23]))
                 self.stream.add_client(pbody[3:18], pbody[18:23])
-                self.stream.send_message((pbody[3:18], pbody[18:23]), res)
+                self.stream.add_message_to_out_buf((pbody[3:18], pbody[18:23]), res)
                 #   TODO    Maybe in some other time we should delete this client from our clients array.
 
         if pbody[0:3] == "RES":
