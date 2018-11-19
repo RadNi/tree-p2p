@@ -220,7 +220,62 @@ class PacketFactory:
         :rtype Packet
 
         """
-        pass
+
+        return Packet(buffer=buffer)
+        # try:
+        #     buffer_string = str(buffer)  # verify that buffer is string
+        #     version = '1'
+        #     types = ['01', '02', '03', '04', '05']
+        #
+        #     """ parsing buffer: """
+        #
+        #     buffer_version = buffer_string[0]  # getting first character of buffer for version
+        #     buffer_type = buffer_string[1:3]  # getting next two characters of buffer for type
+        #     buffer_length = buffer_string[3:8]  # getting next five characters for length
+        #     buffer_body = buffer_string[8:]  # getting rest of buffer for body
+        #
+        #     """Validating buffer as packet:"""
+        #
+        #     if buffer_version == version:
+        #         buffer_type = types.index(buffer_type) + 1  # casting type to int
+        #
+        #         if int(buffer_length) == len(buffer_length):
+        #
+        #             if buffer_type == 1:
+        #                 return self.new_register_packet(body=str(buffer_body))
+        #
+        #             elif buffer_type == 2:
+        #                 return self.new_advertise_packet(body=str(buffer_body))
+        #
+        #             elif buffer_type == 3:
+        #
+        #                 if str(buffer_body) == 'JOIN':
+        #                     return self.new_join_packet()
+        #
+        #                 else:
+        #                     raise Exception("Buffer body for join packet type is not 'JOIN'")
+        #
+        #             elif buffer_type == 4:
+        #                 return self.new_message_packet(str(buffer_body))
+        #
+        #             elif buffer_type == 5:
+        #                 return self.new_reunion_packet(str(buffer_body))
+        #
+        #         else:
+        #             raise Exception("Buffer length is incorrect")
+        #
+        #
+        #     else:
+        #         raise Exception("Buffer version is incorrect")
+
+
+
+        #
+        #
+        # except Exception as e:
+        #     print(str(e))
+        #
+        # pass
 
     def new_reunion_packet(self, destination, nodes_array):
         """
@@ -234,6 +289,7 @@ class PacketFactory:
         pass
 
     def new_advertise_packet(self, type, neighbor=None):
+        # TODO change code to realize which type to use from body
         """
         :param type: Type of Advertise packet
         :param neighbor: The neighbor for advertise response packet; The format is like ('192.168.001.001', '05335').
