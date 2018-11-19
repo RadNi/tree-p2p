@@ -221,7 +221,7 @@ class PacketFactory:
 
         """
 
-        return Packet(buffer=buffer)
+        return Packet(buf=buffer)
         # try:
         #     buffer_string = str(buffer)  # verify that buffer is string
         #     version = '1'
@@ -287,7 +287,6 @@ class PacketFactory:
         pass
 
     def new_advertise_packet(self, type, neighbor=None):
-        # TODO change code to realize which type to use from body
         """
         :param type: Type of Advertise packet
         :param neighbor: The neighbor for advertise response packet; The format is like ('192.168.001.001', '05335').
@@ -333,7 +332,35 @@ class PacketFactory:
         return Packet(version + packet_type + length + body)
 
     def new_register_packet(self, type, address=(None, None)):
-        # make a new register packet.
+        """
+        :param type: Type of Register packet
+        :param address: If type is request we need address; The format is like ('192.168.001.001', '05335').
+
+        :type type: str
+        :type address: tuple
+
+        :return New Register packet.
+        :rtype Packet
+
+        """
+
+        version = "1"
+        packet_type = "01"
+        length = ""
+        body = ""
+
+        if type == "REQ":
+            length = "00023"
+            body = "REQ" + address[0] + address[1]
+
+        elif type == "RES":
+            length = "00006"
+            body = "RES"
+        else:
+            raise Exception("Irregular register type.")
+
+        return Packet(version + packet_type + length + body)
+
         pass
 
     def new_message_packet(self, message):

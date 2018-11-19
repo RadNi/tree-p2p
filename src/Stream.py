@@ -8,7 +8,8 @@ class Stream:
     def __init__(self, ip, port):
         self.messages_dic = {}
         self.server_in_buf = {}
-        self.parent = None
+        # self.parent = None
+        #   TODO    Parent should be in Peer object not here
 
         def cb(ip, queue, data):
             queue.put(bytes('ACK'))
@@ -46,5 +47,5 @@ class Stream:
     def send_message(self, client, message):
         self.messages_dic.update({client, self.messages_dic.pop(client).append(message)})
 
-    def set_parent(self, ip, port):
-        self.parent = ClientSocket(ip, port)
+    # def set_parent(self, ip, port):
+    #     self.parent = ClientSocket(ip, port)
