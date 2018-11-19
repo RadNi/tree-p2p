@@ -268,8 +268,6 @@ class PacketFactory:
         #     else:
         #         raise Exception("Buffer version is incorrect")
 
-
-
         #
         #
         # except Exception as e:
@@ -337,3 +335,12 @@ class PacketFactory:
     def new_register_packet(self, type, address=(None, None)):
         # make a new register packet.
         pass
+
+    def new_message_packet(self, message):
+        version = '1'
+        packet_type = '04'
+        body = message
+        length = len(message)
+        for i in range(length, 5):
+            length = '0' + length
+        return Packet(version + packet_type + length + body)
