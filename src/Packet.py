@@ -16,12 +16,12 @@
         For now version is 1
     
     Type:
-        1: Register
-        2: Advertise
-        3: Join
-        4: Message
-        5: Reunion
-        
+        01: Register
+        02: Advertise
+        03: Join
+        04: Message
+        05: Reunion
+                e.g: type = '02' => advertise packet.
     Length:
         This field shows the character numbers for Body of the packet.
         
@@ -33,6 +33,8 @@
         
                                 ** Packet Format **
                  ________________________________________________
+                |                       REQ                      |
+                |------------------------------------------------|
                 |                 IP (15 char)                   |
                 |------------------------------------------------|
                 |                 Port (5 char)                  |
@@ -43,6 +45,8 @@
         
                                 ** Packet Format **
                  ________________________________________________
+                |                       RES                      |
+                |------------------------------------------------|
                 |                       ACK                      |
                 |________________________________________________|
                 
@@ -148,53 +152,61 @@
 class Packet:
 
     def __init__(self, buf):
-        self.header = buf
-        self.version = int(buf[0], 10)
-        self.type = int(buf[1:3], 10)
-        self.length = int(buf[3:8], 10)
-        self.body = buf[8:]
+        self._buf = buf
+        self._header = buf[0:8]
+        self._version = int(buf[0], 10)
+        self._type = int(buf[1:3], 10)
+        self._length = int(buf[3:8], 10)
+        self._body = buf[8:]
 
     def get_header(self):
         """
 
         :return: Packet header
-        :rtype: String
+        :rtype: str
         """
 
-        return self.header
+        return self._header
 
     def get_version(self):
         """
 
         :return: Packet Version
-        :rtype: Integer
+        :rtype: int
         """
-        return self.version
+        return self._version
 
     def get_type(self):
         """
 
         :return: Packet type
-        :rtype: Integer
+        :rtype: int
         """
-        return self.type
+        return self._type
 
     def get_length(self):
         """
 
         :return: Packet length
-        :rtype: Integer
+        :rtype: int
         """
-        return self.length
+        return self._length
 
     def get_body(self):
         """
 
         :return: Packet body
-        :rtype: String
+        :rtype: str
         """
-        return self.body
+        return self._body
 
+    def get_buf(self):
+        """
+
+        :return Packet buffer
+        :return: str
+        """
+        return self._buf
 
 
 class PacketFactory:
@@ -203,28 +215,132 @@ class PacketFactory:
 
         """
         :param buffer: The buffer that should be parse to a validate packet format
-        :return packet
+
+        :return new packet
+        :rtype Packet
 
         """
-        pass
+
+        return Packet(buffer=buffer)
+        # try:
+        #     buffer_string = str(buffer)  # verify that buffer is string
+        #     version = '1'
+        #     types = ['01', '02', '03', '04', '05']
+        #
+        #     """ parsing buffer: """
+        #
+        #     buffer_version = buffer_string[0]  # getting first character of buffer for version
+        #     buffer_type = buffer_string[1:3]  # getting next two characters of buffer for type
+        #     buffer_length = buffer_string[3:8]  # getting next five characters for length
+        #     buffer_body = buffer_string[8:]  # getting rest of buffer for body
+        #
+        #     """Validating buffer as packet:"""
+        #
+        #     if buffer_version == version:
+        #         buffer_type = types.index(buffer_type) + 1  # casting type to int
+        #
+        #         if int(buffer_length) == len(buffer_length):
+        #
+        #             if buffer_type == 1:
+        #                 return self.new_register_packet(body=str(buffer_body))
+        #
+        #             elif buffer_type == 2:
+        #                 return self.new_advertise_packet(body=str(buffer_body))
+        #
+        #             elif buffer_type == 3:
+        #
+        #                 if str(buffer_body) == 'JOIN':
+        #                     return self.new_join_packet()
+        #
+        #                 else:
+        #                     raise Exception("Buffer body for join packet type is not 'JOIN'")
+        #
+        #             elif buffer_type == 4:
+        #                 return self.new_message_packet(str(buffer_body))
+        #
+        #             elif buffer_type == 5:
+        #                 return self.new_reunion_packet(str(buffer_body))
+        #
+        #         else:
+        #             raise Exception("Buffer length is incorrect")
+        #
+        #
+        #     else:
+        #         raise Exception("Buffer version is incorrect")
+
+        #
+        #
+        # except Exception as e:
+        #     print(str(e))
+        #
+        # pass
 
     def new_reunion_packet(self, destination, nodes_array):
         """
         :param destination: (ip, port) of destination want to send reunion packet.
         :param nodes_array: [(ip0, port0), (ip1, port1), ...] It is the path to the 'destination'.
 
-        :return new reunion packet.
+        :return New reunion packet.
+        :rtype Packet
 
         """
         pass
 
-    def new_advertise_packet(self):
+    def new_advertise_packet(self, type, neighbor=None):
+        # TODO change code to realize which type to use from body
         """
-        :param buffer:
+        :param type: Type of Advertise packet
+        :param neighbor: The neighbor for advertise response packet; The format is like ('192.168.001.001', '05335').
+
+        :type type: str
+        :type neighbor: tuple
+
+        :return New advertise packet.
+        :rtype Packet
 
         """
-        pass
+        version = '1'
+        packet_type = '02'
 
-    def new_register_packet(self):
+        if type == 'Request':
+            body = 'REQ'
+            length = '00003'
+            return Packet(version + packet_type + length + body)
+
+        elif type == 'Response':
+            try:
+                body = 'RES'
+                body += neighbor[0]
+                body += neighbor[1]
+                length = '00023'
+                return Packet(version + packet_type + length + body)
+            except Exception as e:
+                print(str(e))
+        else:
+            raise Exception("Type is incorrect")
+
+    def new_join_packet(self):
+        """
+        :return New join packet.
+        :rtype Packet
+
+        """
+        version = '1'
+        packet_type = '03'
+        length = '00004'
+        body = 'JOIN'
+
+        return Packet(version + packet_type + length + body)
+
+    def new_register_packet(self, type, address=(None, None)):
         # make a new register packet.
         pass
+
+    def new_message_packet(self, message):
+        version = '1'
+        packet_type = '04'
+        body = message
+        length = len(message)
+        for i in range(length, 5):
+            length = '0' + length
+        return Packet(version + packet_type + length + body)
