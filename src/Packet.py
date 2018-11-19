@@ -264,8 +264,6 @@ class PacketFactory:
         #     else:
         #         raise Exception("Buffer version is incorrect")
 
-
-
         #
         #
         # except Exception as e:
@@ -328,10 +326,15 @@ class PacketFactory:
         length = '00004'
         body = 'JOIN'
 
-
     def new_register_packet(self, body):
         packet_type = '01'
         pass
 
     def new_message_packet(self, message):
-        pass
+        version = '1'
+        packet_type = '04'
+        body = message
+        length = len(message)
+        for i in range(length, 5):
+            length = '0' + length
+        return Packet(version + packet_type + length + body)
