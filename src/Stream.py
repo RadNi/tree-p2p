@@ -59,7 +59,7 @@ class Stream:
         return self.server_in_buf
 
     def send_message(self, client, message):
-        self.messages_dic.update({client, self.messages_dic.pop(client).append(message)})
+        self.messages_dic.update({client, self.messages_dic.pop(client.connect_ip).append(message)})
 
     def set_parent(self, ip ,port):
         if not self.is_valid(ip, port):
