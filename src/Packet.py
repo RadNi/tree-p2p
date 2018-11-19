@@ -275,7 +275,7 @@ class PacketFactory:
         #
         # pass
 
-    def new_reunion_packet(self, destination, nodes_array):
+    def new_reunion_packet(self, type,  nodes_array):
         """
         :param destination: (ip, port) of destination want to send reunion packet.
         :param nodes_array: [(ip0, port0), (ip1, port1), ...] It is the path to the 'destination'.
@@ -284,7 +284,26 @@ class PacketFactory:
         :rtype Packet
 
         """
-        pass
+        version = '1'
+        packet_type = '05'
+        if type == 'Request':
+            body = 'REQ'
+        else:
+            body = 'RES'
+        number_of_entity = str(len(nodes_array))
+        if len(number_of_entity) < 2:
+            number_of_entity = '0' + number_of_entity
+        body = body + number_of_entity
+        for (ip,port) in nodes_array:
+            body = body + ip
+            body = body + port
+        length = str(len(body))
+        while len(length) < 5:
+            length = '0' + length
+        return Packet(version + packet_type + length + body)
+
+
+
 
     def new_advertise_packet(self, type, neighbor=None):
         """
