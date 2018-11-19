@@ -6,6 +6,13 @@ from src.tools.simpletcp.clientsocket import ClientSocket
 class Stream:
 
     def __init__(self, ip, port):
+        """
+        :param ip: 15 characters
+        :param port: 5 characters
+        """
+        if not self.is_valid(ip, port):
+            #TODO
+            pass
         self.messages_dic = {}
         self.server_in_buf = {}
         # self.parent = None
@@ -20,12 +27,20 @@ class Stream:
         self.clients = []
 
     def add_client(self, ip, port):
+        if not self.is_valid(ip, port):
+            print("Invalid ip/port")
+            return
         if (ip, port) in self.messages_dic:
-            # TODO
+            print("This client currently exists")
             return
         else:
-            self.messages_dic.update({(ip, port): []})
+            self.messages_dic.update({(ip, port):[]})
             self.clients.append(ClientSocket(ip, port))
+
+    def is_valid(self, ip, port):
+        if len(str(ip)) != 15 or len(str(port)) != 5:
+            return False
+        return True
 
     def remove_client(self, cl):
         self.clients.remove(cl)
@@ -47,5 +62,8 @@ class Stream:
     def send_message(self, client, message):
         self.messages_dic.update({client, self.messages_dic.pop(client).append(message)})
 
-    # def set_parent(self, ip, port):
+    # def set_parent(self, ip ,port):
+    #     if not self.is_valid(ip, port):
+    #         print("Invalid ip/port")
+    #         return
     #     self.parent = ClientSocket(ip, port)
