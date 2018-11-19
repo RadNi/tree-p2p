@@ -148,7 +148,8 @@
 class Packet:
 
     def __init__(self, buf):
-        self.header = buf
+        self.buf = buf
+        self.header = buf[0:8]
         self.version = int(buf[0], 10)
         self.type = int(buf[1:3], 10)
         self.length = int(buf[3:8], 10)
@@ -194,6 +195,14 @@ class Packet:
         :rtype: str
         """
         return self.body
+
+    def get_buf(self):
+        """
+
+        :return Packet buffer
+        :return: str
+        """
+        return self.buf
 
 
 class PacketFactory:
@@ -249,6 +258,8 @@ class PacketFactory:
                 return Packet(version+packet_type+length+body)
             except Exception as e:
                 print(str(e))
+        else:
+            raise Exception("Type is incorrect")
 
     def new_join_packet(self):
         """
