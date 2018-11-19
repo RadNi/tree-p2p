@@ -15,7 +15,8 @@ class Stream:
             pass
         self.messages_dic = {}
         self.server_in_buf = {}
-        self.parent = None
+        # self.parent = None
+        #   TODO    Parent should be in Peer object not here
 
         def cb(ip, queue, data):
             queue.put(bytes('ACK'))
@@ -52,7 +53,7 @@ class Stream:
             if cl.get_port() == port and cl.get_ip == ip:
                 rem_client = cl
                 break
-        if rem_client != None:
+        if rem_client is not None:
             self.remove_client(rem_client)
 
     def read_in_buf(self):
@@ -61,8 +62,8 @@ class Stream:
     def send_message(self, client, message):
         self.messages_dic.update({client, self.messages_dic.pop(client.connect_ip).append(message)})
 
-    def set_parent(self, ip ,port):
-        if not self.is_valid(ip, port):
-            print("Invalid ip/port")
-            return
-        self.parent = ClientSocket(ip, port)
+    # def set_parent(self, ip ,port):
+    #     if not self.is_valid(ip, port):
+    #         print("Invalid ip/port")
+    #         return
+    #     self.parent = ClientSocket(ip, port)

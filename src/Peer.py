@@ -1,5 +1,6 @@
 from src.Stream import Stream
 from src.Packet import Packet, PacketFactory
+from src.UserInterface import UserInterface
 
 
 class Peer:
@@ -15,9 +16,11 @@ class Peer:
         self.packets = []
         self.neighbours = []
 
-        self.user_interface_buffer = []
+        self._user_interface = UserInterface()
 
-        self.broadcast_packets = []
+        self._user_interface_buffer = []
+
+        self._broadcast_packets = []
 
         self.packet_factory = PacketFactory()
 
@@ -30,6 +33,9 @@ class Peer:
         # Which the user or client sees and works with. run() #This method runs every time to
         #  see whether there is new messages or not.
         #   TODO
+
+        self._user_interface.start()
+
         pass
 
     def handle_user_interface_buffer(self):
@@ -38,12 +44,18 @@ class Peer:
         :return:
         """
 
-        for buffer in self.user_interface_buffer:
-            self.broadcast_packets.append(self.packet_factory.new_message_packet(buffer))
+        for buffer in self._user_interface_buffer:
+            self._broadcast_packets.append(self.packet_factory.new_message_packet(buffer))
 
     def run(self):
         """
         Main loop of the program.
+        The actions that should be done in this function listed below:
+            1.Parse server inbuf of the stream.
+            2.Handle all packets were received from server.
+            3.Parse user_interface_buffer to make message packets.
+            4.Send packets stored in clients dictionary of stream.
+            5.** sleep for some milliseconds **
 
         :return:
         """
