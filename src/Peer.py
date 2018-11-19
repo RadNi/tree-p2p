@@ -5,6 +5,7 @@ from src.Packet import Packet, PacketFactory
 class Peer:
 
     def __init__(self, is_root=False):
+        self._is_root = is_root
         #    TODO   here we should pass IP/Port of the Stream server to Stream constructor.
         self.stream = Stream()
 
@@ -12,11 +13,12 @@ class Peer:
 
         #   TODO    The arrival packets that should handle in future ASAP!
         self.packets = []
+        self.neighbours = []
 
         self.packet_factory = PacketFactory()
 
-        if is_root:
-            self.nodes = []
+        if self._is_root:
+            self.network_nodes = []
 
         pass
 
@@ -38,19 +40,19 @@ class Peer:
         :type sender tuple
 
         """
-        if packet.length != len(packet.body):
+        if packet.get_length() != len(packet.get_body()):
             raise Exception("Packet Length is incorrect.")
 
-        if packet.version == 1:
-            if packet.type == 1:
+        if packet.get_version() == 1:
+            if packet.get_type() == 1:
                 self.__handle_register_packet(packet, sender)
-            elif packet.type == 2:
+            elif packet.get_type() == 2:
                 self.__handle_advertise_packet(packet, sender)
-            elif packet.type == 3:
+            elif packet.get_type() == 3:
                 self.__handle_join_packet(packet, sender)
-            elif packet.type == 4:
+            elif packet.get_type() == 4:
                 self.__handle_message_packet(packet, sender)
-            elif packet.type == 5:
+            elif packet.get_type() == 5:
                 self.__handle_reunion_packet(packet, sender)
 
     def __handle_advertise_packet(self, packet, sender):
@@ -72,12 +74,12 @@ class Peer:
 
         :return:
         """
-        if packet.body[0:3] == "REQ":
+        if packet.get_body()[0:3] == "REQ":
             p = self.packet_factory.new_advertise_packet(type="RES", neighbor=self.__get_neighbour(sender))
             self.stream.send_message(sender, p.get_buf())
-        elif packet.body[0:3] == "RES":
-            ip = packet.body[3:18]
-            port = packet.body[18:23]
+        elif packet.get_body()[0:3] == "RES":
+            ip = packet.get_body()[3:18]
+            port = packet.get_body()[18:23]
             self.stream.add_client(ip, port)
             self.parent = (ip, port)
             join_packet = self.packet_factory.new_join_packet()
@@ -96,7 +98,22 @@ class Peer:
         :type sender tuple
         :return:
         """
-        pass
+        pbody = packet.get_body()
+        if pbody[0:3] == "REQ":
+            if not self._is_root:
+                raise Exception("Register request packet send to a non root node!")
+            else:
+                res = self.packet_factory.new_register_packet(type="RES")
+                self.network_nodes.append(Node(pbody[3:18], pbody[18:23]))
+                self.stream.add_client(pbody[3:18], pbody[18:23])
+                self.stream.send_message((pbody[3:18], pbody[18:23]), res)
+                #   TODO    Maybe in some other time we should delete this client from our clients array.
+
+        if pbody[0:3] == "RES":
+            if pbody[3:6] == "ACK":
+                print("Hooraa. We registered to the network.")
+            else:
+                raise Exception("Root did not send ack in the register response packet!")
 
     def __handle_message_packet(self, packet, sender):
         """
@@ -132,14 +149,14 @@ class Peer:
         :return:
         """
 
-        self.nodes.append(sender)
+        self.neighbours.append(sender)
         self.stream.add_client(sender[0], sender[1])
 
         pass
 
     def __get_neighbour(self, sender):
         """
-        Finds the best neighbour for the 'sender'.
+        Finds the best neighbour for the 'sender' from network_nodes array.
 
         :param sender: Sender of the packet
         :return: The specified neighbor for the sender; The format is like ('192.168.001.001', '05335').

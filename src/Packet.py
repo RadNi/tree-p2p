@@ -33,6 +33,8 @@
         
                                 ** Packet Format **
                  ________________________________________________
+                |                       REQ                      |
+                |------------------------------------------------|
                 |                 IP (15 char)                   |
                 |------------------------------------------------|
                 |                 Port (5 char)                  |
@@ -43,6 +45,8 @@
         
                                 ** Packet Format **
                  ________________________________________________
+                |                       RES                      |
+                |------------------------------------------------|
                 |                       ACK                      |
                 |________________________________________________|
                 
@@ -148,12 +152,12 @@
 class Packet:
 
     def __init__(self, buf):
-        self.buf = buf
-        self.header = buf[0:8]
-        self.version = int(buf[0], 10)
-        self.type = int(buf[1:3], 10)
-        self.length = int(buf[3:8], 10)
-        self.body = buf[8:]
+        self._buf = buf
+        self._header = buf[0:8]
+        self._version = int(buf[0], 10)
+        self._type = int(buf[1:3], 10)
+        self._length = int(buf[3:8], 10)
+        self._body = buf[8:]
 
     def get_header(self):
         """
@@ -162,7 +166,7 @@ class Packet:
         :rtype: str
         """
 
-        return self.header
+        return self._header
 
     def get_version(self):
         """
@@ -170,7 +174,7 @@ class Packet:
         :return: Packet Version
         :rtype: int
         """
-        return self.version
+        return self._version
 
     def get_type(self):
         """
@@ -178,7 +182,7 @@ class Packet:
         :return: Packet type
         :rtype: int
         """
-        return self.type
+        return self._type
 
     def get_length(self):
         """
@@ -186,7 +190,7 @@ class Packet:
         :return: Packet length
         :rtype: int
         """
-        return self.length
+        return self._length
 
     def get_body(self):
         """
@@ -194,7 +198,7 @@ class Packet:
         :return: Packet body
         :rtype: str
         """
-        return self.body
+        return self._body
 
     def get_buf(self):
         """
@@ -202,7 +206,7 @@ class Packet:
         :return Packet buffer
         :return: str
         """
-        return self.buf
+        return self._buf
 
 
 class PacketFactory:
@@ -274,6 +278,6 @@ class PacketFactory:
 
         return Packet(version + packet_type + length + body)
 
-    def new_register_packet(self):
+    def new_register_packet(self, type, address=(None, None)):
         # make a new register packet.
         pass
