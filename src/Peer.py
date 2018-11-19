@@ -13,7 +13,6 @@ class Peer:
         #   TODO    The arrival packets that should handle in future ASAP!
         self.packets = []
 
-
         self.packet_factory = PacketFactory()
 
         if is_root:

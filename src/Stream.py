@@ -20,7 +20,7 @@ class Stream:
 
     def add_client(self, ip, port):
         if (ip, port) in self.messages_dic:
-            #TODO
+            # TODO
             return
         else:
             self.messages_dic.update({(ip, port): []})

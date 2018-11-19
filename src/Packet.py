@@ -16,12 +16,12 @@
         For now version is 1
     
     Type:
-        1: Register
-        2: Advertise
-        3: Join
-        4: Message
-        5: Reunion
-        
+        01: Register
+        02: Advertise
+        03: Join
+        04: Message
+        05: Reunion
+                e.g: type = '02' => advertise packet.
     Length:
         This field shows the character numbers for Body of the packet.
         
@@ -247,7 +247,7 @@ class PacketFactory:
         if type == 'Request':
             body = 'REQ'
             length = '00003'
-            return Packet(version+packet_type+length+body)
+            return Packet(version + packet_type + length + body)
 
         elif type == 'Response':
             try:
@@ -255,7 +255,7 @@ class PacketFactory:
                 body += neighbor[0]
                 body += neighbor[1]
                 length = '00023'
-                return Packet(version+packet_type+length+body)
+                return Packet(version + packet_type + length + body)
             except Exception as e:
                 print(str(e))
         else:
@@ -272,8 +272,7 @@ class PacketFactory:
         length = '00004'
         body = 'JOIN'
 
-        return Packet(version+packet_type+length+body)
-
+        return Packet(version + packet_type + length + body)
 
     def new_register_packet(self):
         # make a new register packet.
