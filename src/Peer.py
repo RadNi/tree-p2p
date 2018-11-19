@@ -15,6 +15,10 @@ class Peer:
         self.packets = []
         self.neighbours = []
 
+        self.user_interface_buffer = []
+
+        self.broadcast_packets = []
+
         self.packet_factory = PacketFactory()
 
         if self._is_root:
@@ -22,10 +26,28 @@ class Peer:
 
         pass
 
-    def user_interface(self):
+    def start_user_interface(self):
         # Which the user or client sees and works with. run() #This method runs every time to
         #  see whether there is new messages or not.
         #   TODO
+        pass
+
+    def handle_user_interface_buffer(self):
+        """
+        Only handle broadcast messages
+        :return:
+        """
+
+        for buffer in self.user_interface_buffer:
+            self.broadcast_packets.append(self.packet_factory.new_message_packet(buffer))
+
+    def run(self):
+        """
+        Main loop of the program.
+
+        :return:
+        """
+
         pass
 
     def handle_packet(self, packet, sender):
