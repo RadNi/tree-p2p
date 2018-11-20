@@ -6,6 +6,10 @@
      ________________________________________________
     | Version(1 char)| Type(2 char) | Length(5 char) |
     |------------------------------------------------|
+    |            Source Server IP(15 char)           |
+    |------------------------------------------------|
+    |           Source Server Port(5 char)           |
+    |------------------------------------------------|
     |                      ....                      |
     |                      BODY                      |
     |                      ....                      |
@@ -24,7 +28,10 @@
                 e.g: type = '02' => advertise packet.
     Length:
         This field shows the character numbers for Body of the packet.
-        
+
+    Server IP/Port:
+        We need this field for response packet in non-blocking mode.
+
     
     Packet descriptions:
     
@@ -63,20 +70,20 @@
                 
                 Nodes for finding the IP/Port of their neighbour peer must send this packet to the root.
             Response:
-        
+
                                 ** Packet Format **
                  ________________________________________________
                 |                      RES                       |
                 |------------------------------------------------|
-                |                 IP (15 char)                   |
+                |             Server IP (15 char)                |
                 |------------------------------------------------|
-                |                 Port (5 char)                  |
+                |             Server Port (5 char)               |
                 |________________________________________________|
                 
                 Root will response Advertise Request packet with sending IP/Port of the requester peer in this packet.
                 
         Join:
-            
+
                                 ** Packet Format **
                  ________________________________________________
                 |                     JOIN                       |
@@ -153,10 +160,12 @@ class Packet:
 
     def __init__(self, buf):
         self._buf = buf
-        self._header = buf[0:8]
+        self._header = buf[0:28]
         self._version = int(buf[0], 10)
         self._type = int(buf[1:3], 10)
         self._length = int(buf[3:8], 10)
+        self._source_server_ip = buf[8:23]
+        self._source_server_port = buf[23:28]
         self._body = buf[8:]
 
     def get_header(self):
@@ -208,6 +217,31 @@ class Packet:
         """
         return self._buf
 
+    def get_source_server_ip(self):
+        """
+
+        :return: Server IP address for sender of the packet.
+        :rtype: str
+        """
+        return self._source_server_ip
+
+    def get_source_server_port(self):
+        """
+
+        :return: Server Port address for sender of the packet.
+        :rtype: str
+        """
+        return self._source_server_port
+
+    def get_source_server_address(self):
+        """
+
+        :return: Server address; The format is like ('192.168.001.001', '05335').
+        :rtype: tuple
+        """
+
+        return self.get_source_server_ip(), self.get_source_server_port()
+
 
 class PacketFactory:
 
@@ -222,58 +256,6 @@ class PacketFactory:
         """
 
         return Packet(buf=buffer)
-        # try:
-        #     buffer_string = str(buffer)  # verify that buffer is string
-        #     version = '1'
-        #     types = ['01', '02', '03', '04', '05']
-        #
-        #     """ parsing buffer: """
-        #
-        #     buffer_version = buffer_string[0]  # getting first character of buffer for version
-        #     buffer_type = buffer_string[1:3]  # getting next two characters of buffer for type
-        #     buffer_length = buffer_string[3:8]  # getting next five characters for length
-        #     buffer_body = buffer_string[8:]  # getting rest of buffer for body
-        #
-        #     """Validating buffer as packet:"""
-        #
-        #     if buffer_version == version:
-        #         buffer_type = types.index(buffer_type) + 1  # casting type to int
-        #
-        #         if int(buffer_length) == len(buffer_length):
-        #
-        #             if buffer_type == 1:
-        #                 return self.new_register_packet(body=str(buffer_body))
-        #
-        #             elif buffer_type == 2:
-        #                 return self.new_advertise_packet(body=str(buffer_body))
-        #
-        #             elif buffer_type == 3:
-        #
-        #                 if str(buffer_body) == 'JOIN':
-        #                     return self.new_join_packet()
-        #
-        #                 else:
-        #                     raise Exception("Buffer body for join packet type is not 'JOIN'")
-        #
-        #             elif buffer_type == 4:
-        #                 return self.new_message_packet(str(buffer_body))
-        #
-        #             elif buffer_type == 5:
-        #                 return self.new_reunion_packet(str(buffer_body))
-        #
-        #         else:
-        #             raise Exception("Buffer length is incorrect")
-        #
-        #
-        #     else:
-        #         raise Exception("Buffer version is incorrect")
-
-        #
-        #
-        # except Exception as e:
-        #     print(str(e))
-        #
-        # pass
 
     def new_reunion_packet(self, type,  nodes_array):
         """
@@ -296,7 +278,7 @@ class PacketFactory:
         if len(number_of_entity) < 2:
             number_of_entity = '0' + number_of_entity
         body = body + number_of_entity
-        for (ip,port) in nodes_array:
+        for (ip, port) in nodes_array:
             body = body + ip
             body = body + port
         length = str(len(body))
@@ -304,15 +286,14 @@ class PacketFactory:
             length = '0' + length
         return Packet(version + packet_type + length + body)
 
-
-
-
-    def new_advertise_packet(self, type, neighbor=None):
+    def new_advertise_packet(self, type, source_server_address, neighbor=None):
         """
         :param type: Type of Advertise packet
+        :param source_server_address Server address of the packet sender.
         :param neighbor: The neighbor for advertise response packet; The format is like ('192.168.001.001', '05335').
 
         :type type: str
+        :type source_server_address: tuple
         :type neighbor: tuple
 
         :return New advertise packet.
@@ -325,7 +306,7 @@ class PacketFactory:
         if type == 'Request':
             body = 'REQ'
             length = '00003'
-            return Packet(version + packet_type + length + body)
+            return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
 
         elif type == 'Response':
             try:
@@ -333,14 +314,18 @@ class PacketFactory:
                 body += neighbor[0]
                 body += neighbor[1]
                 length = '00023'
-                return Packet(version + packet_type + length + body)
+                return Packet(
+                    version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
             except Exception as e:
                 print(str(e))
         else:
             raise Exception("Type is incorrect")
 
-    def new_join_packet(self):
+    def new_join_packet(self, source_server_address):
         """
+        :param source_server_address: Server address of the packet sender.
+        :type source_server_address: tuple
+
         :return New join packet.
         :rtype Packet
 
@@ -350,14 +335,16 @@ class PacketFactory:
         length = '00004'
         body = 'JOIN'
 
-        return Packet(version + packet_type + length + body)
+        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
 
-    def new_register_packet(self, type, address=(None, None)):
+    def new_register_packet(self, type, source_server_address, address=(None, None)):
         """
         :param type: Type of Register packet
+        :param source_server_address: Server address of the packet sender.
         :param address: If type is request we need address; The format is like ('192.168.001.001', '05335').
 
         :type type: str
+        :type source_server_address: tuple
         :type address: tuple
 
         :return New Register packet.
@@ -380,15 +367,27 @@ class PacketFactory:
         else:
             raise Exception("Irregular register type.")
 
-        return Packet(version + packet_type + length + body)
+        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
 
         pass
 
-    def new_message_packet(self, message):
+    def new_message_packet(self, message, source_server_address):
+        """
+        Packet for sending a broadcast message to hole network.
+
+        :param message: Our message
+        :param source_server_address: Server address of the packet sender.
+
+        :type message: str
+        :type source_server_address: tuple
+
+        :return: New Message packet.
+        :rtype: Packet
+        """
         version = '1'
         packet_type = '04'
         body = message
         length = len(message)
         for i in range(length, 5):
             length = '0' + length
-        return Packet(version + packet_type + length + body)
+        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)

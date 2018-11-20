@@ -1,16 +1,17 @@
 from src.Stream import Stream
 from src.Packet import Packet, PacketFactory
 from src.UserInterface import UserInterface
+import time
 
 
 class Peer:
 
-    def __init__(self, is_root=False):
+    def __init__(self, server_ip, server_port, is_root=False):
         self._is_root = is_root
         #    TODO   here we should pass IP/Port of the Stream server to Stream constructor.
-        self.stream = Stream()
+        self.stream = Stream(server_ip, server_port)
 
-        self.parent = None, None
+        self.parent = None
 
         #   TODO    The arrival packets that should handle in future ASAP!
         self.packets = []
@@ -45,7 +46,8 @@ class Peer:
         """
 
         for buffer in self._user_interface_buffer:
-            self._broadcast_packets.append(self.packet_factory.new_message_packet(buffer))
+            self._broadcast_packets.append(self.packet_factory.new_message_packet(self.parent.get_server_address()
+                                                                                  , buffer))
 
     def run(self):
         """
@@ -55,24 +57,32 @@ class Peer:
             1.Parse server in_buf of the stream.
             2.Handle all packets were received from server.
             3.Parse user_interface_buffer to make message packets.
-            4.Send packets stored in clients dictionary of stream.
+            4.Send packets stored in nodes buffer of stream.
             5.** sleep for some milliseconds **
 
         :return:
         """
 
+        while True:
+
+            for b in self.stream.read_in_buf():
+                p = self.packet_factory.parse_buffer(b)
+                self.handle_packet(p)
+
+            self.handle_user_interface_buffer()
+            self.stream.send_out_buf_messages()
+
+            time.sleep(2)
         pass
 
-    def handle_packet(self, packet, sender):
+    def handle_packet(self, packet):
         """
 
         In this function we will use the other handle_###_packet methods to handle the 'packet'.
 
         :param packet: The arrived packet that should be handled.
-        :param sender: The sender for packet; The format is like ('192.168.001.001', '05335').
 
         :type packet Packet
-        :type sender tuple
 
         """
         if packet.get_length() != len(packet.get_body()):
@@ -80,17 +90,17 @@ class Peer:
 
         if packet.get_version() == 1:
             if packet.get_type() == 1:
-                self.__handle_register_packet(packet, sender)
+                self.__handle_register_packet(packet)
             elif packet.get_type() == 2:
-                self.__handle_advertise_packet(packet, sender)
+                self.__handle_advertise_packet(packet)
             elif packet.get_type() == 3:
-                self.__handle_join_packet(packet, sender)
+                self.__handle_join_packet(packet)
             elif packet.get_type() == 4:
-                self.__handle_message_packet(packet, sender)
+                self.__handle_message_packet(packet)
             elif packet.get_type() == 5:
-                self.__handle_reunion_packet(packet, sender)
+                self.__handle_reunion_packet(packet)
 
-    def __handle_advertise_packet(self, packet, sender):
+    def __handle_advertise_packet(self, packet):
         """
         For advertising peers in network, It is peer discovery message.
 
@@ -102,35 +112,39 @@ class Peer:
             new parent.
 
         :param packet: Arrived register packet
-        :param sender: Sender of the 'packet'
 
         :type packet Packet
-        :type sender tuple
 
         :return:
         """
         if packet.get_body()[0:3] == "REQ":
-            p = self.packet_factory.new_advertise_packet(type="RES", neighbor=self.__get_neighbour(sender))
-            self.stream.add_message_to_out_buf(sender, p.get_buf())
+            p = self.packet_factory.new_advertise_packet(type="RES",
+                                                         source_server_address=self.stream.get_server_address(),
+                                                         neighbor=self.
+                                                         __get_neighbour(packet.get_source_server_address()))
+
+            self.stream.add_message_to_out_buff(packet.get_source_server_address(), p.get_buf())
+
         elif packet.get_body()[0:3] == "RES":
-            ip = packet.get_body()[3:18]
-            port = packet.get_body()[18:23]
-            self.stream.add_client(ip, port)
-            self.parent = (ip, port)
-            join_packet = self.packet_factory.new_join_packet()
-            self.stream.add_message_to_out_buf(self.parent, join_packet.get_buf())
+            server_ip = packet.get_source_server_ip()
+            server_port = packet.get_source_server_port()
+            self.stream.add_node((server_ip, server_port))
+            self.parent = self.stream.get_node_by_server(server_ip, server_port)
+            # self.parent = (ip, port)
+            #   TODO    fix it !!!
+            addr = self.stream.get_server_address()
+            join_packet = self.packet_factory.new_join_packet(addr)
+            self.stream.add_message_to_out_buff(self.parent, join_packet.get_buf())
         else:
             raise Exception("Unexpected Type.")
 
-    def __handle_register_packet(self, packet, sender):
+    def __handle_register_packet(self, packet):
         """
         For registration a new node to the network at first we should make a Node object for 'sender' and save it in
         nodes array.
 
         :param packet: Arrived register packet
-        :param sender: Sender of the 'packet'
         :type packet Packet
-        :type sender tuple
         :return:
         """
         pbody = packet.get_body()
@@ -138,11 +152,15 @@ class Peer:
             if not self._is_root:
                 raise Exception("Register request packet send to a non root node!")
             else:
-                res = self.packet_factory.new_register_packet(type="RES")
-                self.network_nodes.append(Node(pbody[3:18], pbody[18:23]))
-                self.stream.add_client(pbody[3:18], pbody[18:23])
-                self.stream.add_message_to_out_buf((pbody[3:18], pbody[18:23]), res)
-                #   TODO    Maybe in some other time we should delete this client from our clients array.
+                res = self.packet_factory.new_register_packet(type="RES",
+                                                              source_server_address=self.stream.get_server_address(),
+                                                              address=self.stream.get_server_address())
+                self.network_nodes.append(SemiNode(pbody[3:18], pbody[18:23]))
+                self.stream.add_node((packet.get_source_server_ip(), packet.get_source_server_port()))
+                # self.stream.add_client(pbody[3:18], pbody[18:23])
+                self.stream.add_message_to_out_buff(packet.get_source_server_address(), res.get_buf())
+                # self.stream.add_message_to_out_buf((pbody[3:18], pbody[18:23]), res)
+                #   TODO    Maybe in other time we should delete this node from our clients array.
 
         if pbody[0:3] == "RES":
             if pbody[3:6] == "ACK":
@@ -150,28 +168,32 @@ class Peer:
             else:
                 raise Exception("Root did not send ack in the register response packet!")
 
-    def __handle_message_packet(self, packet, sender):
+    def __handle_message_packet(self, packet):
         """
         For now only broadcast message to the other nodes.
         Do not forget to send message to the parent if exist.
 
         :param packet:
-        :param sender:
 
         :type packet Packet
-        :type sender tuple
 
         :return:
         """
 
-        for c in self.stream.clients:
-            if c != sender:
-                self.stream.add_message_to_out_buf(c, packet.get_buf())
+        for n in self.stream.nodes:
+            if n.get_server_address() != packet.get_source_server_address():
+                self.stream.add_message_to_out_buff(n.get_server_address(), packet.get_buf())
 
-        if self.parent != sender:
-            self.stream.add_message_to_out_buf(self.parent, packet.get_buf())
+        if self.parent.get_server_address() != packet.get_source_server_address():
+            self.stream.add_message_to_out_buff(self.parent.get_server_address(), packet.get_buf())
 
     def __handle_reunion_packet(self, packet):
+        """
+        #TODO   @Ali complete doc please. :\
+
+        :param packet:
+        :return:
+        """
         if packet.get_body()[0:3] == "REQ":
             if self._is_root:
                 number_of_entity = int(packet.get_body()[0:2])
@@ -184,8 +206,8 @@ class Peer:
                     port = ip_and_ports[i*20+15:i*21]
                     node_array.insert(0,(ip,port))
 
-                sender = self.stream.get_client(ip= sender_ip, port= sender_port)
-                p = self.packet_factory.new_reunion_packet(type='RES',nodes_array=node_array)
+                sender = self.stream.get_client(ip=sender_ip, port=sender_port)
+                p = self.packet_factory.new_reunion_packet(type='RES', nodes_array=node_array)
                 self.stream.add_message_to_out_buf(sender,p.get_buf())
             else:
                 number_of_entity = int(packet.get_body()[0:2])
@@ -212,7 +234,7 @@ class Peer:
                     ip = ip_and_ports[i * 20:i * 20 + 15]
                     port = ip_and_ports[i * 20 + 15:i * 21]
                     node_array.append((ip, port))
-                sender = self.stream.get_client(ip=sender_ip, port= sender_port)
+                sender = self.stream.get_client(ip=sender_ip, port=sender_port)
                 p = self.packet_factory.new_reunion_packet(type='RES', nodes_array=node_array)
                 self.stream.add_message_to_out_buf(sender, p.get_buf())
             else:
@@ -220,10 +242,7 @@ class Peer:
         else:
             raise Exception("Unexpected type")
 
-
-
-
-    def __handle_join_packet(self, packet, sender):
+    def __handle_join_packet(self, packet):
         """
         When a Join packet received we should add new node to our nodes array.
         In future we should add a security level for this section to forbid joining without permission of network root.
@@ -231,16 +250,14 @@ class Peer:
         :param packet: Arrived register packet.
                        Latter we will use this for security.
 
-        :param sender: Sender of the 'packet'
 
         :type packet Packet
-        :type sender tuple
 
         :return:
         """
 
-        self.neighbours.append(sender)
-        self.stream.add_client(sender[0], sender[1])
+        self.neighbours.append(packet.get_source_server_address())
+        self.stream.add_node(packet.get_source_server_address())
 
         pass
 
@@ -254,7 +271,7 @@ class Peer:
         pass
 
 
-class Node:
+class SemiNode:
     def __init__(self, ip, port):
         self.ip = ip
         self.port = port
