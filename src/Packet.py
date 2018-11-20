@@ -286,10 +286,12 @@ class PacketFactory:
         """
         version = '1'
         packet_type = '05'
-        if type == 'Request':
+        if type == 'REQ':
             body = 'REQ'
-        else:
+        elif type == 'RES':
             body = 'RES'
+        else:
+            return None
         number_of_entity = str(len(nodes_array))
         if len(number_of_entity) < 2:
             number_of_entity = '0' + number_of_entity

@@ -26,6 +26,8 @@ class Stream:
 
         self.server = TCPServer(ip, port, cb)
         self.clients = []
+        self.ip = ip
+        self.port = port
 
     def add_client(self, ip, port):
         if not self.is_valid(ip, port):
@@ -47,6 +49,11 @@ class Stream:
         self.clients.remove(cl)
         cl.close()
         self.messages_dic.pop(cl.connect_ip)
+
+    def get_client(self, ip, port):
+        for cl in self.clients:
+            if cl.get_port == port and cl.get_ip == ip:
+                return cl
 
     def remove_client_by_info(self, ip, port):
         rem_client = None

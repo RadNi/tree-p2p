@@ -171,8 +171,57 @@ class Peer:
         if self.parent != sender:
             self.stream.add_message_to_out_buf(self.parent, packet.get_buf())
 
-    def __handle_reunion_packet(self, packet, sender):
-        pass
+    def __handle_reunion_packet(self, packet):
+        if packet.get_body()[0:3] == "REQ":
+            if self._is_root:
+                number_of_entity = int(packet.get_body()[0:2])
+                node_array = []
+                ip_and_ports = packet.get_body()[2:]
+                sender_ip = ip_and_ports[(number_of_entity-1)*20 : (number_of_entity-1)*20 + 15]
+                sender_port = ip_and_ports[(number_of_entity-1)*20 + 15 : (number_of_entity-1)*20 + 20]
+                for i in range(number_of_entity):
+                    ip = ip_and_ports[i*20:i*20+15]
+                    port = ip_and_ports[i*20+15:i*21]
+                    node_array.insert(0,(ip,port))
+
+                sender = self.stream.get_client(ip= sender_ip, port= sender_port)
+                p = self.packet_factory.new_reunion_packet(type='RES',nodes_array=node_array)
+                self.stream.add_message_to_out_buf(sender,p.get_buf())
+            else:
+                number_of_entity = int(packet.get_body()[0:2])
+                node_array = []
+                ip_and_ports = packet.get_body()[2:]
+                for i in range(number_of_entity):
+                    ip = ip_and_ports[i * 20:i * 20 + 15]
+                    port = ip_and_ports[i * 20 + 15:i * 21]
+                    node_array.append((ip, port))
+                node_array.append((self.stream.ip, self.stream.port))
+
+                p = self.packet_factory.new_reunion_packet(type='REQ', nodes_array=node_array)
+                self.stream.add_message_to_out_buf(self.parent, p.get_buf())
+        elif packet.get_body()[0:3] == "RES":
+            number_of_entity = int(packet.get_body()[0:2])
+            node_array = []
+            ip_and_ports = packet.get_body()[2:]
+            first_ip = ip_and_ports[0:15]
+            first_port = ip_and_ports[15:20]
+            sender_ip = ip_and_ports[20:35]
+            sender_port = ip_and_ports[35:40]
+            if first_ip == self.stream.ip and first_port == self.stream.port:
+                for i in range(number_of_entity-1):
+                    ip = ip_and_ports[i * 20:i * 20 + 15]
+                    port = ip_and_ports[i * 20 + 15:i * 21]
+                    node_array.append((ip, port))
+                sender = self.stream.get_client(ip=sender_ip, port= sender_port)
+                p = self.packet_factory.new_reunion_packet(type='RES', nodes_array=node_array)
+                self.stream.add_message_to_out_buf(sender, p.get_buf())
+            else:
+                raise Exception("Unexpected Ip or Port in Reunion's body")
+        else:
+            raise Exception("Unexpected type")
+
+
+
 
     def __handle_join_packet(self, packet, sender):
         """
