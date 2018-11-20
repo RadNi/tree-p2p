@@ -51,7 +51,8 @@ class Peer:
         """
         Main loop of the program.
         The actions that should be done in this function listed below:
-            1.Parse server inbuf of the stream.
+
+            1.Parse server in_buf of the stream.
             2.Handle all packets were received from server.
             3.Parse user_interface_buffer to make message packets.
             4.Send packets stored in clients dictionary of stream.
@@ -162,7 +163,13 @@ class Peer:
 
         :return:
         """
-        pass
+
+        for c in self.stream.clients:
+            if c != sender:
+                self.stream.add_message_to_out_buf(c, packet.get_buf())
+
+        if self.parent != sender:
+            self.stream.add_message_to_out_buf(self.parent, packet.get_buf())
 
     def __handle_reunion_packet(self, packet, sender):
         pass
