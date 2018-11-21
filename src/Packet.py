@@ -300,12 +300,14 @@ class PacketFactory:
         :rtype Packet
 
         """
+        print("Creating advertisement packet")
         version = '1'
         packet_type = '02'
 
         if type == 'REQ':
             body = 'REQ'
             length = '00003'
+            print("Request adv packtet created")
             return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
 
         elif type == 'RES':
@@ -314,6 +316,7 @@ class PacketFactory:
                 body += neighbor[0]
                 body += neighbor[1]
                 length = '00023'
+                print("Response adv packtet created")
                 return Packet(
                     version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
             except Exception as e:
@@ -330,6 +333,7 @@ class PacketFactory:
         :rtype Packet
 
         """
+        print("Creating join packet")
         version = '1'
         packet_type = '03'
         length = '00004'
@@ -351,20 +355,19 @@ class PacketFactory:
         :rtype Packet
 
         """
-
+        print("Creating register packet")
         version = "1"
         packet_type = "01"
-        length = ""
-        body = ""
 
         if type == "REQ":
             length = "00023"
             body = "REQ" + '.'.join(str(int(part)).zfill(3) for part in address[0].split('.')) + \
                    str(address[1]).zfill(5)
-
+            print("Request register packet created")
         elif type == "RES":
             length = "00006"
             body = "RES"
+            print("Response register packet created")
         else:
             raise Exception("Irregular register type.")
 
@@ -391,4 +394,5 @@ class PacketFactory:
         length = len(message)
         for i in range(length, 5):
             length = '0' + length
+        print("Message packet created")
         return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)

@@ -37,7 +37,7 @@ class Peer:
         # Which the user or client sees and works with. run() #This method runs every time to
         #  see whether there is new messages or not.
         #   TODO
-
+        print("Starting UI")
         self._user_interface.start()
 
         pass
@@ -51,13 +51,15 @@ class Peer:
         print("user interface handler ", self._user_interface_buffer)
         for buffer in self._user_interface.buffer:
             if buffer[0] == '1':
-                print("oomad inja")
+                print("Handling buffer/1 in UI")
                 self.packets.append(self.packet_factory.new_register_packet("REQ", self.stream.get_server_address(),
                                                                             self.root_address))
             elif buffer[0] == '2':
+                print("Handling buffer/2 in UI")
                 self.packets.append(self.packet_factory.new_advertise_packet("REQ", self.stream.get_server_address()))
 
             elif buffer[0] == '4':
+                print("Handling buffer/4 in UI")
                 self._broadcast_packets.append(self.packet_factory.new_message_packet(buffer,
                                                                                       self.stream.get_server_address()))
         self._user_interface.buffer = []
@@ -76,9 +78,8 @@ class Peer:
         :return:
         """
 
-        print("run function")
+        print("Running the peer...")
         while True:
-            print("in while")
             for b in self.stream.read_in_buf():
                 p = self.packet_factory.parse_buffer(b)
                 self.handle_packet(p)
@@ -100,17 +101,22 @@ class Peer:
         """
         if packet.get_length() != len(packet.get_body()):
             raise Exception("Packet Length is incorrect.")
-
+        print("Handling the packet...")
         if packet.get_version() == 1:
+            print("Packet version:\t1")
             if packet.get_type() == 1:
                 self.__handle_register_packet(packet)
             elif packet.get_type() == 2:
+                print("Packet version:\t2")
                 self.__handle_advertise_packet(packet)
             elif packet.get_type() == 3:
+                print("Packet version:\t3")
                 self.__handle_join_packet(packet)
             elif packet.get_type() == 4:
+                print("Packet version:\t4")
                 self.__handle_message_packet(packet)
             elif packet.get_type() == 5:
+                print("Packet version:\t5")
                 self.__handle_reunion_packet(packet)
 
     def __handle_advertise_packet(self, packet):
@@ -130,7 +136,9 @@ class Peer:
 
         :return:
         """
+        print("Handling advertisement packet...")
         if packet.get_body()[0:3] == "REQ":
+            print("Packet is in Request type")
             p = self.packet_factory.new_advertise_packet(type="RES",
                                                          source_server_address=self.stream.get_server_address(),
                                                          neighbor=self.
@@ -139,6 +147,7 @@ class Peer:
             self.stream.add_message_to_out_buff(packet.get_source_server_address(), p.get_buf())
 
         elif packet.get_body()[0:3] == "RES":
+            print("Packet is in Response type")
             server_ip = packet.get_source_server_ip()
             server_port = packet.get_source_server_port()
             self.stream.add_node((server_ip, server_port))
@@ -160,8 +169,10 @@ class Peer:
         :type packet Packet
         :return:
         """
+        print("Handling register packet")
         pbody = packet.get_body()
         if pbody[0:3] == "REQ":
+            print("Packet is in Request type")
             if not self._is_root:
                 raise Exception("Register request packet send to a non root node!")
             else:
@@ -176,8 +187,9 @@ class Peer:
                 #   TODO    Maybe in other time we should delete this node from our clients array.
 
         if pbody[0:3] == "RES":
+            print("Packet is in Response type")
             if pbody[3:6] == "ACK":
-                print("Hooraa. We registered to the network.")
+                print("ACK! Registered accomplished")
             else:
                 raise Exception("Root did not send ack in the register response packet!")
 
@@ -192,7 +204,7 @@ class Peer:
 
         :return:
         """
-
+        print("Handling message packet...")
         for n in self.stream.nodes:
             if n.get_server_address() != packet.get_source_server_address():
                 self.stream.add_message_to_out_buff(n.get_server_address(), packet.get_buf())
@@ -207,7 +219,9 @@ class Peer:
         :param packet:
         :return:
         """
+        print("Handling reunion packet")
         if packet.get_body()[0:3] == "REQ":
+            print("Packet is in Request type")
             if self._is_root:
                 number_of_entity = int(packet.get_body()[0:2])
                 node_array = []
@@ -234,6 +248,7 @@ class Peer:
                 p = self.packet_factory.new_reunion_packet(type='REQ', nodes_array=node_array)
                 self.stream.add_message_to_out_buff((self.parent.get_ip(), self.parent.get_port()), p.get_buf())
         elif packet.get_body()[0:3] == "RES":
+            print("Packet is in Response type")
             number_of_entity = int(packet.get_body()[0:2])
             node_array = []
             ip_and_ports = packet.get_body()[2:]
@@ -266,7 +281,7 @@ class Peer:
 
         :return:
         """
-
+        print("Handling join packet")
         self.neighbours.append(packet.get_source_server_address())
         self.stream.add_node(packet.get_source_server_address())
 
