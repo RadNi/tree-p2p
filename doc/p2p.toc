@@ -1,0 +1,26 @@
+\babel@toc {english}{}
+\contentsline {section}{\numberline {1}Introdeuction}{3}
+\contentsline {paragraph}{}{3}
+\contentsline {section}{\numberline {2}UML model}{3}
+\contentsline {paragraph}{}{3}
+\contentsline {section}{\numberline {3}Objects}{6}
+\contentsline {paragraph}{}{6}
+\contentsline {subsection}{\numberline {3.1}Stream}{6}
+\contentsline {paragraph}{}{11}
+\contentsline {subsection}{\numberline {3.2}Peer}{11}
+\contentsline {subsection}{\numberline {3.3}Packet Factory}{12}
+\contentsline {paragraph}{packetFactory()}{12}
+\contentsline {subsection}{\numberline {3.4}Packet}{15}
+\contentsline {paragraph}{}{15}
+\contentsline {subsection}{\numberline {3.5}Reunion}{17}
+\contentsline {paragraph}{reunion(packet)}{17}
+\contentsline {subsection}{\numberline {3.6}Node}{17}
+\contentsline {paragraph}{}{18}
+\contentsline {subsection}{\numberline {3.7}Resgister Request}{18}
+\contentsline {paragraph}{reg\_req()}{18}
+\contentsline {subsection}{\numberline {3.8}Register Response}{19}
+\contentsline {paragraph}{reg\_res()}{19}
+\contentsline {subsection}{\numberline {3.9}Advertise}{19}
+\contentsline {paragraph}{adv(packet)}{19}
+\contentsline {subsection}{\numberline {3.10}Mesasge}{19}
+\contentsline {paragraph}{msg(packet)}{19}
