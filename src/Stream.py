@@ -30,10 +30,12 @@ class Node:
         for b in self.out_buff:
             print(b)
             response = self.client.send(b)
-
-            if response.decode("UTF-8") != bytes('ACK'):
+            print("response: ", response, " ", type(response))
+            if response != b'ACK':
                 print("The ", self.get_server_address()[0], ": ", self.get_server_address()[1],
                       " did not response with b'ACK'.")
+
+        self.out_buff.clear()
 
     def add_message_to_out_buff(self, message):
         """
@@ -108,7 +110,9 @@ class Stream:
 
         print("Binding server: ", ip, ": ", port)
         self._server = TCPServer(ip, port, cb)
-        self._server.run()
+        tcpserver_thread = threading.Thread(target=self._server.run)
+        # self._server.run()
+        tcpserver_thread.start()
         self.nodes = []
         self.ip = ip
         self.port = port
