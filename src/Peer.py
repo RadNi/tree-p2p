@@ -281,7 +281,7 @@ class Peer:
 
         :return:
         """
-        print("Handling join packet")
+        print("Handling join packet...")
         self.neighbours.append(packet.get_source_server_address())
         self.stream.add_node(packet.get_source_server_address())
 
