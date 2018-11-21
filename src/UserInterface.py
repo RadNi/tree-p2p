@@ -31,9 +31,9 @@ class A:
         except:
             raise Exception('UI thread failed to start')
 
-
-a = A()
-a.run()
-while True:
-    print(a.ui.buffer)
-    time.sleep(3)
+#
+# a = A()
+# a.run()
+# while True:
+#     print(a.ui.buffer)
+#     time.sleep(3)

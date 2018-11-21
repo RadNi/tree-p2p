@@ -2,11 +2,12 @@ from src.Stream import Stream
 from src.Packet import Packet, PacketFactory
 from src.UserInterface import UserInterface
 import time
+import threading
 
 
 class Peer:
 
-    def __init__(self, server_ip, server_port, is_root=False):
+    def __init__(self, server_ip, server_port, is_root=False, root_address=None):
         self._is_root = is_root
         #    TODO   here we should pass IP/Port of the Stream server to Stream constructor.
         self.stream = Stream(server_ip, server_port)
@@ -27,6 +28,8 @@ class Peer:
 
         if self._is_root:
             self.network_nodes = []
+        else:
+            self.root_address = root_address
 
         pass
 
@@ -45,9 +48,19 @@ class Peer:
         :return:
         """
 
-        for buffer in self._user_interface_buffer:
-            self._broadcast_packets.append(self.packet_factory.new_message_packet(self.parent.get_server_address()
-                                                                                  , buffer))
+        print("user interface handler ", self._user_interface_buffer)
+        for buffer in self._user_interface.buffer:
+            if buffer[0] == '1':
+                print("oomad inja")
+                self.packets.append(self.packet_factory.new_register_packet("REQ", self.stream.get_server_address(),
+                                                                            self.root_address))
+            elif buffer[0] == '2':
+                self.packets.append(self.packet_factory.new_advertise_packet("REQ", self.stream.get_server_address()))
+
+            elif buffer[0] == '4':
+                self._broadcast_packets.append(self.packet_factory.new_message_packet(buffer,
+                                                                                      self.stream.get_server_address()))
+        self._user_interface.buffer = []
 
     def run(self):
         """
@@ -63,8 +76,9 @@ class Peer:
         :return:
         """
 
+        print("run function")
         while True:
-
+            print("in while")
             for b in self.stream.read_in_buf():
                 p = self.packet_factory.parse_buffer(b)
                 self.handle_packet(p)
@@ -73,7 +87,6 @@ class Peer:
             self.stream.send_out_buf_messages()
 
             time.sleep(2)
-        pass
 
     def handle_packet(self, packet):
         """
@@ -268,7 +281,8 @@ class Peer:
         :param sender: Sender of the packet
         :return: The specified neighbor for the sender; The format is like ('192.168.001.001', '05335').
         """
-        pass
+
+        return self.stream.get_server_address()
 
 
 class SemiNode:

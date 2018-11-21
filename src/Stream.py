@@ -108,7 +108,7 @@ class Stream:
         self.nodes.append(Node(server_address))
 
     def is_valid(self, ip, port):
-        if len(str(ip)) != 15 or len(str(port)) != 5:
+        if len(str(ip)) != 15 or len(str(port)) > 5:
             return False
         return True
 

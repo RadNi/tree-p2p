@@ -303,12 +303,12 @@ class PacketFactory:
         version = '1'
         packet_type = '02'
 
-        if type == 'Request':
+        if type == 'REQ':
             body = 'REQ'
             length = '00003'
             return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
 
-        elif type == 'Response':
+        elif type == 'RES':
             try:
                 body = 'RES'
                 body += neighbor[0]
@@ -359,7 +359,8 @@ class PacketFactory:
 
         if type == "REQ":
             length = "00023"
-            body = "REQ" + address[0] + address[1]
+            body = "REQ" + '.'.join(str(int(part)).zfill(3) for part in address[0].split('.')) + \
+                   str(address[1]).zfill(5)
 
         elif type == "RES":
             length = "00006"
