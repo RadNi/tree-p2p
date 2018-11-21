@@ -206,9 +206,8 @@ class Peer:
                     port = ip_and_ports[i*20+15:i*21]
                     node_array.insert(0,(ip,port))
 
-                sender = self.stream.get_client(ip=sender_ip, port=sender_port)
                 p = self.packet_factory.new_reunion_packet(type='RES', nodes_array=node_array)
-                self.stream.add_message_to_out_buf(sender,p.get_buf())
+                self.stream.add_message_to_out_buff((sender_ip, sender_port),p.get_buf())
             else:
                 number_of_entity = int(packet.get_body()[0:2])
                 node_array = []
@@ -220,7 +219,7 @@ class Peer:
                 node_array.append((self.stream.ip, self.stream.port))
 
                 p = self.packet_factory.new_reunion_packet(type='REQ', nodes_array=node_array)
-                self.stream.add_message_to_out_buf(self.parent, p.get_buf())
+                self.stream.add_message_to_out_buff((self.parent.get_ip(), self.parent.get_port()), p.get_buf())
         elif packet.get_body()[0:3] == "RES":
             number_of_entity = int(packet.get_body()[0:2])
             node_array = []
@@ -234,9 +233,8 @@ class Peer:
                     ip = ip_and_ports[i * 20:i * 20 + 15]
                     port = ip_and_ports[i * 20 + 15:i * 21]
                     node_array.append((ip, port))
-                sender = self.stream.get_client(ip=sender_ip, port=sender_port)
                 p = self.packet_factory.new_reunion_packet(type='RES', nodes_array=node_array)
-                self.stream.add_message_to_out_buf(sender, p.get_buf())
+                self.stream.add_message_to_out_buff((sender_ip, sender_port), p.get_buf())
             else:
                 raise Exception("Unexpected Ip or Port in Reunion's body")
         else:
@@ -275,3 +273,7 @@ class SemiNode:
     def __init__(self, ip, port):
         self.ip = ip
         self.port = port
+    def get_ip(self):
+        return self.ip
+    def get_port(self):
+        return self.port
