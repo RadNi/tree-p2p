@@ -1,7 +1,7 @@
 from src.tools.simpletcp.tcpserver import TCPServer
 
 from src.tools.simpletcp.clientsocket import ClientSocket
-
+import threading
 
 class Node:
     def __init__(self, server_address):
@@ -13,7 +13,9 @@ class Node:
         self.server_ip = Node.parse_ip(server_address[0])
         self.server_port = Node.parse_port(server_address[1])
 
-        self.client = ClientSocket(self.server_ip, self.server_port)
+        print( "                    inja, ", self.server_port)
+        print(server_address)
+        self.client = ClientSocket(self.server_ip, int(self.server_port, 10), single_use=False)
 
         self.in_buff = []
         self.out_buff = []
@@ -24,7 +26,14 @@ class Node:
 
         :return:
         """
-        return self.client.send(self.out_buff)
+        print("in sending message: ", self.out_buff)
+        for b in self.out_buff:
+            print(b)
+            response = self.client.send(b)
+
+            if response.decode("UTF-8") != bytes('ACK'):
+                print("The ", self.get_server_address()[0], ": ", self.get_server_address()[1],
+                      " did not response with b'ACK'.")
 
     def add_message_to_out_buff(self, message):
         """
@@ -93,10 +102,13 @@ class Stream:
 
         def cb(ip, queue, data):
             queue.put(bytes('ACK', 'utf8'))
+            print("In callback: ", data)
             # self.messages_dic.update({ip: self.messages_dic.get(ip).append(data)})
             self._server_in_buf.append(data)
 
+        print("Binding server: ", ip, ": ", port)
         self._server = TCPServer(ip, port, cb)
+        self._server.run()
         self.nodes = []
         self.ip = ip
         self.port = port
@@ -124,11 +136,14 @@ class Stream:
         :return:
         :rtype: Node
         """
+        port = Node.parse_port(port)
+        ip = Node.parse_ip(ip)
         for nd in self.nodes:
-            if nd.get_server_address[0] == ip and nd.get_server_address[1] == port:
+            if nd.get_server_address()[0] == ip and nd.get_server_address()[1] == port:
                 return nd
 
     def add_message_to_out_buff(self, address, message):
+        print("add message to out buff: ", address, " ", message)
         n = self.get_node_by_server(address[0], address[1])
         # if n is None:
         #     n = self.get_node_by_client(address[0], address[1])
@@ -160,10 +175,6 @@ class Stream:
         """
 
         response = node.send_message()
-
-        if response.decode("UTF-8") != bytes('ACK'):
-            print("The ", node.get_server_address()[0], ": ", node.get_server_address()[1],
-                  " did not response with b'ACK'.")
 
     def send_out_buf_messages(self):
         """

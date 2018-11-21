@@ -30,6 +30,7 @@ class Peer:
             self.network_nodes = []
         else:
             self.root_address = root_address
+            self.stream.add_node(root_address)
 
         pass
 
@@ -48,12 +49,13 @@ class Peer:
         :return:
         """
 
-        print("user interface handler ", self._user_interface_buffer)
+        print("user interface handler ", self._user_interface.buffer)
         for buffer in self._user_interface.buffer:
             if buffer[0] == '1':
                 print("Handling buffer/1 in UI")
-                self.packets.append(self.packet_factory.new_register_packet("REQ", self.stream.get_server_address(),
-                                                                            self.root_address))
+                self.stream.add_message_to_out_buff(self.root_address,
+                                                    self.packet_factory.new_register_packet("REQ",
+                                                                                            self.stream.get_server_address(), self.root_address).get_buf())
             elif buffer[0] == '2':
                 print("Handling buffer/2 in UI")
                 self.packets.append(self.packet_factory.new_advertise_packet("REQ", self.stream.get_server_address()))
@@ -81,6 +83,7 @@ class Peer:
         print("Running the peer...")
         while True:
             for b in self.stream.read_in_buf():
+                print("In main while: ", b)
                 p = self.packet_factory.parse_buffer(b)
                 self.handle_packet(p)
 
