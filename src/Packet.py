@@ -159,6 +159,10 @@
 class Packet:
 
     def __init__(self, buf):
+        print("Packet Constructor:\tbuffer: ",buf, " ,buffer type: ", type(buf) )
+        if type(buf) == bytes:
+            buf = buf.decode("utf-8")
+        print(buf)
         self._buf = buf
         self._header = buf[0:28]
         self._version = int(buf[0], 10)
@@ -166,7 +170,7 @@ class Packet:
         self._length = int(buf[3:8], 10)
         self._source_server_ip = buf[8:23]
         self._source_server_port = buf[23:28]
-        self._body = buf[8:]
+        self._body = buf[28:]
 
     def get_header(self):
         """
@@ -366,7 +370,7 @@ class PacketFactory:
             print("Request register packet created")
         elif type == "RES":
             length = "00006"
-            body = "RES"
+            body = "RESACK"
             print("Response register packet created")
         else:
             raise Exception("Irregular register type.")

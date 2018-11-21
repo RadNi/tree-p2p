@@ -103,6 +103,7 @@ class Peer:
 
         """
         if packet.get_length() != len(packet.get_body()):
+            print("packet.get_length() = ", packet.get_length(), "  , packet.get_body() = ", len(packet.get_body()))
             raise Exception("Packet Length is incorrect.")
         print("Handling the packet...")
         if packet.get_version() == 1:
