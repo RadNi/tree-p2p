@@ -107,7 +107,11 @@ new_reg() #makes a new register packet.
 \paragraph{}Every packet consists seven differntes parts: \textbf{plain\underline{\hspace{.05in}}text} which is the raw text message in the packet.\\
 \textbf{Node}: Specifies to which node the packet sent to. \textbf{Sender} specifies who sent the packet \textbf{Validator} which makes the packet valid.\\ \textbf{Header} where the information such as type of the packet and etc. are going to be there.\\ \textbf{Body} body of our packet .
 \subsection{Reunion}
-\paragraph{reunion(packet)} checks the connection of the nodes to the root.
+\paragraph{reunion(packet)} checks the connection of the nodes to the root. This is one type of packets which each node has to send it to the root every 20 seconds to clarify is still live. \\
+A node who want to send reunion packet, after creating the header, inserts it's ip and port in the body and passes it to his father. Then the father should append it's ip and port at the end of the body then passes it to the next father... \\
+When the root recieves the reunion packet from one node, the root should reverse the sort of ip and ports in the reunion's body then sets it as the reunion answer's body and pass it to the node which gave the reunion to the root. \\
+Each node which receives the reunion answer from it's father, should check if the first ip and port in the body are for himself or not. If yes, it should pop his port and ip from the body and then send it to the next node which it's ip and port are in the top of the body.
+This process continue until the destination node receives the reunion answer.
 \begin{lstlisting}
 #reunion(packet)
  get_destination()
