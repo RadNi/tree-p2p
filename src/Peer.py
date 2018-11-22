@@ -6,7 +6,6 @@ import threading
 
 
 class Peer:
-
     def __init__(self, server_ip, server_port, is_root=False, root_address=None):
         self._is_root = is_root
         #    TODO   here we should pass IP/Port of the Stream server to Stream constructor.
@@ -55,12 +54,13 @@ class Peer:
                 print("Handling buffer/1 in UI")
                 self.stream.add_message_to_out_buff(self.root_address,
                                                     self.packet_factory.new_register_packet("REQ",
-                                                                                            self.stream.get_server_address(), self.root_address).get_buf())
+                                                                                            self.stream.get_server_address(),
+                                                                                            self.root_address).get_buf())
             elif buffer[0] == '2':
                 print("Handling buffer/2 in UI")
                 self.stream.add_message_to_out_buff(self.root_address,
                                                     self.packet_factory.new_advertise_packet("REQ",
-                                                                                            self.stream.get_server_address()).get_buf())
+                                                                                             self.stream.get_server_address()).get_buf())
 
             elif buffer[0] == '4':
                 print("Handling buffer/4 in UI")
@@ -145,7 +145,7 @@ class Peer:
                 self.__handle_reunion_packet(packet)
             else:
                 print("Unexpected type:\t", packet.get_type())
-            # self.packets.remove(packet)
+                # self.packets.remove(packet)
 
     def __handle_advertise_packet(self, packet):
         """
@@ -208,7 +208,8 @@ class Peer:
                                                               source_server_address=self.stream.get_server_address(),
                                                               address=self.stream.get_server_address())
                 self.network_nodes.append(SemiNode(pbody[3:18], pbody[18:23]))
-                self.stream.add_node((packet.get_source_server_ip(), packet.get_source_server_port()), set_register_connection=True)
+                self.stream.add_node((packet.get_source_server_ip(), packet.get_source_server_port()),
+                                     set_register_connection=True)
                 # self.stream.add_client(pbody[3:18], pbody[18:23])
                 self.stream.add_message_to_out_buff(packet.get_source_server_address(), res.get_buf())
                 # self.stream.add_message_to_out_buf((pbody[3:18], pbody[18:23]), res)
@@ -233,7 +234,8 @@ class Peer:
         :return:
         """
         print("Handling message packet...")
-        print("The message was just arrived is: ", packet.get_body(), " and source of the packet is: ", packet.get_source_server_address())
+        print("The message was just arrived is: ", packet.get_body(), " and source of the packet is: ",
+              packet.get_source_server_address())
         new_packet = self.packet_factory.new_message_packet(packet.get_body(), self.stream.get_server_address())
         for n in self.stream.nodes:
             if not n.is_register_connection:
@@ -259,15 +261,15 @@ class Peer:
                 number_of_entity = int(packet.get_body()[0:2])
                 node_array = []
                 ip_and_ports = packet.get_body()[2:]
-                sender_ip = ip_and_ports[(number_of_entity-1)*20 : (number_of_entity-1)*20 + 15]
-                sender_port = ip_and_ports[(number_of_entity-1)*20 + 15 : (number_of_entity-1)*20 + 20]
+                sender_ip = ip_and_ports[(number_of_entity - 1) * 20: (number_of_entity - 1) * 20 + 15]
+                sender_port = ip_and_ports[(number_of_entity - 1) * 20 + 15: (number_of_entity - 1) * 20 + 20]
                 for i in range(number_of_entity):
-                    ip = ip_and_ports[i*20:i*20+15]
-                    port = ip_and_ports[i*20+15:i*21]
-                    node_array.insert(0,(ip,port))
+                    ip = ip_and_ports[i * 20:i * 20 + 15]
+                    port = ip_and_ports[i * 20 + 15:i * 21]
+                    node_array.insert(0, (ip, port))
 
                 p = self.packet_factory.new_reunion_packet(type='RES', nodes_array=node_array)
-                self.stream.add_message_to_out_buff((sender_ip, sender_port),p.get_buf())
+                self.stream.add_message_to_out_buff((sender_ip, sender_port), p.get_buf())
             else:
                 number_of_entity = int(packet.get_body()[0:2])
                 node_array = []
@@ -290,7 +292,7 @@ class Peer:
             sender_ip = ip_and_ports[20:35]
             sender_port = ip_and_ports[35:40]
             if first_ip == self.stream.ip and first_port == self.stream.port:
-                for i in range(number_of_entity-1):
+                for i in range(number_of_entity - 1):
                     ip = ip_and_ports[i * 20:i * 20 + 15]
                     port = ip_and_ports[i * 20 + 15:i * 21]
                     node_array.append((ip, port))
@@ -335,7 +337,50 @@ class SemiNode:
     def __init__(self, ip, port):
         self.ip = ip
         self.port = port
+
     def get_ip(self):
         return self.ip
+
     def get_port(self):
         return self.port
+
+
+class GraphNode:
+    def __init__(self, address):
+        """
+
+        :param address: (ip, port) tuple
+
+        """
+        self.parent = None
+        self.children = []
+        self.ip = address[0]
+        self.port = address[1]
+        self.address = address
+        self.alive = False
+
+    def set_parent(self, parent):
+        self.parent = parent
+
+    def set_address(self, new_address):
+        self.address = new_address
+
+    def __reset(self):
+        self.parent = None
+        self.children = []
+
+    def add_child(self, child):
+        self.children.append(child)
+
+
+class NetworkGraph:
+    def __init__(self, root):
+        self.root = root
+        self.nodes = [root]
+
+    def found_live_node(self):
+        live_node = self.root
+        queue = [self.root]
+        while len(queue) > 0:
+            node = queue[0]
+            
