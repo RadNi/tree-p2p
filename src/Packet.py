@@ -395,8 +395,6 @@ class PacketFactory:
         version = '1'
         packet_type = '04'
         body = message
-        length = len(message)
-        for i in range(length, 5):
-            length = '0' + length
+        length = str(len(message)).zfill(5)
         print("Message packet created")
         return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)

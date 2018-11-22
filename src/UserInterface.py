@@ -9,7 +9,7 @@ class UserInterface(threading.Thread):
         while True:
             message = input("give me some message to broadcast:\n")
             self.buffer.append(message)
-
+            print("i gave message: ", message)
     # Which the user or client sees and works with. run() #This method runs every time to
     #  see whether there is new messages or not.
     #   TODO

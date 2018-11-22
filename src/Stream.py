@@ -3,8 +3,9 @@ from src.tools.simpletcp.tcpserver import TCPServer
 from src.tools.simpletcp.clientsocket import ClientSocket
 import threading
 
+
 class Node:
-    def __init__(self, server_address):
+    def __init__(self, server_address, set_root=False, set_register=False):
         """
 
         :param server_address: Nodes server address.
@@ -15,10 +16,18 @@ class Node:
 
         print( "                    inja, ", self.server_port)
         print(server_address)
-        self.client = ClientSocket(self.server_ip, int(self.server_port, 10), single_use=False)
 
         self.in_buff = []
         self.out_buff = []
+        self.is_root = set_root
+        self.is_register_connection = set_register
+
+        try:
+            self.client = ClientSocket(self.server_ip, int(self.server_port, 10), single_use=False)
+        except:
+            print("Node was detached.")
+            self.out_buff.clear()
+            self.in_buff.clear()
 
     def send_message(self):
         """
@@ -60,6 +69,18 @@ class Node:
         :rtype: tuple
         """
         return self.server_ip, self.server_port
+
+    def get_standard_server_address(self):
+        """
+
+        :return: Server address in standard format.
+        :rtype: tuple
+        """
+
+        ip_prime = '.'.join(str(int(part)) for part in self.server_ip.split('.'))
+        port_prime = int(self.server_port)
+
+        return self.server_ip, port_prime
 
     @staticmethod
     def parse_ip(ip):
@@ -120,8 +141,18 @@ class Stream:
     def get_server_address(self):
         return Node.parse_ip(self._server.ip), Node.parse_port(self._server.port)
 
-    def add_node(self, server_address):
-        self.nodes.append(Node(server_address))
+    def clear_in_buff(self):
+        self._server_in_buf = []
+
+    def add_node(self, server_address, set_root=False, set_register_connection=False):
+        # node = None
+        # try:
+        node = Node(server_address, set_register=set_register_connection)
+        # except:
+        #     print("Node was detached.")
+        #     # self.remove_node()
+        # if node is not None:
+        self.nodes.append(node)
 
     def is_valid(self, ip, port):
         if len(str(ip)) != 15 or len(str(port)) > 5:
@@ -178,7 +209,7 @@ class Stream:
         :return:
         """
 
-        response = node.send_message()
+        node.send_message()
 
     def send_out_buf_messages(self):
         """

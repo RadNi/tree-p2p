@@ -30,7 +30,7 @@ class Peer:
             self.network_nodes = []
         else:
             self.root_address = root_address
-            self.stream.add_node(root_address)
+            self.stream.add_node(root_address, set_register_connection=True)
 
         pass
 
@@ -58,12 +58,14 @@ class Peer:
                                                                                             self.stream.get_server_address(), self.root_address).get_buf())
             elif buffer[0] == '2':
                 print("Handling buffer/2 in UI")
-                self.packets.append(self.packet_factory.new_advertise_packet("REQ", self.stream.get_server_address()))
+                self.stream.add_message_to_out_buff(self.root_address,
+                                                    self.packet_factory.new_advertise_packet("REQ",
+                                                                                            self.stream.get_server_address()).get_buf())
 
             elif buffer[0] == '4':
                 print("Handling buffer/4 in UI")
                 self._broadcast_packets.append(self.packet_factory.new_message_packet(buffer,
-                                                                                      self.stream.get_server_address()))
+                                                                                      self.stream.get_server_address()).get_buf())
         self._user_interface.buffer = []
 
     def run(self):
@@ -83,14 +85,33 @@ class Peer:
         print("Running the peer...")
         while True:
             for b in self.stream.read_in_buf():
-                print("In main while: ", b)
+                # print("In main while: ", b)
                 p = self.packet_factory.parse_buffer(b)
                 self.handle_packet(p)
+                # self.packets.remove(p)
+            self.stream.clear_in_buff()
 
             self.handle_user_interface_buffer()
+            print("Main while before user_interface handler")
+            self.send_broadcast_packets()
             self.stream.send_out_buf_messages()
 
             time.sleep(2)
+
+    def send_broadcast_packets(self):
+        """
+        For setting broadcast packets buffer into Nodes out_buff.
+        :return:
+        """
+
+        for b in self._broadcast_packets:
+            for n in self.stream.nodes:
+                # print(n.get_standard_server_address())
+                # print(self.root_address)
+                # if n.get_standard_server_address() != self.root_address:
+                if not n.is_register_connection:
+                    self.stream.add_message_to_out_buff(n.get_server_address(), b)
+        self._broadcast_packets = []
 
     def handle_packet(self, packet):
         """
@@ -111,17 +132,20 @@ class Peer:
             if packet.get_type() == 1:
                 self.__handle_register_packet(packet)
             elif packet.get_type() == 2:
-                print("Packet version:\t2")
+                print("Packet type:\t2")
                 self.__handle_advertise_packet(packet)
             elif packet.get_type() == 3:
-                print("Packet version:\t3")
+                print("Packet type:\t3")
                 self.__handle_join_packet(packet)
             elif packet.get_type() == 4:
-                print("Packet version:\t4")
+                print("Packet type:\t4")
                 self.__handle_message_packet(packet)
             elif packet.get_type() == 5:
-                print("Packet version:\t5")
+                print("Packet type:\t5")
                 self.__handle_reunion_packet(packet)
+            else:
+                print("Unexpected type:\t", packet.get_type())
+            # self.packets.remove(packet)
 
     def __handle_advertise_packet(self, packet):
         """
@@ -160,7 +184,7 @@ class Peer:
             #   TODO    fix it !!!
             addr = self.stream.get_server_address()
             join_packet = self.packet_factory.new_join_packet(addr)
-            self.stream.add_message_to_out_buff(self.parent, join_packet.get_buf())
+            self.stream.add_message_to_out_buff(self.parent.get_server_address(), join_packet.get_buf())
         else:
             raise Exception("Unexpected Type.")
 
@@ -184,7 +208,7 @@ class Peer:
                                                               source_server_address=self.stream.get_server_address(),
                                                               address=self.stream.get_server_address())
                 self.network_nodes.append(SemiNode(pbody[3:18], pbody[18:23]))
-                self.stream.add_node((packet.get_source_server_ip(), packet.get_source_server_port()))
+                self.stream.add_node((packet.get_source_server_ip(), packet.get_source_server_port()), set_register_connection=True)
                 # self.stream.add_client(pbody[3:18], pbody[18:23])
                 self.stream.add_message_to_out_buff(packet.get_source_server_address(), res.get_buf())
                 # self.stream.add_message_to_out_buf((pbody[3:18], pbody[18:23]), res)
@@ -209,12 +233,17 @@ class Peer:
         :return:
         """
         print("Handling message packet...")
+        print("The message was just arrived is: ", packet.get_body(), " and source of the packet is: ", packet.get_source_server_address())
+        new_packet = self.packet_factory.new_message_packet(packet.get_body(), self.stream.get_server_address())
         for n in self.stream.nodes:
-            if n.get_server_address() != packet.get_source_server_address():
-                self.stream.add_message_to_out_buff(n.get_server_address(), packet.get_buf())
+            if not n.is_register_connection:
+                if n.get_server_address() != packet.get_source_server_address():
+                    print("Node considered to send message to: ", n.get_server_address())
+                    self.stream.add_message_to_out_buff(n.get_server_address(), new_packet.get_buf())
 
-        if self.parent.get_server_address() != packet.get_source_server_address():
-            self.stream.add_message_to_out_buff(self.parent.get_server_address(), packet.get_buf())
+        if self.parent and self.parent.get_server_address() != packet.get_source_server_address():
+            print("Node considered to send message to: ", self.parent.get_server_address())
+            self.stream.add_message_to_out_buff(self.parent.get_server_address(), new_packet.get_buf())
 
     def __handle_reunion_packet(self, packet):
         """
