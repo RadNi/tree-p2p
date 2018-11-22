@@ -22,15 +22,11 @@ class Peer:
         self._user_interface_buffer = []
 
         self._broadcast_packets = []
-
         self.packet_factory = PacketFactory()
         if self._is_root:
             self.network_nodes = []
-            self.graph_node = GraphNode((server_ip, server_port))
-            self.graph_node.alive = True
-            self.network_Graph = NetworkGraph(self.graph_node)
+            self.network_Graph = NetworkGraph(GraphNode((server_ip, server_port)))
         else:
-            self.graph_node = None
             self.root_address = root_address
             self.stream.add_node(root_address, set_register_connection=True)
 
@@ -170,11 +166,12 @@ class Peer:
         print("Handling advertisement packet...")
         if packet.get_body()[0:3] == "REQ":
             print("Packet is in Request type")
+            neighbor = self.__get_neighbour(packet.get_source_server_address())
             p = self.packet_factory.new_advertise_packet(type="RES",
                                                          source_server_address=self.stream.get_server_address(),
-                                                         neighbor=self.
-                                                         __get_neighbour(packet.get_source_server_address()))
-
+                                                         neighbor=neighbor)
+            server_address = packet.get_source_server_address()
+            self.network_Graph.add_node(server_address[0], server_address[1], neighbor)
             self.stream.add_message_to_out_buff(packet.get_source_server_address(), p.get_buf())
 
         elif packet.get_body()[0:3] == "RES":
@@ -270,8 +267,9 @@ class Peer:
                     ip = ip_and_ports[i * 20:i * 20 + 15]
                     port = ip_and_ports[i * 20 + 15:i * 21]
                     node_array.insert(0, (ip, port))
-
-                p = self.packet_factory.new_reunion_packet(type='RES', nodes_array=node_array)
+                self.network_Graph.turn_on_node(packet.get_source_server_address())
+                p = self.packet_factory.new_reunion_packet(type='RES', source_address=self.root_address,
+                                                           nodes_array=node_array)
                 self.stream.add_message_to_out_buff((sender_ip, sender_port), p.get_buf())
             else:
                 number_of_entity = int(packet.get_body()[0:2])
@@ -283,7 +281,9 @@ class Peer:
                     node_array.append((ip, port))
                 node_array.append((self.stream.ip, self.stream.port))
 
-                p = self.packet_factory.new_reunion_packet(type='REQ', nodes_array=node_array)
+                p = self.packet_factory.new_reunion_packet(type='REQ',
+                                                           source_address=packet.get_source_server_address(),
+                                                           nodes_array=node_array)
                 self.stream.add_message_to_out_buff((self.parent.get_ip(), self.parent.get_port()), p.get_buf())
         elif packet.get_body()[0:3] == "RES":
             print("Packet is in Response type")
@@ -299,7 +299,9 @@ class Peer:
                     ip = ip_and_ports[i * 20:i * 20 + 15]
                     port = ip_and_ports[i * 20 + 15:i * 21]
                     node_array.append((ip, port))
-                p = self.packet_factory.new_reunion_packet(type='RES', nodes_array=node_array)
+                p = self.packet_factory.new_reunion_packet(type='RES',
+                                                           source_address=packet.get_source_server_address(),
+                                                           nodes_array=node_array)
                 self.stream.add_message_to_out_buff((sender_ip, sender_port), p.get_buf())
             else:
                 raise Exception("Unexpected Ip or Port in Reunion's body")
@@ -332,8 +334,8 @@ class Peer:
         :param sender: Sender of the packet
         :return: The specified neighbor for the sender; The format is like ('192.168.001.001', '05335').
         """
-
-        return self.stream.get_server_address()
+        # return self.stream.get_server_address()
+        return self.network_Graph.find_live_node().address
 
 
 class SemiNode:
@@ -379,9 +381,10 @@ class GraphNode:
 class NetworkGraph:
     def __init__(self, root):
         self.root = root
+        root.alive = True
         self.nodes = [root]
 
-    def found_live_node(self):
+    def find_live_node(self):
         queue = [self.root]
         while len(queue) > 0:
             node = queue[0]
@@ -395,9 +398,33 @@ class NetworkGraph:
             queue.pop(0)
         return self.root
 
-    def add_node(self, new_node):
-        father_node = self.found_live_node()
-        if not self.nodes.__contains__(new_node):
+    def find_node(self, ip, port):
+        for node in self.nodes:
+            if node.ip == ip and node.port == port:
+                return node
+        return None
+
+    def turn_on_node(self, node_address):
+        node = self.find_node(node_address[0], node_address[1])
+        if node != None:
+            node.alive = True
+
+    def turn_of_node(self, node_address):
+        node = self.find_node(node_address[0], node_address[1])
+        if node != None:
+            node.alive = False
+
+    def remove_node(self, node_address):
+        node = self.find_node(node_address[0], node_address[1])
+        if node != None:
+            self.nodes.remove(node)
+
+    def add_node(self, ip, port, father_address):
+        father_node = self.find_node(father_address[0], father_address[1])
+        new_node = self.find_node(ip, port)
+
+        if new_node == None:
+            new_node = GraphNode((ip, port))
             self.nodes.append(new_node)
         new_node.set_parent(father_node)
         father_node.add_child(new_node)
