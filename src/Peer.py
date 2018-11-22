@@ -166,7 +166,7 @@ class Peer:
         print("Handling advertisement packet...")
         if packet.get_body()[0:3] == "REQ":
             print("Packet is in Request type")
-            neighbor = self.__get_neighbour(packet.get_source_server_address())
+            neighbor = self.__get_neighbour()
             p = self.packet_factory.new_advertise_packet(type="RES",
                                                          source_server_address=self.stream.get_server_address(),
                                                          neighbor=neighbor)
@@ -327,7 +327,7 @@ class Peer:
 
         pass
 
-    def __get_neighbour(self, sender):
+    def __get_neighbour(self):
         """
         Finds the best neighbour for the 'sender' from network_nodes array.
 
