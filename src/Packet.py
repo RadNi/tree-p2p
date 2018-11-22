@@ -157,9 +157,8 @@
 
 
 class Packet:
-
     def __init__(self, buf):
-        print("Packet Constructor:\tbuffer: ",buf, " ,buffer type: ", type(buf) )
+        print("Packet Constructor:\tbuffer: ", buf, " ,buffer type: ", type(buf))
         if type(buf) == bytes:
             buf = buf.decode("utf-8")
         print(buf)
@@ -248,7 +247,6 @@ class Packet:
 
 
 class PacketFactory:
-
     def parse_buffer(self, buffer):
 
         """
@@ -261,7 +259,7 @@ class PacketFactory:
 
         return Packet(buf=buffer)
 
-    def new_reunion_packet(self, type,  nodes_array):
+    def new_reunion_packet(self, type, source_address, nodes_array):
         """
         :param destination: (ip, port) of destination want to send reunion packet.
         :param nodes_array: [(ip0, port0), (ip1, port1), ...] It is the path to the 'destination'.
@@ -288,7 +286,7 @@ class PacketFactory:
         length = str(len(body))
         while len(length) < 5:
             length = '0' + length
-        return Packet(version + packet_type + length + body)
+        return Packet(version + packet_type + length + source_address[0] + source_address[1] + body)
 
     def new_advertise_packet(self, type, source_server_address, neighbor=None):
         """
