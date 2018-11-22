@@ -24,10 +24,13 @@ class Peer:
         self._broadcast_packets = []
 
         self.packet_factory = PacketFactory()
-
         if self._is_root:
             self.network_nodes = []
+            self.graph_node = GraphNode((server_ip, server_port))
+            self.graph_node.alive = True
+            self.network_Graph = NetworkGraph(self.graph_node)
         else:
+            self.graph_node = None
             self.root_address = root_address
             self.stream.add_node(root_address, set_register_connection=True)
 
@@ -379,8 +382,22 @@ class NetworkGraph:
         self.nodes = [root]
 
     def found_live_node(self):
-        live_node = self.root
         queue = [self.root]
         while len(queue) > 0:
             node = queue[0]
-            
+            number_of_live_children = 0
+            for child in node.childre:
+                if child.alive == True:
+                    number_of_live_children += 1
+                    queue.append(child)
+            if number_of_live_children < 2:
+                return node
+            queue.pop(0)
+        return self.root
+
+    def add_node(self, new_node):
+        father_node = self.found_live_node()
+        if not self.nodes.__contains__(new_node):
+            self.nodes.append(new_node)
+        new_node.set_parent(father_node)
+        father_node.add_child(new_node)
