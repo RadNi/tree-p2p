@@ -2,7 +2,7 @@ from src.Stream import Stream
 from src.Packet import Packet, PacketFactory
 from src.UserInterface import UserInterface
 import time
-import threading
+import random
 
 
 class Peer:
@@ -49,8 +49,11 @@ class Peer:
         :return:
         """
 
-        print("user interface handler ", self._user_interface.buffer)
+        # print("user interface handler ", self._user_interface.buffer)
         for buffer in self._user_interface.buffer:
+            print("User interface handler buffer: ", buffer)
+            if len(buffer) == 0:
+                return
             if buffer[0] == '1':
                 print("Handling buffer/1 in UI")
                 self.stream.add_message_to_out_buff(self.root_address,
@@ -92,7 +95,7 @@ class Peer:
             self.stream.clear_in_buff()
 
             self.handle_user_interface_buffer()
-            print("Main while before user_interface handler")
+            # print("Main while before user_interface handler")
             self.send_broadcast_packets()
             self.stream.send_out_buf_messages()
 
@@ -178,8 +181,8 @@ class Peer:
             print("Packet is in Response type")
             server_ip = packet.get_source_server_ip()
             server_port = packet.get_source_server_port()
-            self.stream.add_node((server_ip, server_port))
-            self.parent = self.stream.get_node_by_server(server_ip, server_port)
+            self.stream.add_node((packet.get_body()[3:18], packet.get_body()[18:23]))
+            self.parent = self.stream.get_node_by_server(packet.get_body()[3:18], packet.get_body()[18:23])
             # self.parent = (ip, port)
             #   TODO    fix it !!!
             addr = self.stream.get_server_address()
@@ -197,7 +200,7 @@ class Peer:
         :type packet Packet
         :return:
         """
-        print("Handling register packet")
+        print("Handling register packet body: ", packet.get_body())
         pbody = packet.get_body()
         if pbody[0:3] == "REQ":
             print("Packet is in Request type")
@@ -208,7 +211,8 @@ class Peer:
                                                               source_server_address=self.stream.get_server_address(),
                                                               address=self.stream.get_server_address())
                 self.network_nodes.append(SemiNode(pbody[3:18], pbody[18:23]))
-                self.stream.add_node((packet.get_source_server_ip(), packet.get_source_server_port()), set_register_connection=True)
+                self.stream.add_node((packet.get_source_server_ip(), packet.get_source_server_port()),
+                                     set_register_connection=True)
                 # self.stream.add_client(pbody[3:18], pbody[18:23])
                 self.stream.add_message_to_out_buff(packet.get_source_server_address(), res.get_buf())
                 # self.stream.add_message_to_out_buf((pbody[3:18], pbody[18:23]), res)
@@ -236,14 +240,16 @@ class Peer:
         print("The message was just arrived is: ", packet.get_body(), " and source of the packet is: ", packet.get_source_server_address())
         new_packet = self.packet_factory.new_message_packet(packet.get_body(), self.stream.get_server_address())
         for n in self.stream.nodes:
+            print("From here:\t", n.get_server_address(), " ", n.is_register_connection)
+        for n in self.stream.nodes:
             if not n.is_register_connection:
                 if n.get_server_address() != packet.get_source_server_address():
                     print("Node considered to send message to: ", n.get_server_address())
                     self.stream.add_message_to_out_buff(n.get_server_address(), new_packet.get_buf())
 
-        if self.parent and self.parent.get_server_address() != packet.get_source_server_address():
-            print("Node considered to send message to: ", self.parent.get_server_address())
-            self.stream.add_message_to_out_buff(self.parent.get_server_address(), new_packet.get_buf())
+        # if self.parent and self.parent.get_server_address() != packet.get_source_server_address():
+        #     print("Node considered to send message to: ", self.parent.get_server_address())
+        #     self.stream.add_message_to_out_buff(self.parent.get_server_address(), new_packet.get_buf())
 
     def __handle_reunion_packet(self, packet):
         """
@@ -328,14 +334,61 @@ class Peer:
         :return: The specified neighbor for the sender; The format is like ('192.168.001.001', '05335').
         """
 
-        return self.stream.get_server_address()
+        valid_nodes = []
+        for s in self.network_nodes:
+            if s.get_address() != sender:
+                valid_nodes.append(s)
+
+        if len(valid_nodes) >= 1:
+            return random.choice(valid_nodes).get_address()
+
+        # if len(self.network_nodes) >= 2:
+        #     return self.network_nodes[len(self.network_nodes)-2].get_address()
+        # try:
+        #     print("     In try: ", self.network_nodes[-1].get_address(), ' len: ', len(self.network_nodes))
+        #     return self.network_nodes[len(self.network_nodes)-2].get_adderss()
+        #     # return valid_nodes[-1].get_server_address()
+        else:
+        # else:
+            print("     In except")
+            return self.stream.get_server_address()
 
 
 class SemiNode:
     def __init__(self, ip, port):
         self.ip = ip
         self.port = port
+
     def get_ip(self):
         return self.ip
+
     def get_port(self):
         return self.port
+
+    def get_address(self):
+        return SemiNode.parse_ip(self.ip), SemiNode.parse_port(self.port)
+
+
+    @staticmethod
+    def parse_ip(ip):
+        """
+        Automatically change the input IP format like '192.168.001.001'.
+        :param ip: Input IP
+        :type ip: str
+
+        :return: Formatted IP
+        :rtype: str
+        """
+        return '.'.join(str(int(part)).zfill(3) for part in ip.split('.'))
+
+    @staticmethod
+    def parse_port(port):
+        """
+        Automatically change the input IP format like '05335'.
+        :param port: Input IP
+        :type port: str
+
+        :return: Formatted IP
+        :rtype: str
+        """
+        return str(int(port)).zfill(5)

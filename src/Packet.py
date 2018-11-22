@@ -365,9 +365,10 @@ class PacketFactory:
 
         if type == "REQ":
             length = "00023"
-            body = "REQ" + '.'.join(str(int(part)).zfill(3) for part in address[0].split('.')) + \
-                   str(address[1]).zfill(5)
+            body = "REQ" + '.'.join(str(int(part)).zfill(3) for part in source_server_address[0].split('.')) + \
+                   str(source_server_address[1]).zfill(5)
             print("Request register packet created")
+            print("Address for packet is: ", address)
         elif type == "RES":
             length = "00006"
             body = "RESACK"
