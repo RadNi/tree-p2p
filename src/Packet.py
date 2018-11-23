@@ -14,8 +14,23 @@
     |                      BODY                      |
     |                      ....                      |
     |________________________________________________|
-    
-    
+
+
+                  **ٔ NEW Packet Format  **
+     _________________________________________________________________________________________
+    | Version(2 bytes(1 Short Int))| Type(2 Bytes(1 Short Int)) | Length(4 bytes(1 Long Int)) |
+    |-----------------------------------------------------------------------------------------
+    |  Source Server IP(4*2 bytes(4 short Int)       |
+    |------------------------------------------------|
+    |       Source Server Port(4 bytes (1 Int))      |
+    |------------------------------------------------|
+    |                      ....                      |
+    |                      BODY                      |
+    |                      ....                      |
+    |________________________________________________|
+
+
+
     Version:
         For now version is 1
     
@@ -40,11 +55,11 @@
         
                                 ** Packet Format **
                  ________________________________________________
-                |                       REQ                      |
+                |                       REQ (3 bytes)            |
                 |------------------------------------------------|
-                |                 IP (15 char)                   |
+                |              IP (4*2 bytes/4 short Int)        |
                 |------------------------------------------------|
-                |                 Port (5 char)                  |
+                |              Port (4 bytes (1 Int))            |
                 |________________________________________________|
                 
                 For sending IP/Port of current node to the root to ask if it can register to network or not.
@@ -52,7 +67,7 @@
         
                                 ** Packet Format **
                  ________________________________________________
-                |                       RES                      |
+                |                    RES(3 bytes)                |
                 |------------------------------------------------|
                 |                       ACK                      |
                 |________________________________________________|
@@ -65,7 +80,7 @@
             
                                 ** Packet Format **
                  ________________________________________________
-                |                      REQ                       |
+                |                 REQ (3 bytes)                  |
                 |________________________________________________|
                 
                 Nodes for finding the IP/Port of their neighbour peer must send this packet to the root.
@@ -73,11 +88,11 @@
 
                                 ** Packet Format **
                  ________________________________________________
-                |                      RES                       |
+                |                RES(3 bytes)                    |
                 |------------------------------------------------|
-                |             Server IP (15 char)                |
+                |         Server IP (4*2 bytes/4 short Int)      |
                 |------------------------------------------------|
-                |             Server Port (5 char)               |
+                |          Server Port (4 bytes (1 Int))         |
                 |________________________________________________|
                 
                 Root will response Advertise Request packet with sending IP/Port of the requester peer in this packet.
@@ -86,7 +101,7 @@
 
                                 ** Packet Format **
                  ________________________________________________
-                |                     JOIN                       |
+                |                 JOIN (4 bytes)                 |
                 |________________________________________________|
             
             New node after getting Advertise Response from root must send this packet to specified peer 
@@ -98,7 +113,7 @@
         Message:
                                 ** Packet Format **
                  ________________________________________________
-                |                     Message                    |
+                |              Message(length bytes)             |
                 |________________________________________________|
 
             The message that want to broadcast to hole network. Right now this type only includes a plain text.
@@ -108,23 +123,23 @@
         
                                 ** Packet Format **
                  ________________________________________________
-                |                      REQ                       |
+                |                 REQ (3 bytes)                  |
                 |------------------------------------------------|
-                |            Number of Entries(2 char)           |
+                |    Number of Entries (2 Bytes(1 Short Int))    |
                 |------------------------------------------------|
-                |                 IP0 (15 char)                  |
+                |         IP0 (4*2 bytes/4 short Int)            |
                 |------------------------------------------------|
-                |                 Port0 (5 char)                 |
+                |              Port0 (4 bytes (1 Int))           |
                 |------------------------------------------------|
-                |                 IP1 (15 char)                  |
+                |         IP1 (4*2 bytes/4 short Int)            |
                 |------------------------------------------------|
-                |                 Port1 (5 char)                 |
+                |             Port1 (4 bytes (1 Int))            |
                 |------------------------------------------------|
                 |                     ...                        |
                 |------------------------------------------------|
-                |                 IPN (15 char)                  |
+                |         IPN (4*2 bytes/4 short Int)            |
                 |------------------------------------------------|
-                |                 PortN (5 char)                 |
+                |             PortN (4 bytes (1 Int))            |
                 |________________________________________________|
                 
                 In every intervals (for now 20 seconds) peers must send this message to the root.
@@ -134,19 +149,19 @@
         
                                 ** Packet Format **
                  ________________________________________________
-                |                      RES                       |
+                |             RES (3 bytes)                      |
                 |------------------------------------------------|
-                |            Number of Entries(2 char)           |
+                |    Number of Entries (2 Bytes(1 Short Int))    |
                 |------------------------------------------------|
-                |                 IPN (15 char)                  |
+                |         IPN (4*2 bytes/4 short Int)            |
                 |------------------------------------------------|
-                |                 PortN (5 char)                 |
+                |             PortN (4 bytes (1 Int))            |
                 |------------------------------------------------|
                 |                     ...                        |
                 |------------------------------------------------|
-                |                 IP1 (15 char)                  |
+                |         IP1 (4*2 bytes/4 short Int)            |
                 |------------------------------------------------|
-                |                 Port1 (5 char)                 |
+                |             Port1 (4 bytes (1 Int))            |
                 |________________________________________________|
 
                 Root in answer of the Reunion Hello message will send this packet to the target node.
