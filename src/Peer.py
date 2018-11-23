@@ -1,6 +1,8 @@
 from src.Stream import Stream
 from src.Packet import Packet, PacketFactory
 from src.UserInterface import UserInterface
+from src.tools.SemiNode import SemiNode
+from src.tools.NetworkGraph import NetworkGraph, GraphNode
 import time
 import random
 import threading
@@ -18,8 +20,6 @@ class Peer:
         self.neighbours = []
 
         self._user_interface = UserInterface()
-
-        self._broadcast_packets = []
 
         self.packet_factory = PacketFactory()
 
@@ -175,8 +175,6 @@ class Peer:
         :return:
         """
 
-
-
         print("Handling advertisement packet...")
 
         if packet.get_body()[0:3] == "REQ":
@@ -195,7 +193,7 @@ class Peer:
             p = self.packet_factory.new_advertise_packet(type="RES",
                                                          source_server_address=self.stream.get_server_address(),
                                                          neighbor=neighbor)
-            server_address = packet.get_source_server_address()
+            # server_address = packet.get_source_server_address()
             # self.network_Graph.add_node(server_address[0], server_address[1], neighbor)
             print("We want to add this to the node: ", packet.get_source_server_address())
             self.network_nodes.append(SemiNode(packet.get_source_server_ip(), packet.get_source_server_port()))
@@ -204,8 +202,6 @@ class Peer:
 
         elif packet.get_body()[0:3] == "RES":
             print("Packet is in Response type")
-            server_ip = packet.get_source_server_ip()
-            server_port = packet.get_source_server_port()
             self.stream.add_node((packet.get_body()[3:18], packet.get_body()[18:23]))
             if self.parent:
                 self.stream.remove_node(self.parent)
@@ -215,7 +211,7 @@ class Peer:
             join_packet = self.packet_factory.new_join_packet(addr)
             self.stream.add_message_to_out_buff(self.parent.get_server_address(), join_packet.get_buf())
         else:
-            raise Exception("Unexpected Type.")
+            raise print("Unexpected Type.")
 
     def __handle_register_packet(self, packet):
         """
@@ -231,7 +227,7 @@ class Peer:
         if pbody[0:3] == "REQ":
             print("Packet is in Request type")
             if not self._is_root:
-                raise Exception("Register request packet send to a non root node!")
+                raise print("Register request packet send to a root node!")
             else:
 
                 if self.__check_registered(packet.get_source_server_address()):
@@ -368,8 +364,8 @@ class Peer:
         :return:
         """
         print("Handling join packet...")
-        self.neighbours.append(packet.get_source_server_address())
         self.stream.add_node(packet.get_source_server_address())
+        self.neighbours.append(packet.get_source_server_address())
 
         pass
 
@@ -381,13 +377,14 @@ class Peer:
         :return: The specified neighbor for the sender; The format is like ('192.168.001.001', '05335').
         """
 
-        valid_nodes = []
-        for s in self.network_nodes:
-            if s.get_address() != sender:
-                valid_nodes.append(s)
+        # valid_nodes = []
+        # for s in self.network_nodes:
+        #     if s.get_address() != sender:
+        #         valid_nodes.append(s)
 
-        if len(valid_nodes) >= 1:
-            return random.choice(valid_nodes).get_address()
+        if len(self.network_nodes) >= 1:
+            #   TODO    add performance checking here.
+            return random.choice(self.network_nodes).get_address()
 
         else:
             return self.stream.get_server_address()
@@ -396,121 +393,3 @@ class Peer:
         # return self.network_Graph.find_live_node().address
 
 
-class SemiNode:
-    def __init__(self, ip, port):
-        self.ip = ip
-        self.port = port
-
-    def get_ip(self):
-        return self.ip
-
-    def get_port(self):
-        return self.port
-
-    def get_address(self):
-        return SemiNode.parse_ip(self.ip), SemiNode.parse_port(self.port)
-
-    @staticmethod
-    def parse_ip(ip):
-        """
-        Automatically change the input IP format like '192.168.001.001'.
-        :param ip: Input IP
-        :type ip: str
-
-        :return: Formatted IP
-        :rtype: str
-        """
-        return '.'.join(str(int(part)).zfill(3) for part in ip.split('.'))
-
-    @staticmethod
-    def parse_port(port):
-        """
-        Automatically change the input IP format like '05335'.
-        :param port: Input IP
-        :type port: str
-
-        :return: Formatted IP
-        :rtype: str
-        """
-        return str(int(port)).zfill(5)
-
-
-class GraphNode:
-    def __init__(self, address):
-        """
-
-        :param address: (ip, port)
-        :type address: tuple
-
-        """
-        self.parent = None
-        self.children = []
-        self.ip = address[0]
-        self.port = address[1]
-        self.address = address
-        self.alive = False
-
-    def set_parent(self, parent):
-        self.parent = parent
-
-    def set_address(self, new_address):
-        self.address = new_address
-
-    def __reset(self):
-        self.parent = None
-        self.children = []
-
-    def add_child(self, child):
-        self.children.append(child)
-
-
-class NetworkGraph:
-    def __init__(self, root):
-        self.root = root
-        root.alive = True
-        self.nodes = [root]
-
-    def find_live_node(self):
-        queue = [self.root]
-        while len(queue) > 0:
-            node = queue[0]
-            number_of_live_children = 0
-            for child in node.childre:
-                if child.alive:
-                    number_of_live_children += 1
-                    queue.append(child)
-            if number_of_live_children < 2:
-                return node
-            queue.pop(0)
-        return self.root
-
-    def find_node(self, ip, port):
-        for node in self.nodes:
-            if node.ip == ip and node.port == port:
-                return node
-        return None
-
-    def turn_on_node(self, node_address):
-        node = self.find_node(node_address[0], node_address[1])
-        if node is not None:
-            node.alive = True
-
-    def turn_of_node(self, node_address):
-        node = self.find_node(node_address[0], node_address[1])
-        if node is not None:
-            node.alive = False
-
-    def remove_node(self, node_address):
-        node = self.find_node(node_address[0], node_address[1])
-        if node is not None:
-            self.nodes.remove(node)
-
-    def add_node(self, ip, port, father_address):
-        father_node = self.find_node(father_address[0], father_address[1])
-        new_node = self.find_node(ip, port)
-
-        if new_node is None:
-            new_node = GraphNode((ip, port))
-            self.nodes.append(new_node)
-        new_node.set_parent(father_node)
-        father_node.add_child(new_node)
