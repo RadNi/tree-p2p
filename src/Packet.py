@@ -292,7 +292,7 @@ class PacketFactory:
         return Packet(version + packet_type + length + source_address[0] + source_address[1] + body)
 
     @staticmethod
-    def new_advertise_packet(self, type, source_server_address, neighbor=None):
+    def new_advertise_packet(type, source_server_address, neighbor=None):
         """
         :param type: Type of Advertise packet
         :param source_server_address Server address of the packet sender.

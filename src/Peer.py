@@ -25,6 +25,7 @@ class Peer:
 
         if self._is_root:
             self.network_nodes = []
+            self.registered_nodes = []
             self.network_Graph = NetworkGraph(GraphNode((server_ip, server_port)))
         else:
             self.root_address = root_address
@@ -151,7 +152,7 @@ class Peer:
 
     def __check_registered(self, source_address):
 
-        for n in self.network_nodes:
+        for n in self.registered_nodes:
             if n.get_address() == source_address:
                 return True
         return False
@@ -173,10 +174,15 @@ class Peer:
 
         :return:
         """
+
+
+
         print("Handling advertisement packet...")
 
-        flag = False
         if packet.get_body()[0:3] == "REQ":
+            if not self._is_root:
+                raise print("Register request packet send to a non root node!")
+
             print("Packet is in Request type")
 
             if not self.__check_registered(packet.get_source_server_address()):
@@ -191,6 +197,9 @@ class Peer:
                                                          neighbor=neighbor)
             server_address = packet.get_source_server_address()
             # self.network_Graph.add_node(server_address[0], server_address[1], neighbor)
+            print("We want to add this to the node: ", packet.get_source_server_address())
+            self.network_nodes.append(SemiNode(packet.get_source_server_ip(), packet.get_source_server_port()))
+
             self.stream.add_message_to_out_buff(packet.get_source_server_address(), p.get_buf())
 
         elif packet.get_body()[0:3] == "RES":
@@ -232,10 +241,10 @@ class Peer:
                 res = self.packet_factory.new_register_packet(type="RES",
                                                               source_server_address=self.stream.get_server_address(),
                                                               address=self.stream.get_server_address())
-                self.network_nodes.append(SemiNode(pbody[3:18], pbody[18:23]))
                 self.stream.add_node((packet.get_source_server_ip(), packet.get_source_server_port()),
                                      set_register_connection=True)
                 # self.stream.add_client(pbody[3:18], pbody[18:23])
+                self.registered_nodes.append(SemiNode(packet.get_body()[3:18], packet.get_body()[18:23]))
                 self.stream.add_message_to_out_buff(packet.get_source_server_address(), res.get_buf())
                 # self.stream.add_message_to_out_buf((pbody[3:18], pbody[18:23]), res)
                 #   TODO    Maybe in other time we should delete this node from our clients array.
