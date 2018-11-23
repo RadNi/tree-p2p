@@ -15,7 +15,6 @@ class Stream:
             raise Exception("Invalid format of ip or port for TCPServer.")
             #   TODO    Error handling
 
-        self.messages_dic = {}
         self._server_in_buf = []
         # self.parent = None
         #   TODO    Parent should be in Peer object not here
@@ -41,7 +40,7 @@ class Stream:
     def clear_in_buff(self):
         self._server_in_buf = []
 
-    def add_node(self, server_address, set_root=False, set_register_connection=False):
+    def add_node(self, server_address, set_register_connection=False):
         # node = None
         # try:
         node = Node(server_address, set_register=set_register_connection)
@@ -56,9 +55,9 @@ class Stream:
             return False
         return True
 
-    def remove_node(self, cl):
-        self.nodes.remove(cl)
-        cl.close()
+    def remove_node(self, node):
+        self.nodes.remove(node)
+        node.close()
 
     def get_node_by_server(self, ip, port):
         """
@@ -80,18 +79,9 @@ class Stream:
         # if n is None:
         #     n = self.get_node_by_client(address[0], address[1])
         if n is None:
-            raise Exception("Unexpected address to add message to out buffer.")
+            return print("Unexpected address to add message to out buffer.")
 
         n.add_message_to_out_buff(message)
-
-    def remove_node_by_server_info(self, ip, port):
-        rem_client = None
-        for nd in self.nodes:
-            if nd.get_server_address[0] == ip and nd.get_server_address[1] == port:
-                rem_client = nd
-                break
-        if rem_client is not None:
-            self.remove_node(rem_client)
 
     def read_in_buf(self):
         return self._server_in_buf
@@ -106,7 +96,10 @@ class Stream:
         :return:
         """
 
-        node.send_message()
+        try:
+            node.send_message()
+        except:
+            self.remove_node(node)
 
     def send_out_buf_messages(self):
         """

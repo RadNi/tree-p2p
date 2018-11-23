@@ -19,6 +19,8 @@ class Peer:
         self.packets = []
         self.neighbours = []
 
+        self.reunion_daemon = threading.Thread(target=self.run_reunion_daemon())
+
         self._user_interface = UserInterface()
 
         self.packet_factory = PacketFactory()
@@ -30,8 +32,6 @@ class Peer:
         else:
             self.root_address = root_address
             self.stream.add_node(root_address, set_register_connection=True)
-
-        pass
 
     def start_user_interface(self):
         # Which the user or client sees and works with. run() #This method runs every time to
@@ -103,6 +103,22 @@ class Peer:
 
             time.sleep(2)
 
+    def run_reunion_daemon(self):
+        """
+
+        In this function we will handle all reunion actions.
+        :return:
+        """
+        if self._is_root:
+            #   TODO    Handle this section
+
+            pass
+        else:
+            while True:
+                time.sleep(20)
+                packet = self.packet_factory.new_reunion_packet("REQ", self.stream.get_server_address(),
+                                                       [self.stream.get_server_address()])
+
     def send_broadcast_packet(self, broadcast_packet):
         """
         For setting broadcast packets buffer into Nodes out_buff.
@@ -128,7 +144,7 @@ class Peer:
         """
         if packet.get_length() != len(packet.get_body()):
             print("packet.get_length() = ", packet.get_length(), "  , packet.get_body() = ", len(packet.get_body()))
-            raise Exception("Packet Length is incorrect.")
+            return print("Packet Length is incorrect.")
         print("Handling the packet...")
         if packet.get_version() == 1:
             print("Packet version:\t1")
@@ -210,6 +226,8 @@ class Peer:
             addr = self.stream.get_server_address()
             join_packet = self.packet_factory.new_join_packet(addr)
             self.stream.add_message_to_out_buff(self.parent.get_server_address(), join_packet.get_buf())
+
+            self.run_reunion_daemon()
         else:
             raise print("Unexpected Type.")
 
@@ -253,7 +271,10 @@ class Peer:
                 raise Exception("Root did not send ack in the register response packet!")
 
     def __check_neighbour(self, address):
-        if address in self.neighbours == address:
+        if address in self.neighbours:
+            return True
+        print(self.parent.get_server_address(), " ", address)
+        if address == self.parent.get_server_address():
             return True
         return False
 
@@ -275,9 +296,9 @@ class Peer:
         # for n in self.stream.nodes:
         #     print("From here:\t", n.get_server_address(), " ", n.is_register_connection)
 
-        # if not self.__check_neighbour(packet.get_source_server_address()):
-        #     print("The message is from an unknown source.")
-        #     return
+        if not self.__check_neighbour(packet.get_source_server_address()):
+            print("The message is from an unknown source.")
+            return
 
         for n in self.stream.nodes:
             if not n.is_register_connection:
@@ -372,6 +393,7 @@ class Peer:
     def __get_neighbour(self, sender):
         """
         Finds the best neighbour for the 'sender' from network_nodes array.
+        This function only will call when you are a root peer.
 
         :param sender: Sender of the packet
         :return: The specified neighbor for the sender; The format is like ('192.168.001.001', '05335').

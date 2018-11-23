@@ -1,5 +1,6 @@
 from src.tools.simpletcp.clientsocket import ClientSocket
 
+
 class Node:
     def __init__(self, server_address, set_root=False, set_register=False):
         """
@@ -13,7 +14,6 @@ class Node:
         print( "                    inja, ", self.server_port)
         print(server_address)
 
-        self.in_buff = []
         self.out_buff = []
         self.is_root = set_root
         self.is_register_connection = set_register
@@ -23,7 +23,6 @@ class Node:
         except:
             print("Node was detached.")
             self.out_buff.clear()
-            self.in_buff.clear()
 
     def send_message(self):
         """
@@ -36,10 +35,11 @@ class Node:
             print("In sending message buffer: ", b)
             # print(b)
             response = self.client.send(b)
+
             print("Response: ", response, " ", type(response))
             if response != b'ACK':
                 print("The ", self.get_server_address()[0], ": ", self.get_server_address()[1],
-                      " did not response with b'ACK'.")
+                      " did not response with b'ACK'. ", response)
 
         self.out_buff.clear()
 
@@ -74,7 +74,6 @@ class Node:
         :rtype: tuple
         """
 
-        ip_prime = '.'.join(str(int(part)) for part in self.server_ip.split('.'))
         port_prime = int(self.server_port)
 
         return self.server_ip, port_prime

@@ -279,16 +279,15 @@ class PacketFactory:
             body = 'RES'
         else:
             return None
-        number_of_entity = str(len(nodes_array))
-        if len(number_of_entity) < 2:
-            number_of_entity = '0' + number_of_entity
+
+        number_of_entity = str(len(nodes_array)).zfill(2)
+
         body = body + number_of_entity
         for (ip, port) in nodes_array:
             body = body + ip
             body = body + port
-        length = str(len(body))
-        while len(length) < 5:
-            length = '0' + length
+        length = str(len(body)).zfill(5)
+
         return Packet(version + packet_type + length + source_address[0] + source_address[1] + body)
 
     @staticmethod
