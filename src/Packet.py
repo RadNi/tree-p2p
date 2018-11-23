@@ -14,7 +14,7 @@
     |                      BODY                      |
     |                      ....                      |
     |________________________________________________|
-
+1010003192.168.001.00100333JOIN
 
                   **ٔ NEW Packet Format  **
      _________________________________________________________________________________________
@@ -169,6 +169,7 @@
             
     
 """
+from struct import *
 
 
 class Packet:
@@ -273,6 +274,15 @@ class PacketFactory:
         :rtype Packet
 
         """
+        version = str(unpack_from('!h', buffer)[0])
+        type = str(unpack_from('!h', buffer, offset=2)[0])
+        length = str(unpack_from('!l', buffer, offset=4)[0])
+        ip = unpack_from('!hhhh', buffer, offset=8)
+        ip = str(ip[0]) + str(ip[1]) + str(ip[2]) + str(ip[3])
+        port = str(unpack_from('!i', buffer, offset=16)[0])
+        fmt = length + 's'
+        body = unpack_from('!' + fmt, buffer, offset=20)[0].decode("utf-8")
+        buffer = version + type + length + ip + port + body
 
         return Packet(buf=buffer)
 
