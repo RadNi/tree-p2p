@@ -52,9 +52,11 @@ class Peer:
 
         # print("user interface handler ", self._user_interface.buffer)
         for buffer in self._user_interface.buffer:
-            print("User interface handler buffer: ", buffer)
             if len(buffer) == 0:
-                return
+                continue
+
+            print("User interface handler buffer: ", buffer)
+
             if buffer[0] == '1':
                 print("Handling buffer/1 in UI")
                 self.stream.add_message_to_out_buff(self.root_address,
@@ -152,6 +154,13 @@ class Peer:
                 print("Unexpected type:\t", packet.get_type())
                 # self.packets.remove(packet)
 
+    def __check_registered(self, source_address):
+
+        for n in self.network_nodes:
+            if n.get_address() == source_address:
+                return True
+        return False
+
     def __handle_advertise_packet(self, packet):
         """
         For advertising peers in network, It is peer discovery message.
@@ -170,14 +179,23 @@ class Peer:
         :return:
         """
         print("Handling advertisement packet...")
+
+        flag = False
         if packet.get_body()[0:3] == "REQ":
             print("Packet is in Request type")
+
+            if not self.__check_registered(packet.get_source_server_address()):
+                print(packet.get_source_server_address(), " trying to advertise before registering.")
+                return
+
+            #TODO Here we should check that is the node was advertised in past then update our GraphNode
+
             neighbor = self.__get_neighbour(packet.get_source_server_address())
             p = self.packet_factory.new_advertise_packet(type="RES",
                                                          source_server_address=self.stream.get_server_address(),
                                                          neighbor=neighbor)
             server_address = packet.get_source_server_address()
-            self.network_Graph.add_node(server_address[0], server_address[1], neighbor)
+            # self.network_Graph.add_node(server_address[0], server_address[1], neighbor)
             self.stream.add_message_to_out_buff(packet.get_source_server_address(), p.get_buf())
 
         elif packet.get_body()[0:3] == "RES":
@@ -185,9 +203,10 @@ class Peer:
             server_ip = packet.get_source_server_ip()
             server_port = packet.get_source_server_port()
             self.stream.add_node((packet.get_body()[3:18], packet.get_body()[18:23]))
+            if self.parent:
+                self.stream.remove_node(self.parent)
             self.parent = self.stream.get_node_by_server(packet.get_body()[3:18], packet.get_body()[18:23])
-            # self.parent = (ip, port)
-            #   TODO    fix it !!!
+
             addr = self.stream.get_server_address()
             join_packet = self.packet_factory.new_join_packet(addr)
             self.stream.add_message_to_out_buff(self.parent.get_server_address(), join_packet.get_buf())
@@ -210,6 +229,11 @@ class Peer:
             if not self._is_root:
                 raise Exception("Register request packet send to a non root node!")
             else:
+
+                if self.__check_registered(packet.get_source_server_address()):
+                    print(packet.get_source_server_address(), " trying to register again")
+                    return
+
                 res = self.packet_factory.new_register_packet(type="RES",
                                                               source_server_address=self.stream.get_server_address(),
                                                               address=self.stream.get_server_address())
@@ -228,10 +252,15 @@ class Peer:
             else:
                 raise Exception("Root did not send ack in the register response packet!")
 
+    def __check_neighbour(self, address):
+        if address in self.neighbours == address:
+            return True
+        return False
+
     def __handle_message_packet(self, packet):
         """
         For now only broadcast message to the other nodes.
-        Do not forget to send message to the parent if exist.
+        Do not forget to ignore messages from unknown sources.
 
         :param packet:
 
@@ -243,8 +272,13 @@ class Peer:
         print("The message was just arrived is: ", packet.get_body(), " and source of the packet is: ",
               packet.get_source_server_address())
         new_packet = self.packet_factory.new_message_packet(packet.get_body(), self.stream.get_server_address())
-        for n in self.stream.nodes:
-            print("From here:\t", n.get_server_address(), " ", n.is_register_connection)
+        # for n in self.stream.nodes:
+        #     print("From here:\t", n.get_server_address(), " ", n.is_register_connection)
+
+        if not self.__check_neighbour(packet.get_source_server_address()):
+            print("The message is from an unknown source.")
+            return
+
         for n in self.stream.nodes:
             if not n.is_register_connection:
                 if n.get_server_address() != packet.get_source_server_address():
@@ -351,17 +385,9 @@ class Peer:
         if len(valid_nodes) >= 1:
             return random.choice(valid_nodes).get_address()
 
-        # if len(self.network_nodes) >= 2:
-        #     return self.network_nodes[len(self.network_nodes)-2].get_address()
-        # try:
-        #     print("     In try: ", self.network_nodes[-1].get_address(), ' len: ', len(self.network_nodes))
-        #     return self.network_nodes[len(self.network_nodes)-2].get_adderss()
-        #     # return valid_nodes[-1].get_server_address()
         else:
-        # else:
-            print("     In except")
             return self.stream.get_server_address()
-        # return self.stream.get_server_address()
+
         #   TODO @Ali it's your version, please fix this
         # return self.network_Graph.find_live_node().address
 
@@ -379,7 +405,6 @@ class SemiNode:
 
     def get_address(self):
         return SemiNode.parse_ip(self.ip), SemiNode.parse_port(self.port)
-
 
     @staticmethod
     def parse_ip(ip):
@@ -410,7 +435,8 @@ class GraphNode:
     def __init__(self, address):
         """
 
-        :param address: (ip, port) tuple
+        :param address: (ip, port)
+        :type address: tuple
 
         """
         self.parent = None
@@ -446,7 +472,7 @@ class NetworkGraph:
             node = queue[0]
             number_of_live_children = 0
             for child in node.childre:
-                if child.alive == True:
+                if child.alive:
                     number_of_live_children += 1
                     queue.append(child)
             if number_of_live_children < 2:
@@ -462,24 +488,24 @@ class NetworkGraph:
 
     def turn_on_node(self, node_address):
         node = self.find_node(node_address[0], node_address[1])
-        if node != None:
+        if node is not None:
             node.alive = True
 
     def turn_of_node(self, node_address):
         node = self.find_node(node_address[0], node_address[1])
-        if node != None:
+        if node is not None:
             node.alive = False
 
     def remove_node(self, node_address):
         node = self.find_node(node_address[0], node_address[1])
-        if node != None:
+        if node is not None:
             self.nodes.remove(node)
 
     def add_node(self, ip, port, father_address):
         father_node = self.find_node(father_address[0], father_address[1])
         new_node = self.find_node(ip, port)
 
-        if new_node == None:
+        if new_node is None:
             new_node = GraphNode((ip, port))
             self.nodes.append(new_node)
         new_node.set_parent(father_node)
