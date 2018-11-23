@@ -234,7 +234,35 @@ class Packet:
         :return Packet buffer
         :return: str
         """
-        return self._buf
+        packet = bytearray(10 ** 8)
+        # print(packet)
+        pack_into('!h', packet, 0, self._version)
+        # print(packet)
+        # print(unpack_from('!h', packet))
+
+        pack_into('!h', packet, 2, self._type)
+        # print(packet)
+        # print(unpack_from('!hh', packet))
+
+        pack_into('!l', packet, 4, self._length)
+
+        ip_elements = [int(x) for x in self._source_server_ip.split('.')]
+        pack_into('!hhhh', packet, 8, ip_elements[0], ip_elements[1], ip_elements[2], ip_elements[3])
+        # print(packet)
+        # print(unpack_from('!hhhhhh', packet))
+
+        pack_into('!i', packet, 16, self._source_server_port)
+        # print(packet)
+        # print(unpack_from('!hhhhhhi', packet))
+
+        fmt = str(self._length) + 's'
+        # print(fmt)
+        # print(pack('!' + fmt, body))
+        pack_into('!' + fmt, packet, 20, self._body)
+        # print(packet)
+        print(unpack_from('!hhlhhhhi' + fmt, packet))
+
+        return packet
 
     def get_source_server_ip(self):
         """
