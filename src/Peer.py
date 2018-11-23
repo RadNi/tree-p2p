@@ -168,7 +168,7 @@ class Peer:
 
         """
         if packet.get_length() != len(packet.get_body()):
-            print("packet.get_length() = ", packet.get_length(), "  , packet.get_body() = ", len(packet.get_body()))
+            print("packet.get_length() = ", packet.get_length(), packet.get_body(), packet.get_source_server_ip(),packet.get_source_server_port())
             return print("Packet Length is incorrect.")
         print("Handling the packet...")
         if packet.get_version() == 1:
