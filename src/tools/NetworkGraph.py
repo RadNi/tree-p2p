@@ -14,6 +14,7 @@ class GraphNode:
         self.children = []
         self.ip = address[0]
         self.port = address[1]
+        print("     In node constructor: ", address)
         self.address = address
         self.alive = False
 
@@ -37,7 +38,7 @@ class NetworkGraph:
         root.alive = True
         self.nodes = [root]
 
-    def find_live_node(self):
+    def find_live_node(self, sender):
         queue = [self.root]
         while len(queue) > 0:
             node = queue[0]
@@ -46,7 +47,7 @@ class NetworkGraph:
                 if child.alive:
                     number_of_live_children += 1
                     queue.append(child)
-            if number_of_live_children < 2:
+            if number_of_live_children < 2 and node.address is not sender:
                 return node
             queue.pop(0)
         return self.root
@@ -62,7 +63,7 @@ class NetworkGraph:
         if node is not None:
             node.alive = True
 
-    def turn_of_node(self, node_address):
+    def turn_off_node(self, node_address):
         node = self.find_node(node_address[0], node_address[1])
         if node is not None:
             node.alive = False
