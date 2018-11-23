@@ -6,21 +6,22 @@
 \contentsline {section}{\numberline {3}Objects}{6}
 \contentsline {paragraph}{}{6}
 \contentsline {subsection}{\numberline {3.1}Stream}{6}
-\contentsline {paragraph}{}{11}
-\contentsline {subsection}{\numberline {3.2}Peer}{11}
-\contentsline {subsection}{\numberline {3.3}Packet Factory}{12}
-\contentsline {paragraph}{packetFactory()}{12}
-\contentsline {subsection}{\numberline {3.4}Packet}{15}
-\contentsline {paragraph}{}{15}
-\contentsline {subsection}{\numberline {3.5}Reunion}{17}
-\contentsline {paragraph}{reunion(packet)}{17}
-\contentsline {subsection}{\numberline {3.6}Node}{17}
-\contentsline {paragraph}{}{18}
-\contentsline {subsection}{\numberline {3.7}Resgister Request}{18}
-\contentsline {paragraph}{reg\_req()}{18}
-\contentsline {subsection}{\numberline {3.8}Register Response}{19}
-\contentsline {paragraph}{reg\_res()}{19}
-\contentsline {subsection}{\numberline {3.9}Advertise}{19}
-\contentsline {paragraph}{adv(packet)}{19}
-\contentsline {subsection}{\numberline {3.10}Mesasge}{19}
-\contentsline {paragraph}{msg(packet)}{19}
+\contentsline {paragraph}{}{6}
+\contentsline {subsection}{\numberline {3.2}Peer}{6}
+\contentsline {subsection}{\numberline {3.3}Packet Factory}{7}
+\contentsline {paragraph}{packetFactory()}{7}
+\contentsline {subsection}{\numberline {3.4}Packet}{7}
+\contentsline {paragraph}{}{7}
+\contentsline {paragraph}{}{7}
+\contentsline {subsection}{\numberline {3.5}Reunion}{8}
+\contentsline {paragraph}{reunion(packet)}{8}
+\contentsline {subsection}{\numberline {3.6}Node}{8}
+\contentsline {paragraph}{}{8}
+\contentsline {subsection}{\numberline {3.7}Resgister Request}{8}
+\contentsline {paragraph}{reg\relax $\@@underline {\hbox {\hspace {.05in}}}\mathsurround \z@ $\relax req()}{8}
+\contentsline {subsection}{\numberline {3.8}Register Response}{8}
+\contentsline {paragraph}{reg\relax $\@@underline {\hbox {\hspace {.05in}}}\mathsurround \z@ $\relax res()}{8}
+\contentsline {subsection}{\numberline {3.9}Advertise}{9}
+\contentsline {paragraph}{adv(packet)}{9}
+\contentsline {subsection}{\numberline {3.10}Mesasge}{9}
+\contentsline {paragraph}{msg(packet)}{9}
