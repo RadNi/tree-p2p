@@ -335,6 +335,8 @@ class PacketFactory:
 
         number_of_entity = str(len(nodes_array)).zfill(2)
 
+        print("In new_reunion_packet: ", nodes_array)
+
         body = body + number_of_entity
         for (ip, port) in nodes_array:
             body = body + ip
@@ -374,11 +376,12 @@ class PacketFactory:
                 body += neighbor[0]
                 body += neighbor[1]
                 length = '00023'
-                print("Response adv packtet created")
+                print("Response adv packet created")
                 return Packet(
                     version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
             except Exception as e:
                 print(str(e))
+                # print()
         else:
             raise Exception("Type is incorrect")
 
