@@ -19,7 +19,11 @@ class Peer:
         self.packets = []
         self.neighbours = []
 
-        self.reunion_daemon = threading.Thread(target=self.run_reunion_daemon())
+        self.reunion_accept = True
+        self.reunion_daemon_thread = threading.Thread(target=self.run_reunion_daemon)
+        self.reunion_sending_time = time.time()
+        self.reunion_pending = False
+
 
         self._user_interface = UserInterface()
 
@@ -28,7 +32,7 @@ class Peer:
         if self._is_root:
             self.network_nodes = []
             self.registered_nodes = []
-            self.network_Graph = NetworkGraph(GraphNode((server_ip, server_port)))
+            self.network_graph = NetworkGraph(GraphNode((server_ip, server_port)))
         else:
             self.root_address = root_address
             self.stream.add_node(root_address, set_register_connection=True)
@@ -89,6 +93,10 @@ class Peer:
 
         print("Running the peer...")
         while True:
+
+            if not self.reunion_accept:
+                continue
+
             for b in self.stream.read_in_buf():
                 # print("In main while: ", b)
                 p = self.packet_factory.parse_buffer(b)
@@ -110,14 +118,29 @@ class Peer:
         :return:
         """
         if self._is_root:
+            # for n in self.network_graph.nodes:
+            #     if time.time() > n.latest_reunion_time + 70:
+            #         print(n)
             #   TODO    Handle this section
 
             pass
         else:
             while True:
-                time.sleep(20)
-                packet = self.packet_factory.new_reunion_packet("REQ", self.stream.get_server_address(),
-                                                       [self.stream.get_server_address()])
+                if not self.reunion_pending:
+                    time.sleep(20)
+                    packet = self.packet_factory.new_reunion_packet("REQ", self.stream.get_server_address(),
+                                                           [self.stream.get_server_address()])
+                    self.stream.add_message_to_out_buff(self.parent, packet.get_buf())
+                    self.reunion_pending = True
+                    self.reunion_sending_time = time.time()
+                else:
+                    if time.time() > self.reunion_sending_time+30:
+
+                        self.reunion_accept = False
+                        advertise_packet = self.packet_factory.new_advertise_packet("REQ", self.stream.get_server_address())
+                        self.stream.add_message_to_out_buff(self.root_address, advertise_packet.get_buf())
+                        # Reunion failed.
+                        #   TODO    Make sure that parent will completely detach from our clients
 
     def send_broadcast_packet(self, broadcast_packet):
         """
@@ -210,7 +233,7 @@ class Peer:
                                                          source_server_address=self.stream.get_server_address(),
                                                          neighbor=neighbor)
             # server_address = packet.get_source_server_address()
-            # self.network_Graph.add_node(server_address[0], server_address[1], neighbor)
+            # self.network_graph.add_node(server_address[0], server_address[1], neighbor)
             print("We want to add this to the node: ", packet.get_source_server_address())
             self.network_nodes.append(SemiNode(packet.get_source_server_ip(), packet.get_source_server_port()))
 
@@ -227,7 +250,7 @@ class Peer:
             join_packet = self.packet_factory.new_join_packet(addr)
             self.stream.add_message_to_out_buff(self.parent.get_server_address(), join_packet.get_buf())
 
-            self.run_reunion_daemon()
+            self.reunion_daemon_thread.start()
         else:
             raise print("Unexpected Type.")
 
@@ -330,7 +353,7 @@ class Peer:
                     ip = ip_and_ports[i * 20:i * 20 + 15]
                     port = ip_and_ports[i * 20 + 15:i * 21]
                     node_array.insert(0, (ip, port))
-                self.network_Graph.turn_on_node(packet.get_source_server_address())
+                self.network_graph.turn_on_node(packet.get_source_server_address())
                 p = self.packet_factory.new_reunion_packet(type='RES', source_address=self.root_address,
                                                            nodes_array=node_array)
                 self.stream.add_message_to_out_buff((sender_ip, sender_port), p.get_buf())
@@ -345,7 +368,7 @@ class Peer:
                 node_array.append((self.stream.ip, self.stream.port))
 
                 p = self.packet_factory.new_reunion_packet(type='REQ',
-                                                           source_address=packet.get_source_server_address(),
+                                                           source_address=self.stream.get_server_address(),
                                                            nodes_array=node_array)
                 self.stream.add_message_to_out_buff((self.parent.get_ip(), self.parent.get_port()), p.get_buf())
         elif packet.get_body()[0:3] == "RES":
@@ -355,21 +378,27 @@ class Peer:
             ip_and_ports = packet.get_body()[2:]
             first_ip = ip_and_ports[0:15]
             first_port = ip_and_ports[15:20]
-            sender_ip = ip_and_ports[20:35]
-            sender_port = ip_and_ports[35:40]
+
             if first_ip == self.stream.ip and first_port == self.stream.port:
-                for i in range(number_of_entity - 1):
-                    ip = ip_and_ports[i * 20:i * 20 + 15]
-                    port = ip_and_ports[i * 20 + 15:i * 21]
-                    node_array.append((ip, port))
-                p = self.packet_factory.new_reunion_packet(type='RES',
-                                                           source_address=packet.get_source_server_address(),
-                                                           nodes_array=node_array)
-                self.stream.add_message_to_out_buff((sender_ip, sender_port), p.get_buf())
-            else:
-                raise Exception("Unexpected Ip or Port in Reunion's body")
+
+                if number_of_entity == 1:
+                    self.reunion_pending = False
+
+                sender_ip = ip_and_ports[20:35]
+                sender_port = ip_and_ports[35:40]
+                if first_ip == self.stream.ip and first_port == self.stream.port:
+                    for i in range(number_of_entity - 1):
+                        ip = ip_and_ports[i * 20:i * 20 + 15]
+                        port = ip_and_ports[i * 20 + 15:i * 21]
+                        node_array.append((ip, port))
+                    p = self.packet_factory.new_reunion_packet(type='RES',
+                                                               source_address=self.stream.get_server_address(),
+                                                               nodes_array=node_array)
+                    self.stream.add_message_to_out_buff((sender_ip, sender_port), p.get_buf())
+                else:
+                    raise print("Unexpected Ip or Port in Reunion's body")
         else:
-            raise Exception("Unexpected type")
+            raise print("Unexpected type")
 
     def __handle_join_packet(self, packet):
         """
@@ -412,6 +441,6 @@ class Peer:
             return self.stream.get_server_address()
 
         #   TODO @Ali it's your version, please fix this
-        # return self.network_Graph.find_live_node().address
+        # return self.network_graph.find_live_node().address
 
 

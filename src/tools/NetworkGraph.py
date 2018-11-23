@@ -1,3 +1,6 @@
+import time
+
+
 class GraphNode:
     def __init__(self, address):
         """
@@ -7,6 +10,7 @@ class GraphNode:
 
         """
         self.parent = None
+        self.latest_reunion_time = time.time()
         self.children = []
         self.ip = address[0]
         self.port = address[1]
@@ -38,7 +42,7 @@ class NetworkGraph:
         while len(queue) > 0:
             node = queue[0]
             number_of_live_children = 0
-            for child in node.childre:
+            for child in node.children:
                 if child.alive:
                     number_of_live_children += 1
                     queue.append(child)
