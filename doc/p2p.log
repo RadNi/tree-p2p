@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.10.30)  21 NOV 2018 23:58
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.10.30)  23 NOV 2018 14:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -790,68 +790,61 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
  [2
 
-] [3
-
 ]
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <9> on input line 53.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 53.
-
-Overfull \hbox (119.50697pt too wide) in paragraph at lines 63--64
-[][] 
- []
-
-[4
+ [3
 
 ]
 Overfull \vbox (8.07735pt too high) has occurred while \output is active []
 
 
-[5]
-Overfull \hbox (79.9906pt too wide) in paragraph at lines 78--79
+[4]
+Overfull \hbox (80.13248pt too wide) in paragraph at lines 89--90
 [][] 
  []
 
+[5
 
-Underfull \hbox (badness 10000) in paragraph at lines 81--87
+]
+Underfull \hbox (badness 10000) in paragraph at lines 93--99
 
  []
 
 [6
 
-] [7] [8] [9] [10]
-Underfull \hbox (badness 10000) in paragraph at lines 280--285
+]
+Underfull \hbox (badness 10000) in paragraph at lines 123--124
 
  []
 
-[11] [12] [13] [14]
-Underfull \hbox (badness 10000) in paragraph at lines 446--447
-
- []
-
-[15] [16] [17] [18] [19] (./p2p.aux) ) 
+[7]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 149.
+ [8] [9] (./p2p.aux) ) 
 Here is how much of TeX's memory you used:
- 19559 strings out of 492649
- 405612 string characters out of 6133383
- 749571 words of memory out of 5000000
- 23086 multiletter control sequences out of 15000+600000
+ 19474 strings out of 492649
+ 404457 string characters out of 6133383
+ 718571 words of memory out of 5000000
+ 23001 multiletter control sequences out of 15000+600000
  9282 words of font info for 33 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,9n,84p,607b,1810s stack positions out of 5000i,500n,10000p,200000b,80000s
-<c:/texlive/2018/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmbx10.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmbx12.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmbx9.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb
-><c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texli
-ve/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2018/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2018/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmr9.pfb><c:/texlive/2018/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmtt9.pfb>
-Output written on p2p.pdf (19 pages, 148727 bytes).
+ 62i,11n,84p,511b,1228s stack positions out of 5000i,500n,10000p,200000b,80000s
+<c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmbx10.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.
+pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb><c:/te
+xlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/201
+8/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2018/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2018/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2018/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmr9.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmtt9.pfb>
+Output written on p2p.pdf (9 pages, 130839 bytes).
 PDF statistics:
- 129 PDF objects out of 1000 (max. 8388607)
- 82 compressed objects within 1 object stream
+ 97 PDF objects out of 1000 (max. 8388607)
+ 60 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  109 words of extra memory for PDF output out of 10000 (max. 10000000)
 
