@@ -395,6 +395,7 @@ class PacketFactory:
                 body += neighbor[0]
                 body += neighbor[1]
                 length = '23'.zfill(8)
+
                 print("Response adv packet created")
                 return Packet(
                     version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
