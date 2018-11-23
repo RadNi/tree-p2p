@@ -34,7 +34,7 @@ class Node:
         for b in self.out_buff:
             print("In sending message buffer: ", b)
             # print(b)
-            response = self.client.send(b)
+            response = self.client.send(bytes(b))
 
             print("Response: ", response, " ", type(response))
             if response != b'ACK':

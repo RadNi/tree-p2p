@@ -182,10 +182,11 @@ class Packet:
         self._header = buf[0:28]
         self._version = int(buf[0], 10)
         self._type = int(buf[1:3], 10)
-        self._length = int(buf[3:8], 10)
-        self._source_server_ip = buf[8:23]
-        self._source_server_port = buf[23:28]
-        self._body = buf[28:]
+        self._length = int(buf[3:11], 10)
+        print("`len here: ", buf[3:11])
+        self._source_server_ip = buf[11:26]
+        self._source_server_port = buf[26:31]
+        self._body = buf[31:]
 
     def get_header(self):
         """
@@ -234,7 +235,8 @@ class Packet:
         :return Packet buffer
         :return: str
         """
-        packet = bytearray(10 ** 8)
+
+        packet = bytearray(self._length + 20)
         # print(packet)
         pack_into('!h', packet, 0, self._version)
         # print(packet)
@@ -245,22 +247,26 @@ class Packet:
         # print(unpack_from('!hh', packet))
 
         pack_into('!l', packet, 4, self._length)
-
+        # 10100023127.000.000.00119125REQ127.000.000.00119125
+        # 112312700119125REQ127.000.000.00119125
+        # 112312700119125REQ127.000.000.00119125
         ip_elements = [int(x) for x in self._source_server_ip.split('.')]
         pack_into('!hhhh', packet, 8, ip_elements[0], ip_elements[1], ip_elements[2], ip_elements[3])
         # print(packet)
         # print(unpack_from('!hhhhhh', packet))
 
-        pack_into('!i', packet, 16, self._source_server_port)
+        pack_into('!i', packet, 16, int(self._source_server_port))
         # print(packet)
         # print(unpack_from('!hhhhhhi', packet))
-
-        fmt = str(self._length) + 's'
+        # print(str(self._length))
+        # print(str(self._body))
+        fmt = str(int(self._length)) + 's'
+        # print(fmt)
         # print(fmt)
         # print(pack('!' + fmt, body))
-        pack_into('!' + fmt, packet, 20, self._body)
+        pack_into('!' + fmt, packet, 20, self._body.encode('UTF-8'))
         # print(packet)
-        print(unpack_from('!hhlhhhhi' + fmt, packet))
+        # print(unpack_from('!hhlhhhhi' + fmt, packet))
 
         return packet
 
@@ -302,15 +308,28 @@ class PacketFactory:
         :rtype Packet
 
         """
+
+        print("before: ", buffer)
         version = str(unpack_from('!h', buffer)[0])
-        type = str(unpack_from('!h', buffer, offset=2)[0])
-        length = str(unpack_from('!l', buffer, offset=4)[0])
+        print(version)
+        type = str(unpack_from('!h', buffer, offset=2)[0]).zfill(2)
+        print(type)
+        length = str(int(unpack_from('!l', buffer, offset=4)[0]))
+        print(length)
         ip = unpack_from('!hhhh', buffer, offset=8)
-        ip = str(ip[0]) + str(ip[1]) + str(ip[2]) + str(ip[3])
-        port = str(unpack_from('!i', buffer, offset=16)[0])
+        print(ip)
+        ip = str(ip[0]) + '.' + str(ip[1]) + '.' + str(ip[2]) + '.' + str(ip[3])
+        ip = '.'.join(p.zfill(3) for p in ip.split('.'))
+
+        print(ip)
+        port = str(unpack_from('!i', buffer, offset=16)[0]).zfill(5)
+        print(port)
         fmt = length + 's'
+        print(fmt)
         body = unpack_from('!' + fmt, buffer, offset=20)[0].decode("utf-8")
-        buffer = version + type + length + ip + port + body
+        print(body)
+        buffer = version + type + length.zfill(8) + ip + port + body
+        print("after: ", buffer)
 
         return Packet(buf=buffer)
 
@@ -341,7 +360,7 @@ class PacketFactory:
         for (ip, port) in nodes_array:
             body = body + ip
             body = body + port
-        length = str(len(body)).zfill(5)
+        length = str(len(body)).zfill(8)
 
         return Packet(version + packet_type + length + source_address[0] + source_address[1] + body)
 
@@ -366,19 +385,19 @@ class PacketFactory:
 
         if type == 'REQ':
             body = 'REQ'
-            length = '00003'
-            print("Request adv packtet created")
-            return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
+            length = '3'.zfill(8)
+            print("Request adv packet created")
+            return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
 
         elif type == 'RES':
             try:
                 body = 'RES'
                 body += neighbor[0]
                 body += neighbor[1]
-                length = '00023'
+                length = '23'.zfill(8)
                 print("Response adv packet created")
                 return Packet(
-                    version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
+                    version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
             except Exception as e:
                 print(str(e))
                 # print()
@@ -398,10 +417,10 @@ class PacketFactory:
         print("Creating join packet")
         version = '1'
         packet_type = '03'
-        length = '00004'
+        length = '4'.zfill(8)
         body = 'JOIN'
 
-        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
+        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
 
     @staticmethod
     def new_register_packet(type, source_server_address, address=(None, None)):
@@ -423,19 +442,19 @@ class PacketFactory:
         packet_type = "01"
 
         if type == "REQ":
-            length = "00023"
+            length = "23".zfill(8)
             body = "REQ" + '.'.join(str(int(part)).zfill(3) for part in source_server_address[0].split('.')) + \
                    str(source_server_address[1]).zfill(5)
             print("Request register packet created")
             print("Address for packet is: ", address)
         elif type == "RES":
-            length = "00006"
+            length = "6".zfill(8)
             body = "RESACK"
             print("Response register packet created")
         else:
             raise Exception("Irregular register type.")
 
-        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
+        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
 
         pass
 
@@ -456,6 +475,6 @@ class PacketFactory:
         version = '1'
         packet_type = '04'
         body = message
-        length = str(len(message)).zfill(5)
+        length = str(len(message)).zfill(8)
         print("Message packet created")
-        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
+        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
