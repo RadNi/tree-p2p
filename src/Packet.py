@@ -247,7 +247,9 @@ class Packet:
 
 
 class PacketFactory:
-    def parse_buffer(self, buffer):
+
+    @staticmethod
+    def parse_buffer(buffer):
 
         """
         :param buffer: The buffer that should be parse to a validate packet format
@@ -259,7 +261,8 @@ class PacketFactory:
 
         return Packet(buf=buffer)
 
-    def new_reunion_packet(self, type, source_address, nodes_array):
+    @staticmethod
+    def new_reunion_packet(type, source_address, nodes_array):
         """
         :param destination: (ip, port) of destination want to send reunion packet.
         :param nodes_array: [(ip0, port0), (ip1, port1), ...] It is the path to the 'destination'.
@@ -288,6 +291,7 @@ class PacketFactory:
             length = '0' + length
         return Packet(version + packet_type + length + source_address[0] + source_address[1] + body)
 
+    @staticmethod
     def new_advertise_packet(self, type, source_server_address, neighbor=None):
         """
         :param type: Type of Advertise packet
@@ -326,7 +330,8 @@ class PacketFactory:
         else:
             raise Exception("Type is incorrect")
 
-    def new_join_packet(self, source_server_address):
+    @staticmethod
+    def new_join_packet(source_server_address):
         """
         :param source_server_address: Server address of the packet sender.
         :type source_server_address: tuple
@@ -343,7 +348,8 @@ class PacketFactory:
 
         return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1] + body)
 
-    def new_register_packet(self, type, source_server_address, address=(None, None)):
+    @staticmethod
+    def new_register_packet(type, source_server_address, address=(None, None)):
         """
         :param type: Type of Register packet
         :param source_server_address: Server address of the packet sender.
@@ -378,7 +384,8 @@ class PacketFactory:
 
         pass
 
-    def new_message_packet(self, message, source_server_address):
+    @staticmethod
+    def new_message_packet(message, source_server_address):
         """
         Packet for sending a broadcast message to hole network.
 

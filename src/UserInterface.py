@@ -8,10 +8,8 @@ class UserInterface(threading.Thread):
     def run(self):
         while True:
             message = input("Write your command:\n")
-            # if message is not "":
             self.buffer.append(message)
-            # print(self.buffer)
-            # print("i gave message: _", message, "_")
+
     # Which the user or client sees and works with. run() #This method runs every time to
     #  see whether there is new messages or not.
     #   TODO

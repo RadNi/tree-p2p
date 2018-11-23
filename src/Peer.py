@@ -9,18 +9,15 @@ import threading
 class Peer:
     def __init__(self, server_ip, server_port, is_root=False, root_address=None):
         self._is_root = is_root
-        #    TODO   here we should pass IP/Port of the Stream server to Stream constructor.
+
         self.stream = Stream(server_ip, server_port)
 
         self.parent = None
 
-        #   TODO    The arrival packets that should handle in future ASAP!
         self.packets = []
         self.neighbours = []
 
         self._user_interface = UserInterface()
-
-        self._user_interface_buffer = []
 
         self._broadcast_packets = []
 
@@ -71,7 +68,7 @@ class Peer:
 
             elif buffer[0] == '4':
                 print("Handling buffer/4 in UI")
-                self._broadcast_packets.append(self.packet_factory.new_message_packet(buffer,
+                self.send_broadcast_packet(self.packet_factory.new_message_packet(buffer,
                                                                                       self.stream.get_server_address()).get_buf())
         self._user_interface.buffer = []
 
@@ -100,25 +97,23 @@ class Peer:
 
             self.handle_user_interface_buffer()
             # print("Main while before user_interface handler")
-            self.send_broadcast_packets()
+            # self.send_broadcast_packets()
             self.stream.send_out_buf_messages()
 
             time.sleep(2)
 
-    def send_broadcast_packets(self):
+    def send_broadcast_packet(self, broadcast_packet):
         """
         For setting broadcast packets buffer into Nodes out_buff.
         :return:
         """
 
-        for b in self._broadcast_packets:
-            for n in self.stream.nodes:
-                # print(n.get_standard_server_address())
-                # print(self.root_address)
-                # if n.get_standard_server_address() != self.root_address:
-                if not n.is_register_connection:
-                    self.stream.add_message_to_out_buff(n.get_server_address(), b)
-        self._broadcast_packets = []
+        for n in self.stream.nodes:
+            # print(n.get_standard_server_address())
+            # print(self.root_address)
+            # if n.get_standard_server_address() != self.root_address:
+            if not n.is_register_connection:
+                self.stream.add_message_to_out_buff(n.get_server_address(), broadcast_packet)
 
     def handle_packet(self, packet):
         """
@@ -275,9 +270,9 @@ class Peer:
         # for n in self.stream.nodes:
         #     print("From here:\t", n.get_server_address(), " ", n.is_register_connection)
 
-        if not self.__check_neighbour(packet.get_source_server_address()):
-            print("The message is from an unknown source.")
-            return
+        # if not self.__check_neighbour(packet.get_source_server_address()):
+        #     print("The message is from an unknown source.")
+        #     return
 
         for n in self.stream.nodes:
             if not n.is_register_connection:
