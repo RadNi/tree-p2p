@@ -4,6 +4,7 @@ import select
 import socket
 import sys
 
+
 class ServerSocket:
 
     def __init__(self, mode, port, read_callback, max_connections, recv_bytes):

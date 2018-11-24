@@ -19,11 +19,14 @@ class Obj:
         self.in_buf += input("command?")
 
 
-s1 = ClientSocket("localhost", 5050, single_use=False)
+s1 = ClientSocket("localhost", 5051, single_use=False)
 response = s1.send("Hello, World!")
 
-s2 = ClientSocket("localhost", 5050, single_use=False)
-r1 = s2.send("Hello for the first time...")
+s2 = ClientSocket("localhost", 5051, single_use=False)
+buf = ''
+for i in range(3000):
+    buf+='a'
+r1 = s2.send(buf)
 r2 = s2.send("...and hello for the last!")
 s2.close()
 # s1.close()
