@@ -2,33 +2,32 @@
 
     This is the format of packets in our network:
     
-                 ** Packet Format **
-     ________________________________________________
-    | Version(1 char)| Type(2 char) | Length(5 char) |
-    |------------------------------------------------|
-    |            Source Server IP(15 char)           |
-    |------------------------------------------------|
-    |           Source Server Port(5 char)           |
-    |------------------------------------------------|
-    |                      ....                      |
-    |                      BODY                      |
-    |                      ....                      |
-    |________________________________________________|
-1010003192.168.001.00100333JOIN
 
-                  **ٔ NEW Packet Format  **
-     _________________________________________________________________________________________
-    | Version(2 bytes(1 Short Int))| Type(2 Bytes(1 Short Int)) | Length(4 bytes(1 Long Int)) |
-    |-----------------------------------------------------------------------------------------
-    |  Source Server IP(4*2 bytes(4 short Int)       |
-    |------------------------------------------------|
-    |       Source Server Port(4 bytes (1 Int))      |
-    |------------------------------------------------|
-    |                      ....                      |
-    |                      BODY                      |
-    |                      ....                      |
-    |________________________________________________|
 
+                                                **ٔ  NEW Packet Format  **
+     __________________________________________________________________________________________________________________
+    | Version(1 Char/2 Bytes/1 Short Int)  |  Type(2 Chars/2 Bytes/1 Short Int)  |  Length(8 Chars/4 Bytes/1 Long Int) |
+    |------------------------------------------------------------------------------------------------------------------|
+    |                                  Source Server IP(12 Chars/8 Bytes/4 short Int)                                  |
+    |------------------------------------------------------------------------------------------------------------------|
+    |                                     Source Server Port(5 Chars/4 Bytes/1 Int)                                    |
+    |------------------------------------------------------------------------------------------------------------------|
+    |                                                    ..........                                                    |
+    |                                                       BODY                                                       |
+    |                                                    ..........                                                    |
+    |__________________________________________________________________________________________________________________|
+
+    for example:
+
+    version = 1
+    type = 02
+    length = 00000012
+    ip = '192.168.001.029'
+    port = '06500'
+    Body = 'Hello World!'
+
+    Bytes = b'\x00\x01\x00\x02\x00\x00\x00\x0c\x00\xc0\x00\xa8\x00\x01\x00\x1d\x00\x00\x19dHello World!'
+    String = 1020000001219216800102906500Hello World!
 
 
     Version:
@@ -53,34 +52,34 @@
         Register:
             Request:
         
-                                ** Packet Format **
+                                 ** Body Format **
                  ________________________________________________
-                |                       REQ (3 bytes)            |
+                |               REQ (3 Chars/3 Bytes)            |
                 |------------------------------------------------|
-                |              IP (4*2 bytes/4 short Int)        |
+                |        IP (12 Chars/8 Bytes/4 short Int)       |
                 |------------------------------------------------|
-                |              Port (4 bytes (1 Int))            |
+                |          Port (5 Chars/4 Bytes/1 Int)          |
                 |________________________________________________|
                 
                 For sending IP/Port of current node to the root to ask if it can register to network or not.
             Response:
         
-                                ** Packet Format **
-                 ________________________________________________
-                |                    RES(3 bytes)                |
-                |------------------------------------------------|
-                |                       ACK                      |
-                |________________________________________________|
+                                 ** Body Format **
+                 _________________________________________________
+                |              RES (3 Chars/3 Bytes)              |
+                |-------------------------------------------------|
+                |              ACK (3 Chars/3 Bytes)              |
+                |_________________________________________________|
                 
-                For now only should just send an 'Ack' from the root  to inform a node that it 
+                For now only should just send an 'ACK' from the root  to inform a node that it
                 has been registered in the root if the 'Register Request' was successful.
                 
         Advertise:
             Request:
             
-                                ** Packet Format **
+                                ** Body Format **
                  ________________________________________________
-                |                 REQ (3 bytes)                  |
+                |              REQ (3 Chars/3 Bytes)             |
                 |________________________________________________|
                 
                 Nodes for finding the IP/Port of their neighbour peer must send this packet to the root.
@@ -99,9 +98,9 @@
                 
         Join:
 
-                                ** Packet Format **
+                                ** Body Format **
                  ________________________________________________
-                |                 JOIN (4 bytes)                 |
+                |             JOIN (4 Chars/4 Bytes)             |
                 |________________________________________________|
             
             New node after getting Advertise Response from root must send this packet to specified peer 
@@ -111,9 +110,9 @@
             For next version Join packet must contain a field for validation the joining action.
             
         Message:
-                                ** Packet Format **
+                                ** Body Format **
                  ________________________________________________
-                |              Message(length bytes)             |
+                |             Message (#Length Bytes)            |
                 |________________________________________________|
 
             The message that want to broadcast to hole network. Right now this type only includes a plain text.
@@ -121,9 +120,9 @@
         Reunion:
             Hello:
         
-                                ** Packet Format **
+                                ** Body Format **
                  ________________________________________________
-                |                 REQ (3 bytes)                  |
+                |             REQ (3 Chars / 3 Bytes)            |
                 |------------------------------------------------|
                 |    Number of Entries (2 Bytes(1 Short Int))    |
                 |------------------------------------------------|
@@ -147,22 +146,22 @@
                 the packet and update Length.
             Hello Back:
         
-                                ** Packet Format **
-                 ________________________________________________
-                |             RES (3 bytes)                      |
-                |------------------------------------------------|
-                |    Number of Entries (2 Bytes(1 Short Int))    |
-                |------------------------------------------------|
-                |         IPN (4*2 bytes/4 short Int)            |
-                |------------------------------------------------|
-                |             PortN (4 bytes (1 Int))            |
-                |------------------------------------------------|
-                |                     ...                        |
-                |------------------------------------------------|
-                |         IP1 (4*2 bytes/4 short Int)            |
-                |------------------------------------------------|
-                |             Port1 (4 bytes (1 Int))            |
-                |________________________________________________|
+                                    ** Body Format **
+                 _______________________________________________________
+                |                RES (3 Chars/3 bytes)                  |
+                |-------------------------------------------------------|
+                |   Number of Entries (2 Chars/2 Bytes/1 Short Int))    |
+                |-------------------------------------------------------|
+                |         IPN (12 Chars/8 Bytes/4 short Int)            |
+                |-------------------------------------------------------|
+                |             PortN (5 Chars/4 bytes/1 Int)             |
+                |-------------------------------------------------------|
+                |                           ...                         |
+                |-------------------------------------------------------|
+                |         IP1 (12 Chars/8 Bytes/4 short Int)            |
+                |-------------------------------------------------------|
+                |             Port1 5 Chars/4 bytes/1 Int)              |
+                |_______________________________________________________|
 
                 Root in answer of the Reunion Hello message will send this packet to the target node.
                 In this packet all the nodes (ip, port) exist in order by path traversal to target.
@@ -386,7 +385,8 @@ class PacketFactory:
             body = 'REQ'
             length = '3'.zfill(8)
             print("Request adv packet created")
-            return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
+            return Packet(
+                version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
 
         elif type == 'RES':
             try:
@@ -397,7 +397,8 @@ class PacketFactory:
 
                 print("Response adv packet created")
                 return Packet(
-                    version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
+                    version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(
+                        5) + body)
             except Exception as e:
                 print(str(e))
                 # print()
@@ -420,7 +421,8 @@ class PacketFactory:
         length = '4'.zfill(8)
         body = 'JOIN'
 
-        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
+        return Packet(
+            version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
 
     @staticmethod
     def new_register_packet(type, source_server_address, address=(None, None)):
@@ -454,7 +456,8 @@ class PacketFactory:
         else:
             raise Exception("Irregular register type.")
 
-        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
+        return Packet(
+            version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
 
         pass
 
@@ -477,4 +480,5 @@ class PacketFactory:
         body = message
         length = str(len(message)).zfill(8)
         print("Message packet created")
-        return Packet(version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
+        return Packet(
+            version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)

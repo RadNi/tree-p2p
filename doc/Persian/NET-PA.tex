@@ -1,0 +1,68 @@
+\documentclass{article}
+    \usepackage{amsmath}
+    \usepackage{graphicx}
+    \usepackage{HandoutTemplate}
+    
+    \DefaultMathsDigits
+    
+    \settextfont[Scale=1.1]{B Nazanin}
+    %\settextfont[Scale=1.1]{B Nazanin.ttf}
+    \setlatintextfont{Times New Roman}
+    \setdigitfont{Times New Roman}
+    %\setlatindigitfont{Times New Roman}
+    
+    
+    \DeclareMathOperator{\var}{Var}
+    
+    \begin{document}
+    \handout
+    {\lr{CE-40695}}
+    {۱}
+    {آذر ۱۳۹7}
+    {پیاده سازی یک شبکه     \lr{P2P}}
+    {}
+    
+    \vspace{0.3cm}
+    
+    در این تمرین یک 
+    \lr{DNS Server}\footnote{\lr{Domain Name Server}}
+    پیاده‌سازی ‌می‌کند.
+    این پروتکل روشی توزیع‌شده برای مربوط‌کردن اسم‌ها به آی‌پی‌ها است.
+    \\
+    برنامه‌ی شما باید روی پورت ۱۵۳۵۳ برای درخواست‌ها گوش‌کند و به هر درخواست پاسخ‌دهد. برای هر درخواست برنامه‌ی شما باید یک فایل متنی هم تولید بکند. جزئیات هر بخش در ادامه توضیح‌داده‌می‌شوند.
+    \\
+    \section{مقدمه}
+    \section{اشیا}
+	\subsection{\lr{Stream}}
+	در تابع     \lr{constructor} این کلاس ابتدا با متد \lr{is\_valid} فرمت های \lr{IP} و \lr{Port} را چک میکنیم تا مطمئن شویم به صورت همان فرمت مورد نظر هستند. \lr{server\_in\_buf} همان بافری هست که روی سرور نوشته میشود و هر چند وقت یک بار بایستی چک شود. \lr{Callback Function (cb)} نیز پیام های جدید را به ته \lr{server\_in\_buf} میچسباند \lr{(append)} و در نهایت \lr{Ack} برمیگرداند. این \lr{Ack} باعث میشود هر جا که سوکتی وسط کار قطع شود بفهمد قطع شده است. سپس \lr{tcpserver} را مسازیم, در یک \lr{thread} قرار میدهیم و آن را اجرا میکنیم. \lr{self.nodes} تمام نود هایی هستند که درون ما هستند.\\
+\lr{get\_server\_address} آدرس سرور را با آن فرمتی که میخواهیم به ما میدهد.
+\\ 
+\lr{clear\_in\_buf} بافر سرور را پاک میکند.
+\\
+\lr{add\_node} نود اضافه میکند.
+\\
+\lr{remove\_node} نود مشخص شده را از آرایه پاک میکند و سپس  متد \lr{close} نود را اجاره میکند.
+\\
+\lr{get\_node\_by\_server} آی پی و پورت سرور  یک نود را میگیرد و نود را برمیگرداند. سپس با \lr{parse} کردن آن را به فرمت مد نظر تبدیل میکند.
+\\
+\lr{add\_message\_to\_out\_buffer} با گرفتن یک آدرس و پیام نود را پیدا میکند و در \lr{out\_buffer} مینویسد.
+\\
+\lr{read\_in\_buf} وظیفه دارد \lr{read\_in\_buf} را برگرداند.
+\\
+\lr{send\_message\_to\_node} بافرهای توی نود را با استفاده از کال کردن تابع\lr{send\_message}  خودش ارسال میکند.
+\\
+\lr{send\_out\_buf\_messages} پیام تمامی نود ها را ارسال میکند. 
+\\
+	\subsection{\lr{Node}}
+در \lr{constructor} این آبجکت ابتدا \lr{IP/Port} سرور با \lr{parse} شدن به فرمت مورد نظر در می آیند.\lr{out\_buff} بافری هست که قراره روی کلاینتش بنویسیم برود. با \lr{is\_register\_connection} چک میکنیم رجیستر هست یا خیر. در آخر یک \lr{try/catch} برای سوکت کلاینت قرار میدهیم تا اگر نودی در آن وسط \lr{deatach} شد \lr{exception} بخورد و از \lr{out\_buffer} پاک مشود.
+\\
+\lr{send\_message} به ازای هر بافر یک \lr{self.client.send} میکند و اگر \lr{Ack} برگشت یعنی پیام ارسال شده است.
+\\
+    \section{مقدمه}
+    
+    \subsection{لاگ}
+
+    \vfill
+    \vspace{1cm}
+    $\hfill$ موفق باشید
+    \end{document}
