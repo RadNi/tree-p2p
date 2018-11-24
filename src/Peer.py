@@ -33,6 +33,7 @@ class Peer:
             self.network_nodes = []
             self.registered_nodes = []
             self.network_graph = NetworkGraph(GraphNode((server_ip, str(server_port).zfill(5))))
+            self.reunion_daemon_thread.start()
         else:
             self.root_address = root_address
             self.stream.add_node(root_address, set_register_connection=True)
@@ -94,10 +95,26 @@ class Peer:
         print("Running the peer...")
         while True:
 
+            time.sleep(2)
+            temp_array = self.stream.read_in_buf()
+
+            print("In while")
+
             if not self.reunion_accept:
+                print("Reunion failure")
+
+                for b in self.stream.read_in_buf():
+                    # print("In main while: ", b)
+                    p = self.packet_factory.parse_buffer(b)
+                    print("In for: ", p.get_type())
+                    if p.get_type() == 2:
+                        self.handle_packet(p)
+                        temp_array.remove(b)
+                        # self.stream.send_out_buf_messages(only_register=True)
+                        break
                 continue
 
-            for b in self.stream.read_in_buf():
+            for b in temp_array:
                 # print("In main while: ", b)
                 p = self.packet_factory.parse_buffer(b)
                 self.handle_packet(p)
@@ -109,8 +126,6 @@ class Peer:
             # self.send_broadcast_packets()
             self.stream.send_out_buf_messages()
 
-            time.sleep(2)
-
     def run_reunion_daemon(self):
         """
 
@@ -118,29 +133,39 @@ class Peer:
         :return:
         """
         if self._is_root:
-            for n in self.network_graph.nodes:
-                if time.time() > n.latest_reunion_time + 70:
-                    for child in n.children:
-                        self.network_graph.turn_off_node(child)
-                    self.network_graph.remove_node(n)
-            #   TODO    Handle this section
+            while True:
+                print("In reunion root daemon")
+                for n in self.network_graph.nodes:
+                    if time.time() > n.latest_reunion_time + 10 and n is not self.network_graph.root:
+                        print("We have lost a node!", n.address)
+                        for child in n.children:
+                            self.network_graph.turn_off_node(child.address)
+                        self.network_graph.turn_off_node(n.address)
+                        self.network_graph.remove_node(n.address)
+                #   TODO    Handle this section
+                time.sleep(2)
 
         else:
             while True:
                 if not self.reunion_pending:
-                    time.sleep(20)
+                    self.reunion_accept = True
+                    time.sleep(4)
                     packet = self.packet_factory.new_reunion_packet("REQ", self.stream.get_server_address(),
                                                            [self.stream.get_server_address()])
                     self.stream.add_message_to_out_buff(self.parent.get_server_address(), packet.get_buf())
                     self.reunion_pending = True
                     self.reunion_sending_time = time.time()
+                    self.flagg = True
                 else:
                     if time.time() > self.reunion_sending_time+30 and self.flagg:
+
+                        print("Ooops, Reunion was failed.")
 
                         self.reunion_accept = False
                         advertise_packet = self.packet_factory.new_advertise_packet("REQ", self.stream.get_server_address())
                         self.stream.add_message_to_out_buff(self.root_address, advertise_packet.get_buf())
                         self.flagg = False
+                        self.stream.send_out_buf_messages(only_register=True)
                         # Reunion failed.
                         #   TODO    Make sure that parent will completely detach from our clients
 
@@ -256,14 +281,18 @@ class Peer:
             print("Packet is in Response type")
             self.stream.add_node((packet.get_body()[3:18], packet.get_body()[18:23]))
             if self.parent:
-                self.stream.remove_node(self.parent)
+                if self.stream.get_node_by_server(self.parent.server_ip, self.parent.server_port) in self.stream.nodes:
+                    self.stream.remove_node(self.parent)
             self.parent = self.stream.get_node_by_server(packet.get_body()[3:18], packet.get_body()[18:23])
 
             addr = self.stream.get_server_address()
             join_packet = self.packet_factory.new_join_packet(addr)
             self.stream.add_message_to_out_buff(self.parent.get_server_address(), join_packet.get_buf())
+            self.reunion_pending = False
 
-            self.reunion_daemon_thread.start()
+            if not self.reunion_daemon_thread.isAlive():
+                print("Reunion thread started")
+                self.reunion_daemon_thread.start()
         else:
             raise print("Unexpected Type.")
 

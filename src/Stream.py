@@ -101,7 +101,7 @@ class Stream:
         except:
             self.remove_node(node)
 
-    def send_out_buf_messages(self):
+    def send_out_buf_messages(self, only_register=False):
         """
         In this function we will send hole out buffers to their own clients.
 
@@ -109,4 +109,8 @@ class Stream:
         """
 
         for n in self.nodes:
-            self.send_messages_to_node(n)
+            if only_register:
+                if n.is_register_connection:
+                    self.send_messages_to_node(n)
+            else:
+                self.send_messages_to_node(n)

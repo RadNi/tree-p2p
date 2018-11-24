@@ -48,12 +48,20 @@ class NetworkGraph:
                     number_of_live_children += 1
                     queue.append(child)
             if number_of_live_children < 2 and node.address is not sender:
-                return node
+                if self.find_node(sender[0], sender[1]) is not None:
+                    if self.find_node(sender[0], sender[1]).parent is not None:
+                        if node is not self.find_node(sender[0], sender[1]).parent:
+                            return node
+                    else:
+                        return node
+                else:
+                    return node
             queue.pop(0)
         return self.root
 
     def find_node(self, ip, port):
         for node in self.nodes:
+            print("         IN find node: ", node.ip, " ", node.port)
             if node.ip == ip and node.port == port:
                 return node
         return None
@@ -71,6 +79,7 @@ class NetworkGraph:
     def remove_node(self, node_address):
         node = self.find_node(node_address[0], node_address[1])
         if node is not None:
+            node.parent.children.remove(node)
             self.nodes.remove(node)
 
     def add_node(self, ip, port, father_address):

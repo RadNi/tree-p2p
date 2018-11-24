@@ -183,7 +183,6 @@ class Packet:
         self._version = int(buf[0], 10)
         self._type = int(buf[1:3], 10)
         self._length = int(buf[3:11], 10)
-        print("`len here: ", buf[3:11])
         self._source_server_ip = buf[11:26]
         self._source_server_port = buf[26:31]
         self._body = buf[31:]
