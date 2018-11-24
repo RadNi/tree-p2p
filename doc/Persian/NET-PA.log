@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018/W32TeX) (preloaded format=xelatex 2018.11.18)  24 NOV 2018 18:22
+This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018/W32TeX) (preloaded format=xelatex 2018.11.18)  24 NOV 2018 21:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1087,29 +1087,25 @@ Underfull \hbox (badness 10000) in paragraph at lines 37--56
 [][]
  []
 
-[1
 
-]
-Underfull \hbox (badness 10000) in paragraph at lines 119--128
+Underfull \hbox (badness 10000) in paragraph at lines 57--61
 [][]
  []
 
-[2]
-Missing character: There is no ‏ in font [lmmono10-regular]:!
-Missing character: There is no ‏ in font [lmmono10-regular]:!
-Missing character: There is no ‏ in font [lmmono10-regular]:!
- [3] [4] (./NET-PA.aux)
+[1
+
+] [2] (./NET-PA.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 25196 strings out of 492956
- 529765 string characters out of 6136893
- 616787 words of memory out of 5000000
- 28778 multiletter control sequences out of 15000+600000
- 537553 words of font info for 96 fonts, out of 8000000 for 9000
+ 25187 strings out of 492956
+ 529639 string characters out of 6136893
+ 613787 words of memory out of 5000000
+ 28771 multiletter control sequences out of 15000+600000
+ 537545 words of font info for 95 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  67i,8n,71p,1057b,443s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on NET-PA.pdf (4 pages).
+Output written on NET-PA.pdf (2 pages).
