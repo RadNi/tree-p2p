@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018/W32TeX) (preloaded format=xelatex 2018.11.18)  25 NOV 2018 21:35
+This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018/W32TeX) (preloaded format=xelatex 2018.11.18)  25 NOV 2018 22:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1099,12 +1099,12 @@ Missing character: There is no • in font B Nazanin/OT:script=arab;language=DFL
 Missing character: There is no ¬ in font B Nazanin/OT:script=arab;language=DFLT
 ;mapping=persiandigits;!
 
-Underfull \hbox (badness 10000) in paragraph at lines 67--86
+Underfull \hbox (badness 10000) in paragraph at lines 69--88
 [][]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 87--91
+Underfull \hbox (badness 10000) in paragraph at lines 89--93
 [][]
  []
 
@@ -1116,7 +1116,7 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 Here is how much of TeX's memory you used:
  25140 strings out of 492956
  528310 string characters out of 6136893
- 616787 words of memory out of 5000000
+ 617787 words of memory out of 5000000
  28743 multiletter control sequences out of 15000+600000
  534349 words of font info for 71 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
