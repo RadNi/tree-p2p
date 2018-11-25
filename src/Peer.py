@@ -9,8 +9,9 @@ import threading
 
 """
     Peer is our main object in this project.
-    Both clients and root are Peers inside the network.
-
+    In this network Peers will connect together to make a tree graph.
+    This network is not completely decentralised but will show you some real world challenges in Peer to Peer networks.
+    
 """
 
 
@@ -196,7 +197,7 @@ class Peer:
                pay attention that our NetworkGraph depth will not be bigger than 8. (Do not forget main loop sleep time)
             4. Suppose that you are a non-root Peer and Reunion was failed, In this time you should make a new Advertise
                Request packet and send it through your register_connection to the root; Don't forget to send this packet
-               here, because in Reunion Failure mode our main loop will not work properly and we will got stock!
+               here, because in Reunion Failure mode our main loop will not work properly and everything will got stock!
 
         :return:
         """
@@ -239,7 +240,15 @@ class Peer:
 
     def send_broadcast_packet(self, broadcast_packet):
         """
+
         For setting broadcast packets buffer into Nodes out_buff.
+
+        Warnings:
+            1. Don't send Message packets through register_connections.
+
+        :param broadcast_packet: The packet that should be broadcast through network.
+        :type broadcast_packet: Packet
+
         :return:
         """
 
@@ -253,7 +262,10 @@ class Peer:
     def handle_packet(self, packet):
         """
 
-        In this function we will use the other handle_###_packet methods to handle the 'packet'.
+        This function act as a wrapper for other handle_###_packet methods to handle the packet.
+
+        Code design suggestion:
+            1.It's better to check packet validation right now; For example: Validation of the packet length.
 
         :param packet: The arrived packet that should be handled.
 
@@ -285,6 +297,14 @@ class Peer:
                 # self.packets.remove(packet)
 
     def __check_registered(self, source_address):
+        """
+        If the Peer is root of the network we need to find that is a node registered or not.
+
+        :param source_address: Unknown IP/Port address.
+        :type source_address: tuple
+
+        :return:
+        """
 
         for n in self.registered_nodes:
             if n.get_address() == source_address:
@@ -302,6 +322,18 @@ class Peer:
             When a Advertise Response packet type arrived we should update our parent peer and send a Join packet to the
             new parent.
 
+        Code design suggestion:
+            1. Start the Reunion daemon thread when the first Advertise Response packet received.
+            2. When an Advertise Response message arrived  make a new Join packet immediately for advertised address.
+
+        Warnings:
+            1. Don't forget to ignore Advertise Request packets when you are non-root peer.
+            2. The addresses which still haven't registered to the network can not request any peer discovery message.
+            3. Maybe it's not the first time that source of the packet send Advertise Request message. This will happen
+               in rare situations like Reunion Failure. Pay attention that don't advertise the address in packet sender
+               sub-tree.
+            4. When an Advertise Response packet arrived update our Peer parent for sending Reunion Packets.
+
         :param packet: Arrived register packet
 
         :type packet Packet
@@ -318,7 +350,7 @@ class Peer:
             print("Packet is in Request type")
 
             if not self.__check_registered(packet.get_source_server_address()):
-                print(packet.get_source_server_address(), " trying to advertise before registering.")
+                print(packet.get_source_server_address(), " is trying to advertise before registering.")
                 return
 
             #TODO Here we should check that is the node was advertised in past then update our GraphNode
@@ -362,12 +394,18 @@ class Peer:
                 print("Reunion thread started")
                 self.reunion_daemon_thread.start()
         else:
-            raise print("Unexpected Type.")
+            return print("Unexpected Type.")
 
     def __handle_register_packet(self, packet):
         """
-        For registration a new node to the network at first we should make a Node object for 'sender' and save it in
-        nodes array.
+        For registration a new node to the network at first we should make a Node with stream.add_node for'sender' and
+        save it.
+
+        Code design suggestion:
+            1.For checking whether an address is registered since now or not you can use SemiNode object except Node.
+
+        Warnings:
+            1. Don't forget to ignore Register Request packets when you are non-root peer.
 
         :param packet: Arrived register packet
         :type packet Packet
@@ -394,7 +432,6 @@ class Peer:
                 self.registered_nodes.append(SemiNode(packet.get_body()[3:18], packet.get_body()[18:23]))
                 self.stream.add_message_to_out_buff(packet.get_source_server_address(), res.get_buf())
                 # self.stream.add_message_to_out_buf((pbody[3:18], pbody[18:23]), res)
-                #   TODO    Maybe in other time we should delete this node from our clients array.
 
         if pbody[0:3] == "RES":
             print("Packet is in Response type")
@@ -404,6 +441,16 @@ class Peer:
                 raise Exception("Root did not send ack in the register response packet!")
 
     def __check_neighbour(self, address):
+        """
+        Checks is the address in our neighbours array or not.
+
+        :param address: Unknown address
+
+        :type address: tuple
+
+        :return: Whether is address in our neighbours or not.
+        :rtype: bool
+        """
         if address in self.neighbours:
             return True
         print(self.parent.get_server_address(), " ", address)
@@ -413,8 +460,11 @@ class Peer:
 
     def __handle_message_packet(self, packet):
         """
-        For now only broadcast message to the other nodes.
-        Do not forget to ignore messages from unknown sources.
+        Only broadcast message to the other nodes.
+
+        Warnings:
+            1. Do not forget to ignore messages from unknown sources.
+            2. Make sure that you are not sending a message to a register_connection.
 
         :param packet:
 
@@ -439,13 +489,25 @@ class Peer:
                     print("Node considered to send message to: ", n.get_server_address())
                     self.stream.add_message_to_out_buff(n.get_server_address(), new_packet.get_buf())
 
-        # if self.parent and self.parent.get_server_address() != packet.get_source_server_address():
-        #     print("Node considered to send message to: ", self.parent.get_server_address())
-        #     self.stream.add_message_to_out_buff(self.parent.get_server_address(), new_packet.get_buf())
-
     def __handle_reunion_packet(self, packet):
         """
-        #TODO   @Ali complete doc please. :\
+        In this function we should handle Reunion packet was just arrived.
+
+        Reunion Hello:
+            If you are root Peer you should answer with a new Reunion Hello Back packet.
+            At first extract all addresses in the packet body and append them in descending order to the new packet.
+            You should send the new packet to the first address in arrived packet.
+            If you are a non-root Peer append your IP/Port address to the end of the packet and send it to your parent.
+
+        Reunion Hello Back:
+            Check that you are the end node or not; If not only remove your IP/Port address and send packet to the next
+            address, otherwise you received your response from root and everything is fine.
+
+        Warnings:
+            1. Every time adding or removing an address from packet don't forget to update Entity Number field.
+            2. If you are the root, update last Reunion Hello arrival packet from the sender node and turn it on.
+            3. If you are the end node, update your Reunion mode from pending to acceptance.
+
 
         :param packet:
         :return:
@@ -519,10 +581,9 @@ class Peer:
     def __handle_join_packet(self, packet):
         """
         When a Join packet received we should add new node to our nodes array.
-        In future we should add a security level for this section to forbid joining without permission of network root.
+        In reality there is a security level that forbid joining every nodes to our network.
 
         :param packet: Arrived register packet.
-                       Latter we will use this for security.
 
 
         :type packet Packet
@@ -540,10 +601,12 @@ class Peer:
         Finds the best neighbour for the 'sender' from network_nodes array.
         This function only will call when you are a root peer.
 
+        Code design suggestion:
+            1.Use your NetworkGraph find_live_node to find the best neighbour.
+
         :param sender: Sender of the packet
         :return: The specified neighbor for the sender; The format is like ('192.168.001.001', '05335').
         """
-
 
         return self.network_graph.find_live_node(sender).address
 
