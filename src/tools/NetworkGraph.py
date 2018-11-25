@@ -38,6 +38,23 @@ class NetworkGraph:
         self.nodes = [root]
 
     def find_live_node(self, sender):
+        """
+        Here we should find a neighbour for sender.
+        Best neighbour is the node who is nearest the root and has not more than 1 child.
+
+        Code design suggestion:
+            1.Do a BFS algorithm to find the target.
+
+        Warnings:
+            1. Check whether there is sender node in our NetworkGraph or not; if exist doo not return sender node or
+               any other nodes in it's sub-tree.
+
+        :param sender: The node address we want to find best neighbour for it.
+        :type sender: tuple
+
+        :return: Best neighbour for sender.
+        :rtype: GraphNode
+        """
         queue = [self.root]
         while len(queue) > 0:
             node = queue[0]
@@ -90,6 +107,24 @@ class NetworkGraph:
             self.nodes.remove(node)
 
     def add_node(self, ip, port, father_address):
+        """
+        Add a new node with node_address if it's not exist in our NetworkGraph and set it's father.
+
+        Warnings:
+            1.Don't forget to set new node as on of the father_address children.
+            2.Before using this function make sure that there is a node which has father_address.
+
+        :param ip: IP address of the new node.
+        :param port: Port of the new node.
+        :param father_address: Father address of the new node
+
+        :type ip: str
+        :type port: int
+        :type father_address: tuple
+
+
+        :return:
+        """
         father_node = self.find_node(father_address[0], father_address[1])
         new_node = self.find_node(ip, port)
 
