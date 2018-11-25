@@ -42,6 +42,15 @@ class NetworkGraph:
         while len(queue) > 0:
             node = queue[0]
             number_of_live_children = 0
+            if node.address is not sender:
+                if self.find_node(sender[0], sender[1]) is not None:
+                    if self.find_node(sender[0], sender[1]) is node:
+                        continue
+                    if self.find_node(sender[0], sender[1]).parent is not None:
+                        if node is self.find_node(sender[0], sender[1]).parent:
+                            continue
+            else:
+                continue
             for child in node.children:
                 if child.alive:
                     number_of_live_children += 1
