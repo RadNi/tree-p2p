@@ -4,7 +4,7 @@
     
 
 
-                                                **ٔ  NEW Packet Format  **
+                                                **  NEW Packet Format  **
      __________________________________________________________________________________________________________________
     | Version(1 Char/2 Bytes/1 Short Int)  |  Type(2 Chars/2 Bytes/1 Short Int)  |  Length(8 Chars/4 Bytes/1 Long Int) |
     |------------------------------------------------------------------------------------------------------------------|
@@ -17,7 +17,7 @@
     |                                                    ..........                                                    |
     |__________________________________________________________________________________________________________________|
 
-    for example:
+    For example:
 
     version = 1
     type = 02
@@ -182,7 +182,6 @@ class Packet:
         self._version = int(buf[0], 10)
         self._type = int(buf[1:3], 10)
         self._length = int(buf[3:11], 10)
-        print("`len here: ", buf[3:11])
         self._source_server_ip = buf[11:26]
         self._source_server_port = buf[26:31]
         self._body = buf[31:]
