@@ -6,11 +6,11 @@
 
                                                 **  NEW Packet Format  **
      __________________________________________________________________________________________________________________
-    | Version(1 Char/2 Bytes/1 Short Int)  |  Type(2 Chars/2 Bytes/1 Short Int)  |  Length(8 Chars/4 Bytes/1 Long Int) |
+    |        Version(1 Char/2 Bytes)       |       Type(2 Chars/2 Bytes)       |        Length(8 Chars/4 Bytes)        |
     |------------------------------------------------------------------------------------------------------------------|
-    |                                  Source Server IP(12 Chars/8 Bytes/4 short Int)                                  |
+    |                                        Source Server IP(12 Chars/8 Bytes)                                        |
     |------------------------------------------------------------------------------------------------------------------|
-    |                                     Source Server Port(5 Chars/4 Bytes/1 Int)                                    |
+    |                                        Source Server Port(5 Chars/4 Bytes)                                       |
     |------------------------------------------------------------------------------------------------------------------|
     |                                                    ..........                                                    |
     |                                                       BODY                                                       |
@@ -54,11 +54,11 @@
         
                                  ** Body Format **
                  ________________________________________________
-                |               REQ (3 Chars/3 Bytes)            |
+                |                  REQ (3 Chars)                 |
                 |------------------------------------------------|
-                |        IP (12 Chars/8 Bytes/4 short Int)       |
+                |                  IP (15 Chars)                 |
                 |------------------------------------------------|
-                |          Port (5 Chars/4 Bytes/1 Int)          |
+                |                 Port (5 Chars)                 |
                 |________________________________________________|
                 
                 For sending IP/Port of current node to the root to ask if it can register to network or not.
@@ -66,9 +66,9 @@
         
                                  ** Body Format **
                  _________________________________________________
-                |              RES (3 Chars/3 Bytes)              |
+                |                  RES (3 Chars)                  |
                 |-------------------------------------------------|
-                |              ACK (3 Chars/3 Bytes)              |
+                |                  ACK (3 Chars)                  |
                 |_________________________________________________|
                 
                 For now only should just send an 'ACK' from the root  to inform a node that it
@@ -79,7 +79,7 @@
             
                                 ** Body Format **
                  ________________________________________________
-                |              REQ (3 Chars/3 Bytes)             |
+                |                  REQ (3 Chars)                 |
                 |________________________________________________|
                 
                 Nodes for finding the IP/Port of their neighbour peer must send this packet to the root.
@@ -87,11 +87,11 @@
 
                                 ** Packet Format **
                  ________________________________________________
-                |                RES(3 bytes)                    |
+                |                RES(3 Chars)                    |
                 |------------------------------------------------|
-                |         Server IP (4*2 bytes/4 short Int)      |
+                |              Server IP (15 Chars)              |
                 |------------------------------------------------|
-                |          Server Port (4 bytes (1 Int))         |
+                |             Server Port (5 Chars)              |
                 |________________________________________________|
                 
                 Root will response Advertise Request packet with sending IP/Port of the requester peer in this packet.
@@ -100,7 +100,7 @@
 
                                 ** Body Format **
                  ________________________________________________
-                |             JOIN (4 Chars/4 Bytes)             |
+                |                 JOIN (4 Chars)                 |
                 |________________________________________________|
             
             New node after getting Advertise Response from root must send this packet to specified peer 
@@ -112,7 +112,7 @@
         Message:
                                 ** Body Format **
                  ________________________________________________
-                |             Message (#Length Bytes)            |
+                |             Message (#Length Chars)            |
                 |________________________________________________|
 
             The message that want to broadcast to hole network. Right now this type only includes a plain text.
@@ -122,23 +122,23 @@
         
                                 ** Body Format **
                  ________________________________________________
-                |             REQ (3 Chars / 3 Bytes)            |
+                |                  REQ (3 Chars)                 |
                 |------------------------------------------------|
-                |    Number of Entries (2 Bytes(1 Short Int))    |
+                |           Number of Entries (2 Chars)          |
                 |------------------------------------------------|
-                |         IP0 (4*2 bytes/4 short Int)            |
+                |                 IP0 (15 Chars)                 |
                 |------------------------------------------------|
-                |              Port0 (4 bytes (1 Int))           |
+                |                Port0 (5 Chars))                |
                 |------------------------------------------------|
-                |         IP1 (4*2 bytes/4 short Int)            |
+                |                 IP1 (15 Chars)                 |
                 |------------------------------------------------|
-                |             Port1 (4 bytes (1 Int))            |
+                |                Port1 (5 Chars)                 |
                 |------------------------------------------------|
                 |                     ...                        |
                 |------------------------------------------------|
-                |         IPN (4*2 bytes/4 short Int)            |
+                |                 IPN (15 Chars)                 |
                 |------------------------------------------------|
-                |             PortN (4 bytes (1 Int))            |
+                |                PortN (5 Chars)                 |
                 |________________________________________________|
                 
                 In every intervals (for now 20 seconds) peers must send this message to the root.
@@ -147,21 +147,25 @@
             Hello Back:
         
                                     ** Body Format **
-                 _______________________________________________________
-                |                RES (3 Chars/3 bytes)                  |
-                |-------------------------------------------------------|
-                |   Number of Entries (2 Chars/2 Bytes/1 Short Int))    |
-                |-------------------------------------------------------|
-                |         IPN (12 Chars/8 Bytes/4 short Int)            |
-                |-------------------------------------------------------|
-                |             PortN (5 Chars/4 bytes/1 Int)             |
-                |-------------------------------------------------------|
-                |                           ...                         |
-                |-------------------------------------------------------|
-                |         IP1 (12 Chars/8 Bytes/4 short Int)            |
-                |-------------------------------------------------------|
-                |             Port1 5 Chars/4 bytes/1 Int)              |
-                |_______________________________________________________|
+                 ________________________________________________
+                |                  REQ (3 Chars)                 |
+                |------------------------------------------------|
+                |           Number of Entries (2 Chars)          |
+                |------------------------------------------------|
+                |                 IPN (15 Chars)                 |
+                |------------------------------------------------|
+                |                PortN (5 Chars))                |
+                |------------------------------------------------|
+                |                     ...                        |
+                |------------------------------------------------|
+                |                 IP1 (15 Chars)                 |
+                |------------------------------------------------|
+                |                Port1 (5 Chars)                 |
+                |------------------------------------------------|
+                |                 IP0 (15 Chars)                 |
+                |------------------------------------------------|
+                |                Port0 (5 Chars)                 |
+                |________________________________________________|
 
                 Root in answer of the Reunion Hello message will send this packet to the target node.
                 In this packet all the nodes (ip, port) exist in order by path traversal to target.
