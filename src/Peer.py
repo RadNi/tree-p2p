@@ -7,8 +7,41 @@ import time
 import threading
 
 
+"""
+    Peer is our main object in this project.
+    Both clients and root are Peers inside the network.
+
+"""
+
+
 class Peer:
     def __init__(self, server_ip, server_port, is_root=False, root_address=None):
+        """
+        The Peer object constructor.
+
+        Code design suggestions:
+            1. Initialise a Stream object for our Peer.
+            2. Initialise a PacketFactory object.
+            3. Initialise our UserInterface for interaction with user commandline.
+            4. Initialise a Thread for handling reunion daemon.
+
+        Warnings:
+            1. For root Peer we need a NetworkGraph object.
+            2. In root Peer start reunion daemon as soon as possible.
+            3. In client Peer we need to connect to the root of the network, Don't forget to set this connection
+               as a register_connection.
+
+
+        :param server_ip: Server IP address for this Peer that should be pass to Stream.
+        :param server_port: Server Port address for this Peer that should be pass to Stream.
+        :param is_root: Specify that is this Peer root or not.
+        :param root_address: Root IP/Port address if we are a client.
+
+        :type server_ip: str
+        :type server_port: int
+        :type is_root: bool
+        :type root_address: tuple
+        """
         self._is_root = is_root
 
         self.stream = Stream(server_ip, server_port)
@@ -38,8 +71,11 @@ class Peer:
             self.stream.add_node(root_address, set_register_connection=True)
 
     def start_user_interface(self):
-        #   Which the user or client sees and works with. run() #This method runs every time to
-        #   see whether there is new messages or not.
+        """
+        For starting UserInterface thread.
+
+        :return:
+        """
         print("Starting UI")
         print('Available commands: ''Register', 'Advertise', 'SendMessage')
 
@@ -47,10 +83,18 @@ class Peer:
 
     def handle_user_interface_buffer(self):
         """
-        Only handle broadcast messages
+        In every interval we should parse user command that buffered from our UserInterface.
+        All of the valid commands are listed below:
+            1. Register:  With this command client send a Register Request packet to the root of the network.
+            2. Advertise: Send an Advertise Request to the root of the network for finding first hope.
+            3. SendMessage: The following string will be add to a new Message packet and broadcast through network.
+
+        Warnings:
+            1. Ignore irregular commands from user.
+            2. Don't forget to clear our UserInterface buffer.
         :return:
         """
-        available_commands = ['Register', 'Advertise', 'SendMessage hiii']
+        available_commands = ['Register', 'Advertise', 'SendMessage']
         #
         # print("user interface handler ", self._user_interface.buffer)
         for buffer in self._user_interface.buffer:
@@ -83,13 +127,18 @@ class Peer:
     def run(self):
         """
         Main loop of the program.
-        The actions that should be done in this function listed below:
 
-            1.Parse server in_buf of the stream.
-            2.Handle all packets were received from server.
-            3.Parse user_interface_buffer to make message packets.
-            4.Send packets stored in nodes buffer of stream.
-            5.** sleep for some seconds **
+        Code design suggestions:
+            1. Parse server in_buf of the stream.
+            2. Handle all packets were received from our Stream server.
+            3. Parse user_interface_buffer to make message packets.
+            4. Send packets stored in nodes buffer of our Stream object.
+            5. ** sleep the current thread for 2 seconds **
+
+        Warnings:
+            1. At first check reunion daemon condition; Maybe we have a problem in this time
+               and so we should hold any actions until Reunion acceptance.
+            2. In every situations checkout Advertise Response packets; even is Reunion in failure mode or not
 
         :return:
         """
@@ -129,7 +178,26 @@ class Peer:
     def run_reunion_daemon(self):
         """
 
-        In this function we will handle all reunion actions.
+        In this function we will handle all Reunion actions.
+
+        Code design suggestions:
+            1. Check if we are the network root or not; The actions are identical.
+            2. If it's the root Peer, in every interval check the latest Reunion packet arrival time from every nodes;
+               If time is over for the node turn it off (Maybe you need to remove it from our NetworkGraph).
+            3. If it's a non-root peer split the actions by considering whether we are waiting for Reunion Hello Back
+               Packet or it's the time to send new Reunion Hello packet.
+
+        Warnings:
+            1. If we are root of the network in the situation that want to turn a node off, make sure that you will not
+               advertise the nodes sub-tree in our GraphNode.
+            2. If we are a non-root Peer, save the time when you have sent your last Reunion Hello packet; You need this
+               time for checking whether the Reunion was failed or not.
+            3. For choosing time intervals you should wait until Reunion Hello or Reunion Hello Back arrival,
+               pay attention that our NetworkGraph depth will not be bigger than 8. (Do not forget main loop sleep time)
+            4. Suppose that you are a non-root Peer and Reunion was failed, In this time you should make a new Advertise
+               Request packet and send it through your register_connection to the root; Don't forget to send this packet
+               here, because in Reunion Failure mode our main loop will not work properly and we will got stock!
+
         :return:
         """
         if self._is_root:
@@ -138,6 +206,7 @@ class Peer:
                     if time.time() > n.latest_reunion_time + 36 and n is not self.network_graph.root:
                         print("We have lost a node!", n.address)
                         for child in n.children:
+                            #   TODO    Turn all sub-tree off; not only children.
                             self.network_graph.turn_off_node(child.address)
                         self.network_graph.turn_off_node(n.address)
                         self.network_graph.remove_node(n.address)
