@@ -69,7 +69,6 @@ class NetworkGraph:
 
     def find_node(self, ip, port):
         for node in self.nodes:
-            print("         IN find node: ", node.ip, " ", node.port)
             if node.ip == ip and node.port == port:
                 return node
         return None

@@ -558,7 +558,7 @@ class Peer:
             if first_ip == self_address[0] and first_port == self_address[1]:
 
                 if number_of_entity == 1:
-                    print('Hello Back Packet Received')
+                    print('Reunion Hello Back Packet Received')
                     self.reunion_pending = False
                     return
 

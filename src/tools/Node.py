@@ -29,13 +29,10 @@ class Node:
 
         :return:
         """
-        # print("in sending message: ", self.out_buff)
         for b in self.out_buff:
-            print("In sending message buffer: ", b)
-            # print(b)
             response = self.client.send(bytes(b))
 
-            print("Response: ", response, " ", type(response))
+            print("Response: ", response)
             if response != b'ACK':
                 print("The ", self.get_server_address()[0], ": ", self.get_server_address()[1],
                       " did not response with b'ACK'. ", response)

@@ -25,12 +25,11 @@ class Stream:
 
         def cb(ip, queue, data):
             queue.put(bytes('ACK', 'utf8'))
-            print("In callback: ", data)
             # self.messages_dic.update({ip: self.messages_dic.get(ip).append(data)})
             self._server_in_buf.append(data)
 
         print("Binding server: ", ip, ": ", port)
-        self._server = TCPServer(ip, port, cb)
+        self._server = TCPServer(ip, int(port), cb)
         tcpserver_thread = threading.Thread(target=self._server.run)
         # self._server.run()
         tcpserver_thread.start()
