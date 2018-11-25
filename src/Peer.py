@@ -4,7 +4,6 @@ from src.UserInterface import UserInterface
 from src.tools.SemiNode import SemiNode
 from src.tools.NetworkGraph import NetworkGraph, GraphNode
 import time
-import random
 import threading
 
 
@@ -39,9 +38,8 @@ class Peer:
             self.stream.add_node(root_address, set_register_connection=True)
 
     def start_user_interface(self):
-        # Which the user or client sees and works with. run() #This method runs every time to
-        #  see whether there is new messages or not.
-        #   TODO
+        #   Which the user or client sees and works with. run() #This method runs every time to
+        #   see whether there is new messages or not.
         print("Starting UI")
         print('Available commands: ''Register', 'Advertise', 'SendMessage')
 
@@ -52,7 +50,7 @@ class Peer:
         Only handle broadcast messages
         :return:
         """
-        available_commands = ['Register', 'Advertise', 'SendMessage']
+        available_commands = ['Register', 'Advertise', 'SendMessage hiii']
         #
         # print("user interface handler ", self._user_interface.buffer)
         for buffer in self._user_interface.buffer:
@@ -137,7 +135,7 @@ class Peer:
         if self._is_root:
             while True:
                 for n in self.network_graph.nodes:
-                    if time.time() > n.latest_reunion_time + 10 and n is not self.network_graph.root:
+                    if time.time() > n.latest_reunion_time + 36 and n is not self.network_graph.root:
                         print("We have lost a node!", n.address)
                         for child in n.children:
                             self.network_graph.turn_off_node(child.address)
@@ -158,7 +156,7 @@ class Peer:
                     self.reunion_sending_time = time.time()
                     self.flagg = True
                 else:
-                    if time.time() > self.reunion_sending_time+30 and self.flagg:
+                    if time.time() > self.reunion_sending_time+38 and self.flagg:
 
                         print("Ooops, Reunion was failed.")
 
@@ -246,7 +244,7 @@ class Peer:
 
         if packet.get_body()[0:3] == "REQ":
             if not self._is_root:
-                raise print("Register request packet send to a non root node!")
+                return print("Register request packet send to a non root node!")
 
             print("Packet is in Request type")
 
@@ -477,19 +475,6 @@ class Peer:
         :return: The specified neighbor for the sender; The format is like ('192.168.001.001', '05335').
         """
 
-        # valid_nodes = []
-        # for s in self.network_nodes:
-        #     if s.get_address() != sender:
-        #         valid_nodes.append(s)
-
-        # if len(self.network_nodes) >= 1:
-        #     #   TODO    add performance checking here.
-        #     return random.choice(self.network_nodes).get_address()
-        #
-        # else:
-        #     return self.stream.get_server_address()
-
-        #   TODO @Ali it's your version, please fix this
 
         return self.network_graph.find_live_node(sender).address
 
