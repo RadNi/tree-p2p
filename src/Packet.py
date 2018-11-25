@@ -231,9 +231,10 @@ class Packet:
 
     def get_buf(self):
         """
+        In this function we will make our final buffer that represent the Packet with struct.pack_into method.
 
-        :return Packet buffer
-        :return: str
+        :return The parsed packet to the network format.
+        :rtype: bytearray
         """
 
         packet = bytearray(self._length + 20)
@@ -282,15 +283,20 @@ class Packet:
 
 
 class PacketFactory:
+    """
+    This class is only for making Packet objects.
+    """
 
     @staticmethod
     def parse_buffer(buffer):
 
         """
+        In this function we will make a new Packet from input buffer with struct.unpack_from method.
+
         :param buffer: The buffer that should be parse to a validate packet format
 
         :return new packet
-        :rtype Packet
+        :rtype: Packet
 
         """
 
@@ -311,8 +317,13 @@ class PacketFactory:
     @staticmethod
     def new_reunion_packet(type, source_address, nodes_array):
         """
-        :param destination: (ip, port) of destination want to send reunion packet.
+        :param type: Reunion Hello (REQ) or Reunion Hello Back (RES)
+        :param source_address: IP/Port address of the packet sender.
         :param nodes_array: [(ip0, port0), (ip1, port1), ...] It is the path to the 'destination'.
+
+        :type type: str
+        :type source_address: tuple
+        :type nodes_array: list
 
         :return New reunion packet.
         :rtype Packet
@@ -386,6 +397,7 @@ class PacketFactory:
     def new_join_packet(source_server_address):
         """
         :param source_server_address: Server address of the packet sender.
+
         :type source_server_address: tuple
 
         :return New join packet.
