@@ -7,6 +7,13 @@ import time
 import threading
 
 
+"""
+    Peer is our main object in this project.
+    Both clients and root are Peers inside the network.
+    
+"""
+
+
 class Peer:
     def __init__(self, server_ip, server_port, is_root=False, root_address=None):
         self._is_root = is_root
