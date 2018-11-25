@@ -42,39 +42,43 @@ class Peer:
         #  see whether there is new messages or not.
         #   TODO
         print("Starting UI")
-        self._user_interface.start()
+        print('Available commands: ''Register', 'Advertise', 'SendMessage')
 
-        pass
+        self._user_interface.start()
 
     def handle_user_interface_buffer(self):
         """
         Only handle broadcast messages
         :return:
         """
-
+        available_commands = ['Register', 'Advertise', 'SendMessage']
+        #
         # print("user interface handler ", self._user_interface.buffer)
         for buffer in self._user_interface.buffer:
             if len(buffer) == 0:
                 continue
 
             print("User interface handler buffer: ", buffer)
+            print(buffer.split(' ', 1)[0])
 
-            if buffer[0] == '1':
-                print("Handling buffer/1 in UI")
+            if buffer.split(' ', 1)[0] == available_commands[0]:
+                print("Handling buffer/register in UI")
                 self.stream.add_message_to_out_buff(self.root_address,
                                                     self.packet_factory.new_register_packet("REQ",
                                                                                             self.stream.get_server_address(),
                                                                                             self.root_address).get_buf())
-            elif buffer[0] == '2':
-                print("Handling buffer/2 in UI")
+            elif buffer.split(' ', 1)[0] == available_commands[1]:
+                print("Handling buffer/advertise in UI")
                 self.stream.add_message_to_out_buff(self.root_address,
                                                     self.packet_factory.new_advertise_packet("REQ",
                                                                                              self.stream.get_server_address()).get_buf())
 
-            elif buffer[0] == '4':
-                print("Handling buffer/4 in UI")
-                self.send_broadcast_packet(self.packet_factory.new_message_packet(buffer,
-                                                                                      self.stream.get_server_address()).get_buf())
+            elif buffer.split(' ', 1)[0] == available_commands[2]:
+                print("Handling buffer/SendMessage in UI")
+                self.send_broadcast_packet(self.packet_factory.new_message_packet(buffer.split(' ', 1)[1],
+                                                                                  self.stream.get_server_address()).get_buf())
+            else:
+                print('Unknown Command!!!')
         self._user_interface.buffer = []
 
     def run(self):
@@ -86,7 +90,7 @@ class Peer:
             2.Handle all packets were received from server.
             3.Parse user_interface_buffer to make message packets.
             4.Send packets stored in nodes buffer of stream.
-            5.** sleep for some milliseconds **
+            5.** sleep for some seconds **
 
         :return:
         """
@@ -130,15 +134,15 @@ class Peer:
                 if not self.reunion_pending:
                     time.sleep(20)
                     packet = self.packet_factory.new_reunion_packet("REQ", self.stream.get_server_address(),
-                                                           [self.stream.get_server_address()])
+                                                                    [self.stream.get_server_address()])
                     self.stream.add_message_to_out_buff(self.parent.get_server_address(), packet.get_buf())
                     self.reunion_pending = True
                     self.reunion_sending_time = time.time()
                 else:
-                    if time.time() > self.reunion_sending_time+30 and self.flagg:
-
+                    if time.time() > self.reunion_sending_time + 30 and self.flagg:
                         self.reunion_accept = False
-                        advertise_packet = self.packet_factory.new_advertise_packet("REQ", self.stream.get_server_address())
+                        advertise_packet = self.packet_factory.new_advertise_packet("REQ",
+                                                                                    self.stream.get_server_address())
                         self.stream.add_message_to_out_buff(self.root_address, advertise_packet.get_buf())
                         self.flagg = False
                         # Reunion failed.
@@ -168,7 +172,8 @@ class Peer:
 
         """
         if packet.get_length() != len(packet.get_body()):
-            print("packet.get_length() = ", packet.get_length(), packet.get_body(), packet.get_source_server_ip(),packet.get_source_server_port())
+            print("packet.get_length() = ", packet.get_length(), packet.get_body(), packet.get_source_server_ip(),
+                  packet.get_source_server_port())
             return print("Packet Length is incorrect.")
         print("Handling the packet...")
         if packet.get_version() == 1:
@@ -228,7 +233,7 @@ class Peer:
                 print(packet.get_source_server_address(), " trying to advertise before registering.")
                 return
 
-            #TODO Here we should check that is the node was advertised in past then update our GraphNode
+            # TODO Here we should check that is the node was advertised in past then update our GraphNode
 
             neighbor = self.__get_neighbour(packet.get_source_server_address())
             print("Neighbor: \t", neighbor)
@@ -462,5 +467,3 @@ class Peer:
         #   TODO @Ali it's your version, please fix this
 
         return self.network_graph.find_live_node(sender).address
-
-
