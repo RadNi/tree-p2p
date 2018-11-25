@@ -14,7 +14,6 @@ class GraphNode:
         self.children = []
         self.ip = address[0]
         self.port = address[1]
-        print("     In node constructor: ", address)
         self.address = address
         self.alive = False
 

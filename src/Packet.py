@@ -173,10 +173,8 @@ from struct import *
 
 class Packet:
     def __init__(self, buf):
-        print("Packet Constructor:\tbuffer: ", buf, " ,buffer type: ", type(buf))
         if type(buf) == bytes:
             buf = buf.decode("utf-8")
-        print(buf)
         self._buf = buf
         self._header = buf[0:28]
         self._version = int(buf[0], 10)
@@ -307,27 +305,17 @@ class PacketFactory:
 
         """
 
-        print("before: ", buffer)
         version = str(unpack_from('!h', buffer)[0])
-        print(version)
         type = str(unpack_from('!h', buffer, offset=2)[0]).zfill(2)
-        print(type)
         length = str(int(unpack_from('!l', buffer, offset=4)[0]))
-        print(length)
         ip = unpack_from('!hhhh', buffer, offset=8)
-        print(ip)
         ip = str(ip[0]) + '.' + str(ip[1]) + '.' + str(ip[2]) + '.' + str(ip[3])
         ip = '.'.join(p.zfill(3) for p in ip.split('.'))
 
-        print(ip)
         port = str(unpack_from('!i', buffer, offset=16)[0]).zfill(5)
-        print(port)
         fmt = length + 's'
-        print(fmt)
         body = unpack_from('!' + fmt, buffer, offset=20)[0].decode("utf-8")
-        print(body)
         buffer = version + type + length.zfill(8) + ip + port + body
-        print("after: ", buffer)
 
         return Packet(buf=buffer)
 
@@ -352,7 +340,7 @@ class PacketFactory:
 
         number_of_entity = str(len(nodes_array)).zfill(2)
 
-        print("In new_reunion_packet: ", nodes_array)
+        print("Creating Reunion packet")
 
         body = body + number_of_entity
         for (ip, port) in nodes_array:

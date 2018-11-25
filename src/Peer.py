@@ -102,8 +102,6 @@ class Peer:
             time.sleep(2)
             temp_array = self.stream.read_in_buf()
 
-            print("In while")
-
             if not self.reunion_accept:
                 print("Reunion failure")
 
@@ -138,7 +136,6 @@ class Peer:
         """
         if self._is_root:
             while True:
-                print("In reunion root daemon")
                 for n in self.network_graph.nodes:
                     if time.time() > n.latest_reunion_time + 10 and n is not self.network_graph.root:
                         print("We have lost a node!", n.address)

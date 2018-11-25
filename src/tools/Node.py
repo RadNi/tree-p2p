@@ -11,8 +11,7 @@ class Node:
         self.server_ip = Node.parse_ip(server_address[0])
         self.server_port = Node.parse_port(server_address[1])
 
-        print( "                    inja, ", self.server_port)
-        print(server_address)
+        print("Server Address: ", server_address)
 
         self.out_buff = []
         self.is_root = set_root
