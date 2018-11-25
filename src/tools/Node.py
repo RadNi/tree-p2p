@@ -4,15 +4,23 @@ from src.tools.simpletcp.clientsocket import ClientSocket
 class Node:
     def __init__(self, server_address, set_root=False, set_register=False):
         """
+        The Node object constructor.
 
-        :param server_address: Nodes server address.
+        This object is our low level abstraction for other peers in the network.
+        Every node has a ClientSocket that should bind to the Node TCPServer address.
+
+        Warnings:
+            1. Insert an exception handler when initialising the ClientSocket; when a socket closed here we will face to
+               an exception and we should detach this Node and clear it's output buffer.
+
+        :param server_address:
+        :param set_root:
+        :param set_register:
         """
-
         self.server_ip = Node.parse_ip(server_address[0])
         self.server_port = Node.parse_port(server_address[1])
 
-        print( "                    inja, ", self.server_port)
-        print(server_address)
+        print("Server Address: ", server_address)
 
         self.out_buff = []
         self.is_root = set_root
@@ -30,13 +38,10 @@ class Node:
 
         :return:
         """
-        # print("in sending message: ", self.out_buff)
         for b in self.out_buff:
-            print("In sending message buffer: ", b)
-            # print(b)
             response = self.client.send(bytes(b))
 
-            print("Response: ", response, " ", type(response))
+            print("Response: ", response)
             if response != b'ACK':
                 print("The ", self.get_server_address()[0], ": ", self.get_server_address()[1],
                       " did not response with b'ACK'. ", response)
