@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018/W32TeX) (preloaded format=xelatex 2018.11.18)  25 NOV 2018 22:17
+This is XeTeX, Version 3.14159265-2.6-0.99999 (TeX Live 2018/W32TeX) (preloaded format=xelatex 2018.11.18)  25 NOV 2018 23:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1079,11 +1079,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 32--33
  []
 
 LaTeX Font Info:    Font shape `TU/BNazanin(0)/m/n' will be
-(Font)              scaled to size 13.20007pt on input line 35.
+(Font)              scaled to size 13.20007pt on input line 37.
 LaTeX Font Info:    Font shape `TU/BNazanin(0)/bx/n' will be
-(Font)              scaled to size 13.20007pt on input line 35.
+(Font)              scaled to size 13.20007pt on input line 37.
 
-Underfull \hbox (badness 10000) in paragraph at lines 36--45
+Underfull \hbox (badness 10000) in paragraph at lines 38--47
 [][]
  []
 
@@ -1099,16 +1099,16 @@ Missing character: There is no • in font B Nazanin/OT:script=arab;language=DFL
 Missing character: There is no ¬ in font B Nazanin/OT:script=arab;language=DFLT
 ;mapping=persiandigits;!
 
-Underfull \hbox (badness 10000) in paragraph at lines 69--88
+Underfull \hbox (badness 10000) in paragraph at lines 71--90
 [][]
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 89--93
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 91--95
 [][]
  []
 
-[2] [3] (./NET-PA.aux)
+[3] (./NET-PA.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
