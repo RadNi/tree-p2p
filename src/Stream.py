@@ -65,6 +65,7 @@ class Stream:
 
         :return:
         """
+        print("Trying to connect to this address: ", server_address)
         node = Node(server_address, set_register=set_register_connection)
 
         self.nodes.append(node)

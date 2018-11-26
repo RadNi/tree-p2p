@@ -95,7 +95,7 @@ class Peer:
             2. Don't forget to clear our UserInterface buffer.
         :return:
         """
-        available_commands = ['Register', 'Advertise', 'SendMessage']
+        available_commands = ['Register', 'Advertise', 'SendMessage hiiiii']
         #
         # print("user interface handler ", self._user_interface.buffer)
         for buffer in self._user_interface.buffer:

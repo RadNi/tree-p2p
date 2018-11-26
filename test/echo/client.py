@@ -19,26 +19,26 @@ class Obj:
         self.in_buf += input("command?")
 
 
-s1 = ClientSocket("localhost", 5051, single_use=False)
+s1 = ClientSocket("192.168.202.221", 5353, single_use=False)
 response = s1.send("Hello, World!")
 
-s2 = ClientSocket("localhost", 5051, single_use=False)
-buf = ''
-for i in range(3000):
-    buf+='a'
-r1 = s2.send(buf)
-r2 = s2.send("...and hello for the last!")
-s2.close()
+# s2 = ClientSocket("192.168.202.221", 5353, single_use=False)
+# buf = ''
+# for i in range(3000):
+#     buf+='a'
+# r1 = s2.send(buf)
+# r2 = s2.send("...and hello for the last!")
+# s2.close()
 # s1.close()
 
 # Display the correspondence
-print("s1 sent\t\tHello, World!")
-print("s1 received\t\t{}".format(response.decode("UTF-8")))
-print("-------------------------------------------------")
-print("s2 sent\t\tHello for the first time....")
-print("s2 received\t\t{}".format(r1.decode("UTF-8")))
-print("s2 sent\t\t...and hello for the last!.")
-print("s2 received\t\t{}".format(r2.decode("UTF-8")))
+# print("s1 sent\t\tHello, World!")
+# print("s1 received\t\t{}".format(response.decode("UTF-8")))
+# print("-------------------------------------------------")
+# print("s2 sent\t\tHello for the first time....")
+# print("s2 received\t\t{}".format(r1.decode("UTF-8")))
+# print("s2 sent\t\t...and hello for the last!.")
+# print("s2 received\t\t{}".format(r2.decode("UTF-8")))
 
 
 
