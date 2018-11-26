@@ -23,19 +23,18 @@ class Stream:
 
         self._server_in_buf = []
 
-        def cb(ip, queue, data):
-            queue.put(bytes('ACK', 'utf8'))
-            # self.messages_dic.update({ip: self.messages_dic.get(ip).append(data)})
-            self._server_in_buf.append(data)
+        def callback(address, queue, data):
+            """
+            The callback function will run when a new data received from server_buffer.
 
-        print("Binding server: ", ip, ": ", port)
-        self._server = TCPServer(ip, int(port), cb)
-        tcpserver_thread = threading.Thread(target=self._server.run)
-        # self._server.run()
-        tcpserver_thread.start()
-        self.nodes = []
-        self.ip = ip
-        self.port = port
+            :param address: Source address.
+            :param queue: Response queue.
+            :param data: The data received from socket.
+            :return:
+            """
+            queue.put(bytes('ACK', 'utf8'))
+            self._server_in_buf.append(data)
+        pass
 
     def get_server_address(self):
         """
@@ -43,7 +42,7 @@ class Stream:
         :return: Our TCPServer address
         :rtype: tuple
         """
-        return Node.parse_ip(self._server.ip), Node.parse_port(self._server.port)
+        pass
 
     def clear_in_buff(self):
         """
@@ -65,9 +64,7 @@ class Stream:
 
         :return:
         """
-        node = Node(server_address, set_register=set_register_connection)
-
-        self.nodes.append(node)
+        pass
 
     def remove_node(self, node):
         """
@@ -81,8 +78,7 @@ class Stream:
 
         :return:
         """
-        self.nodes.remove(node)
-        node.close()
+        pass
 
     def get_node_by_server(self, ip, port):
         """
@@ -98,11 +94,7 @@ class Stream:
         :return: The node that input address.
         :rtype: Node
         """
-        port = Node.parse_port(port)
-        ip = Node.parse_ip(ip)
-        for nd in self.nodes:
-            if nd.get_server_address()[0] == ip and nd.get_server_address()[1] == port:
-                return nd
+        pass
 
     def add_message_to_out_buff(self, address, message):
         """
@@ -117,14 +109,7 @@ class Stream:
 
         :return:
         """
-        print("add message to out buff: ", address, " ", message)
-        n = self.get_node_by_server(address[0], address[1])
-        # if n is None:
-        #     n = self.get_node_by_client(address[0], address[1])
-        if n is None:
-            return print("Unexpected address to add message to out buffer.")
-
-        n.add_message_to_out_buff(message)
+        pass
 
     def read_in_buf(self):
         """
@@ -148,11 +133,7 @@ class Stream:
 
         :return:
         """
-
-        try:
-            node.send_message()
-        except:
-            self.remove_node(node)
+        pass
 
     def send_out_buf_messages(self, only_register=False):
         """
@@ -160,10 +141,4 @@ class Stream:
 
         :return:
         """
-
-        for n in self.nodes:
-            if only_register:
-                if n.is_register_connection:
-                    self.send_messages_to_node(n)
-            else:
-                self.send_messages_to_node(n)
+        pass

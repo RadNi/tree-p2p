@@ -23,14 +23,7 @@ class Node:
         print("Server Address: ", server_address)
 
         self.out_buff = []
-        self.is_root = set_root
-        self.is_register_connection = set_register
-
-        try:
-            self.client = ClientSocket(self.server_ip, int(self.server_port, 10), single_use=False)
-        except:
-            print("Node was detached.")
-            self.out_buff.clear()
+        pass
 
     def send_message(self):
         """
@@ -38,15 +31,7 @@ class Node:
 
         :return:
         """
-        for b in self.out_buff:
-            response = self.client.send(bytes(b))
-
-            print("Response: ", response)
-            if response != b'ACK':
-                print("The ", self.get_server_address()[0], ": ", self.get_server_address()[1],
-                      " did not response with b'ACK'. ", response)
-
-        self.out_buff.clear()
+        pass
 
     def add_message_to_out_buff(self, message):
         """
@@ -71,17 +56,6 @@ class Node:
         :rtype: tuple
         """
         return self.server_ip, self.server_port
-
-    def get_standard_server_address(self):
-        """
-
-        :return: Server address in standard format.
-        :rtype: tuple
-        """
-
-        port_prime = int(self.server_port)
-
-        return self.server_ip, port_prime
 
     @staticmethod
     def parse_ip(ip):

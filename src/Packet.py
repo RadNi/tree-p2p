@@ -20,14 +20,14 @@
     For example:
 
     version = 1
-    type = 02
+    type = 04
     length = 00000012
     ip = '192.168.001.029'
     port = '06500'
     Body = 'Hello World!'
 
-    Bytes = b'\x00\x01\x00\x02\x00\x00\x00\x0c\x00\xc0\x00\xa8\x00\x01\x00\x1d\x00\x00\x19dHello World!'
-    String = 1020000001219216800102906500Hello World!
+    Bytes = b'\x00\x01\x00\x04\x00\x00\x00\x0c\x00\xc0\x00\xa8\x00\x01\x00\x1d\x00\x00\x19dHello World!'
+    String = 1040000001219216800102906500Hello World!
 
 
     Version:
@@ -39,7 +39,7 @@
         03: Join
         04: Message
         05: Reunion
-                e.g: type = '02' => advertise packet.
+                e.g: type = '02' => Advertise packet.
     Length:
         This field shows the character numbers for Body of the packet.
 
@@ -128,7 +128,7 @@
                 |------------------------------------------------|
                 |                 IP0 (15 Chars)                 |
                 |------------------------------------------------|
-                |                Port0 (5 Chars))                |
+                |                Port0 (5 Chars)                 |
                 |------------------------------------------------|
                 |                 IP1 (15 Chars)                 |
                 |------------------------------------------------|
@@ -154,7 +154,7 @@
                 |------------------------------------------------|
                 |                 IPN (15 Chars)                 |
                 |------------------------------------------------|
-                |                PortN (5 Chars))                |
+                |                PortN (5 Chars)                 |
                 |------------------------------------------------|
                 |                     ...                        |
                 |------------------------------------------------|
@@ -177,16 +177,13 @@ from struct import *
 
 class Packet:
     def __init__(self, buf):
-        if type(buf) == bytes:
-            buf = buf.decode("utf-8")
-        self._buf = buf
-        self._header = buf[0:28]
-        self._version = int(buf[0], 10)
-        self._type = int(buf[1:3], 10)
-        self._length = int(buf[3:11], 10)
-        self._source_server_ip = buf[11:26]
-        self._source_server_port = buf[26:31]
-        self._body = buf[31:]
+        """
+        Decoded buffer should convert to a new packet.
+
+        :param buf: Input buffer was just decoded.
+        :type buf: bytearray
+        """
+        pass
 
     def get_header(self):
         """
@@ -194,8 +191,7 @@ class Packet:
         :return: Packet header
         :rtype: str
         """
-
-        return self._header
+        pass
 
     def get_version(self):
         """
@@ -203,7 +199,7 @@ class Packet:
         :return: Packet Version
         :rtype: int
         """
-        return self._version
+        pass
 
     def get_type(self):
         """
@@ -211,7 +207,7 @@ class Packet:
         :return: Packet type
         :rtype: int
         """
-        return self._type
+        pass
 
     def get_length(self):
         """
@@ -219,7 +215,7 @@ class Packet:
         :return: Packet length
         :rtype: int
         """
-        return self._length
+        pass
 
     def get_body(self):
         """
@@ -227,34 +223,16 @@ class Packet:
         :return: Packet body
         :rtype: str
         """
-        return self._body
+        pass
 
     def get_buf(self):
         """
-        In this function we will make our final buffer that represent the Packet with struct.pack_into method.
+        In this function we will make our final buffer that represent the Packet with struct class methods.
 
         :return The parsed packet to the network format.
         :rtype: bytearray
         """
-
-        packet = bytearray(self._length + 20)
-
-        pack_into('!h', packet, 0, self._version)
-
-        pack_into('!h', packet, 2, self._type)
-
-        pack_into('!l', packet, 4, self._length)
-
-        ip_elements = [int(x) for x in self._source_server_ip.split('.')]
-        pack_into('!hhhh', packet, 8, ip_elements[0], ip_elements[1], ip_elements[2], ip_elements[3])
-
-        pack_into('!i', packet, 16, int(self._source_server_port))
-
-        fmt = str(int(self._length)) + 's'
-
-        pack_into('!' + fmt, packet, 20, self._body.encode('UTF-8'))
-
-        return packet
+        pass
 
     def get_source_server_ip(self):
         """
@@ -262,7 +240,7 @@ class Packet:
         :return: Server IP address for sender of the packet.
         :rtype: str
         """
-        return self._source_server_ip
+        pass
 
     def get_source_server_port(self):
         """
@@ -270,7 +248,7 @@ class Packet:
         :return: Server Port address for sender of the packet.
         :rtype: str
         """
-        return self._source_server_port
+        pass
 
     def get_source_server_address(self):
         """
@@ -278,8 +256,7 @@ class Packet:
         :return: Server address; The format is like ('192.168.001.001', '05335').
         :rtype: tuple
         """
-
-        return self.get_source_server_ip(), self.get_source_server_port()
+        pass
 
 
 class PacketFactory:
@@ -291,7 +268,7 @@ class PacketFactory:
     def parse_buffer(buffer):
 
         """
-        In this function we will make a new Packet from input buffer with struct.unpack_from method.
+        In this function we will make a new Packet from input buffer with struct class methods.
 
         :param buffer: The buffer that should be parse to a validate packet format
 
@@ -299,20 +276,7 @@ class PacketFactory:
         :rtype: Packet
 
         """
-
-        version = str(unpack_from('!h', buffer)[0])
-        type = str(unpack_from('!h', buffer, offset=2)[0]).zfill(2)
-        length = str(int(unpack_from('!l', buffer, offset=4)[0]))
-        ip = unpack_from('!hhhh', buffer, offset=8)
-        ip = str(ip[0]) + '.' + str(ip[1]) + '.' + str(ip[2]) + '.' + str(ip[3])
-        ip = '.'.join(p.zfill(3) for p in ip.split('.'))
-
-        port = str(unpack_from('!i', buffer, offset=16)[0]).zfill(5)
-        fmt = length + 's'
-        body = unpack_from('!' + fmt, buffer, offset=20)[0].decode("utf-8")
-        buffer = version + type + length.zfill(8) + ip + port + body
-
-        return Packet(buf=buffer)
+        pass
 
     @staticmethod
     def new_reunion_packet(type, source_address, nodes_array):
@@ -327,28 +291,8 @@ class PacketFactory:
 
         :return New reunion packet.
         :rtype Packet
-
         """
-        version = '1'
-        packet_type = '05'
-        if type == 'REQ':
-            body = 'REQ'
-        elif type == 'RES':
-            body = 'RES'
-        else:
-            return None
-
-        number_of_entity = str(len(nodes_array)).zfill(2)
-
-        print("Creating Reunion packet")
-
-        body = body + number_of_entity
-        for (ip, port) in nodes_array:
-            body = body + ip
-            body = body + port
-        length = str(len(body)).zfill(8)
-
-        return Packet(version + packet_type + length + source_address[0] + source_address[1] + body)
+        pass
 
     @staticmethod
     def new_advertise_packet(type, source_server_address, neighbor=None):
@@ -365,33 +309,7 @@ class PacketFactory:
         :rtype Packet
 
         """
-        print("Creating advertisement packet")
-        version = '1'
-        packet_type = '02'
-
-        if type == 'REQ':
-            body = 'REQ'
-            length = '3'.zfill(8)
-            print("Request adv packet created")
-            return Packet(
-                version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
-
-        elif type == 'RES':
-            try:
-                body = 'RES'
-                body += neighbor[0]
-                body += neighbor[1]
-                length = '23'.zfill(8)
-
-                print("Response adv packet created")
-                return Packet(
-                    version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(
-                        5) + body)
-            except Exception as e:
-                print(str(e))
-                # print()
-        else:
-            raise Exception("Type is incorrect")
+        pass
 
     @staticmethod
     def new_join_packet(source_server_address):
@@ -404,14 +322,7 @@ class PacketFactory:
         :rtype Packet
 
         """
-        print("Creating join packet")
-        version = '1'
-        packet_type = '03'
-        length = '4'.zfill(8)
-        body = 'JOIN'
-
-        return Packet(
-            version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
+        pass
 
     @staticmethod
     def new_register_packet(type, source_server_address, address=(None, None)):
@@ -428,26 +339,6 @@ class PacketFactory:
         :rtype Packet
 
         """
-        print("Creating register packet")
-        version = "1"
-        packet_type = "01"
-
-        if type == "REQ":
-            length = "23".zfill(8)
-            body = "REQ" + '.'.join(str(int(part)).zfill(3) for part in source_server_address[0].split('.')) + \
-                   str(source_server_address[1]).zfill(5)
-            print("Request register packet created")
-            print("Address for packet is: ", address)
-        elif type == "RES":
-            length = "6".zfill(8)
-            body = "RESACK"
-            print("Response register packet created")
-        else:
-            raise Exception("Irregular register type.")
-
-        return Packet(
-            version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
-
         pass
 
     @staticmethod
@@ -464,10 +355,4 @@ class PacketFactory:
         :return: New Message packet.
         :rtype: Packet
         """
-        version = '1'
-        packet_type = '04'
-        body = message
-        length = str(len(message)).zfill(8)
-        print("Message packet created")
-        return Packet(
-            version + packet_type + length + source_server_address[0] + source_server_address[1].zfill(5) + body)
+        pass
