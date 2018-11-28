@@ -7,13 +7,16 @@ import sys
 
 class ServerSocket:
 
-    def __init__(self, mode, port, read_callback, max_connections, recv_bytes):
-        # Handle the socket's mode.
-        # The socket's mode determines the IP address it binds to.
-        # mode can be one of two special values:
-        # localhost -> (127.0.0.1)
-        # public ->    (0.0.0.0)
-        # otherwise, mode is interpreted as an IP address.
+    def __init__(self, mode, port, read_callback, max_connections, received_bytes):
+        """
+        Handle the socket's mode.
+        The socket's mode determines the IP address it binds to.
+        mode can be one of two special values:
+        localhost -> (127.0.0.1)
+        public ->    (0.0.0.0)
+        otherwise, mode is interpreted as an IP address.
+        """
+
         if mode == "localhost":
             self.ip = mode
         elif mode == "public":
@@ -41,7 +44,7 @@ class ServerSocket:
             raise ValueError
         # Save the number of bytes to be received each time we read from
         # a socket
-        self.recv_bytes = recv_bytes
+        self.received_bytes = received_bytes
 
     def run(self):
         # Start listening
@@ -76,7 +79,7 @@ class ServerSocket:
                 else:
                     # Someone sent us something! Let's receive it.
                     try:
-                        data = sock.recv(self.recv_bytes)
+                        data = sock.recv(self.received_bytes)
                     except socket.error as e:
                         if e.errno is errno.ECONNRESET:
                             # Consider 'Connection reset by peer'
@@ -114,7 +117,7 @@ class ServerSocket:
                     # The queue wasn't empty; we did, in fact, get something.
                     # So send it.
                     sock.send(data)
-            # Deal with erroring sockets.
+            # Deal with errors in sockets.
             for sock in err:
                 # Remove the socket from every list.
                 readers.remove(sock)

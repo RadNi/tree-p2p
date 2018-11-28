@@ -6,7 +6,6 @@ from src.tools.NetworkGraph import NetworkGraph, GraphNode
 import time
 import threading
 
-
 """
     Peer is our main object in this project.
     In this network Peers will connect together to make a tree graph.
@@ -281,6 +280,6 @@ class Peer:
             1. Use your NetworkGraph find_live_node to find the best neighbour.
 
         :param sender: Sender of the packet
-        :return: The specified neighbor for the sender; The format is like ('192.168.001.001', '05335').
+        :return: The specified neighbour for the sender; The format is like ('192.168.001.001', '05335').
         """
         pass

@@ -3,14 +3,17 @@ import socket
 
 
 class ClientSocket:
-    def __init__(self, mode, port, recv_bytes=2048, single_use=True):
-        # Handle the socket's mode.
-        # The socket's mode determines the IP address it will
-        # attempt to connect to.
-        # mode can be one of two special values:
-        # localhost -> (127.0.0.1)
-        # public ->    (0.0.0.0)
-        # otherwise, mode is interpreted as an IP address.
+    def __init__(self, mode, port, received_bytes=2048, single_use=True):
+        """
+
+        Handle the socket's mode.
+        The socket's mode determines the IP address it will attempt to connect to.
+        mode can be one of two special values:
+        localhost -> (127.0.0.1)
+        public ->    (0.0.0.0)
+        otherwise, mode is interpreted as an IP address.
+        """
+
         if mode == "localhost":
             self.connect_ip = mode
         elif mode == "public":
@@ -25,7 +28,7 @@ class ClientSocket:
         # Actually create an INET, STREAMing socket.socket.
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Save the number of bytes to be read in response
-        self.recv_bytes = recv_bytes
+        self.received_bytes = received_bytes
         # Save whether this socket is single-use or not.
         self.single_use = single_use
         # If this isn't a single-use socket, connect right away.
@@ -44,21 +47,26 @@ class ClientSocket:
         return self.connect_ip
 
     def send(self, data):
-        # This method takes one argument: data
-        # data is the data to be sent to the server at the address
-        # specified in this object's constructor.
-        # data must be either of type str or of type bytes.
-        # If data is of type str, then it will be implicitly converted
-        # to UTF-8 bytes.
+        """
 
-        # This method returns a string which is the response received
-        # from the server at the address specified in this object's
-        # constructor.
-        # It is "" if no response was received.
+        This method takes one argument: data
+        data is the data to be sent to the server at the address
+        specified in this object's constructor.
+        data must be either of type str or of type bytes.
+        If data is of type str, then it will be implicitly converted
+        to UTF-8 bytes.
 
-        # If the socket is single-use, we need to connect now
-        # and then immediately close after our correspondence with
-        # the server we're talking to.
+        This method returns a string which is the response received
+        from the server at the address specified in this object's
+        constructor.
+        It is "" if no response was received.
+
+        If the socket is single-use, we need to connect now
+        and then immediately close after our correspondence with
+        the server we're talking to.
+
+        """
+
         if self.single_use:
             # If the socket is single-use and we've already used it:
             if self.used:
@@ -81,7 +89,7 @@ class ClientSocket:
         # Keep track of the fact that we've sent data (or attempted to).
         self.used = True
         # Now read the response:
-        response = self._socket.recv(self.recv_bytes)
+        response = self._socket.recv(self.received_bytes)
         # If this socket is single-use, destroy the connection.
         if self.single_use:
             self._socket.close()

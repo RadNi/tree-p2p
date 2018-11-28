@@ -6,12 +6,12 @@ class Node:
         """
         The Node object constructor.
 
-        This object is our low level abstraction for other peers in the network.
+        This object is our low-level abstraction for other peers in the network.
         Every node has a ClientSocket that should bind to the Node TCPServer address.
 
         Warnings:
-            1. Insert an exception handler when initialising the ClientSocket; when a socket closed here we will face to
-               an exception and we should detach this Node and clear it's output buffer.
+            1. Insert an exception handler when initializing the ClientSocket; when a socket closed here we will face to
+               an exception and we should detach this Node and clear its output buffer.
 
         :param server_address:
         :param set_root:
@@ -27,7 +27,7 @@ class Node:
 
     def send_message(self):
         """
-        Final function to send buffer to the clients socket.
+        Final function to send buffer to the client's socket.
 
         :return:
         """
@@ -35,7 +35,7 @@ class Node:
 
     def add_message_to_out_buff(self, message):
         """
-        Here we will add new message to the server out_buff, then in 'send_message' will send them.
+        Here we will add a new message to the server out_buff, then in 'send_message' will send them.
 
         :param message: The message we want to add to out_buff
         :return:
@@ -44,7 +44,7 @@ class Node:
 
     def close(self):
         """
-        Closing client object.
+        Closing client's object.
         :return:
         """
         self.client.close()
@@ -80,4 +80,3 @@ class Node:
         :rtype: str
         """
         return str(int(port)).zfill(5)
-

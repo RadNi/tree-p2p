@@ -32,14 +32,14 @@ class NetworkGraph:
 
     def find_live_node(self, sender):
         """
-        Here we should find a neighbour for sender.
-        Best neighbour is the node who is nearest the root and has not more than 1 child.
+        Here we should find a neighbour for the sender.
+        Best neighbour is the node who is nearest the root and has not more than one child.
 
         Code design suggestion:
-            1.Do a BFS algorithm to find the target.
+            1. Do a BFS algorithm to find the target.
 
         Warnings:
-            1. Check whether there is sender node in our NetworkGraph or not; if exist doo not return sender node or
+            1. Check whether there is sender node in our NetworkGraph or not; if exist do not return sender node or
                any other nodes in it's sub-tree.
 
         :param sender: The node address we want to find best neighbour for it.
@@ -64,11 +64,11 @@ class NetworkGraph:
 
     def add_node(self, ip, port, father_address):
         """
-        Add a new node with node_address if it's not exist in our NetworkGraph and set it's father.
+        Add a new node with node_address if it does not exist in our NetworkGraph and set its father.
 
         Warnings:
-            1.Don't forget to set new node as on of the father_address children.
-            2.Before using this function make sure that there is a node which has father_address.
+            1. Don't forget to set the new node as one of the father_address children.
+            2. Before using this function make sure that there is a node which has father_address.
 
         :param ip: IP address of the new node.
         :param port: Port of the new node.

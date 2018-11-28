@@ -17,19 +17,6 @@
     |                                                    ..........                                                    |
     |__________________________________________________________________________________________________________________|
 
-    For example:
-
-    version = 1
-    type = 04
-    length = 00000012
-    ip = '192.168.001.029'
-    port = '06500'
-    Body = 'Hello World!'
-
-    Bytes = b'\x00\x01\x00\x04\x00\x00\x00\x0c\x00\xc0\x00\xa8\x00\x01\x00\x1d\x00\x00\x19dHello World!'
-    String = 1040000001219216800102906500Hello World!
-
-
     Version:
         For now version is 1
     
@@ -46,7 +33,23 @@
     Server IP/Port:
         We need this field for response packet in non-blocking mode.
 
-    
+
+
+    ***** For example: ******
+
+    version = 1
+    type = 04
+    length = 00000012
+    ip = '192.168.001.029'
+    port = '06500'
+    Body = 'Hello World!'
+
+    Bytes = b'\x00\x01\x00\x04\x00\x00\x00\x0c\x00\xc0\x00\xa8\x00\x01\x00\x1d\x00\x00\x19dHello World!'
+    String = 1040000001219216800102906500Hello World!
+
+
+
+
     Packet descriptions:
     
         Register:
@@ -61,7 +64,8 @@
                 |                 Port (5 Chars)                 |
                 |________________________________________________|
                 
-                For sending IP/Port of current node to the root to ask if it can register to network or not.
+                For sending IP/Port of the current node to the root to ask if it can register to network or not.
+
             Response:
         
                                  ** Body Format **
@@ -71,7 +75,7 @@
                 |                  ACK (3 Chars)                  |
                 |_________________________________________________|
                 
-                For now only should just send an 'ACK' from the root  to inform a node that it
+                For now only should just send an 'ACK' from the root to inform a node that it
                 has been registered in the root if the 'Register Request' was successful.
                 
         Advertise:
@@ -83,6 +87,7 @@
                 |________________________________________________|
                 
                 Nodes for finding the IP/Port of their neighbour peer must send this packet to the root.
+
             Response:
 
                                 ** Packet Format **
@@ -103,11 +108,11 @@
                 |                 JOIN (4 Chars)                 |
                 |________________________________________________|
             
-            New node after getting Advertise Response from root must send this packet to specified peer 
-            to tell him that they should connect together; When receiving this packet we should update our 
-            Client Dictionary in Stream object.
-            
-            For next version Join packet must contain a field for validation the joining action.
+            New node after getting Advertise Response from root must send this packet to the specified peer
+            to tell him that they should connect together; When receiving this packet we should update our
+            Client Dictionary in the Stream object.
+
+
             
         Message:
                                 ** Body Format **
@@ -141,9 +146,10 @@
                 |                PortN (5 Chars)                 |
                 |________________________________________________|
                 
-                In every intervals (for now 20 seconds) peers must send this message to the root.
-                Every other peers that received this packet should append their (ip, port) to 
+                In every interval (for now 20 seconds) peers must send this message to the root.
+                Every other peer that received this packet should append their (IP, port) to
                 the packet and update Length.
+
             Hello Back:
         
                                     ** Body Format **
@@ -167,8 +173,8 @@
                 |                Port0 (5 Chars)                 |
                 |________________________________________________|
 
-                Root in answer of the Reunion Hello message will send this packet to the target node.
-                In this packet all the nodes (ip, port) exist in order by path traversal to target.
+                Root in an answer to the Reunion Hello message will send this packet to the target node.
+                In this packet, all the nodes (IP, port) exist in order by path traversal to target.
             
     
 """
@@ -178,7 +184,7 @@ from struct import *
 class Packet:
     def __init__(self, buf):
         """
-        Decoded buffer should convert to a new packet.
+        The decoded buffer should convert to a new packet.
 
         :param buf: Input buffer was just decoded.
         :type buf: bytearray
@@ -227,7 +233,7 @@ class Packet:
 
     def get_buf(self):
         """
-        In this function we will make our final buffer that represent the Packet with struct class methods.
+        In this function, we will make our final buffer that represents the Packet with the Struct class methods.
 
         :return The parsed packet to the network format.
         :rtype: bytearray
@@ -237,7 +243,7 @@ class Packet:
     def get_source_server_ip(self):
         """
 
-        :return: Server IP address for sender of the packet.
+        :return: Server IP address for the sender of the packet.
         :rtype: str
         """
         pass
@@ -245,7 +251,7 @@ class Packet:
     def get_source_server_port(self):
         """
 
-        :return: Server Port address for sender of the packet.
+        :return: Server Port address for the sender of the packet.
         :rtype: str
         """
         pass
@@ -266,7 +272,6 @@ class PacketFactory:
 
     @staticmethod
     def parse_buffer(buffer):
-
         """
         In this function we will make a new Packet from input buffer with struct class methods.
 
@@ -295,15 +300,15 @@ class PacketFactory:
         pass
 
     @staticmethod
-    def new_advertise_packet(type, source_server_address, neighbor=None):
+    def new_advertise_packet(type, source_server_address, neighbour=None):
         """
         :param type: Type of Advertise packet
         :param source_server_address Server address of the packet sender.
-        :param neighbor: The neighbor for advertise response packet; The format is like ('192.168.001.001', '05335').
+        :param neighbour: The neighbour for advertise response packet; The format is like ('192.168.001.001', '05335').
 
         :type type: str
         :type source_server_address: tuple
-        :type neighbor: tuple
+        :type neighbour: tuple
 
         :return New advertise packet.
         :rtype Packet
@@ -329,7 +334,7 @@ class PacketFactory:
         """
         :param type: Type of Register packet
         :param source_server_address: Server address of the packet sender.
-        :param address: If type is request we need address; The format is like ('192.168.001.001', '05335').
+        :param address: If 'type' is 'request' we need an address; The format is like ('192.168.001.001', '05335').
 
         :type type: str
         :type source_server_address: tuple
@@ -344,7 +349,7 @@ class PacketFactory:
     @staticmethod
     def new_message_packet(message, source_server_address):
         """
-        Packet for sending a broadcast message to hole network.
+        Packet for sending a broadcast message to the whole network.
 
         :param message: Our message
         :param source_server_address: Server address of the packet sender.

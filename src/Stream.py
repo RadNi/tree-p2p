@@ -29,11 +29,12 @@ class Stream:
 
             :param address: Source address.
             :param queue: Response queue.
-            :param data: The data received from socket.
+            :param data: The data received from the socket.
             :return:
             """
             queue.put(bytes('ACK', 'utf8'))
             self._server_in_buf.append(data)
+
         pass
 
     def get_server_address(self):
@@ -54,9 +55,9 @@ class Stream:
 
     def add_node(self, server_address, set_register_connection=False):
         """
-        Will add new node to our Stream.
+        Will add new a node to our Stream.
 
-        :param server_address: New node TCPServer address
+        :param server_address: New node TCPServer address.
         :param set_register_connection: Shows that is this connection a register_connection or not.
 
         :type server_address: tuple
@@ -68,7 +69,7 @@ class Stream:
 
     def remove_node(self, node):
         """
-        Remove a node from our Stream.
+        Remove the node from our Stream.
 
         Warnings:
             1. Close the node after deletion.
@@ -98,10 +99,10 @@ class Stream:
 
     def add_message_to_out_buff(self, address, message):
         """
-        In this function we will add message to the output buffer of the node that has the input address.
+        In this function, we will add the message to the output buffer of the node that has the input address.
         Later we should use send_out_buf_messages to send these buffers into their sockets.
 
-        :param address: Node address that we want to send message
+        :param address: Node address that we want to send the message
         :param message: Message we want to send
 
         Warnings:
@@ -125,8 +126,8 @@ class Stream:
         Send buffered messages to the 'node'
 
         Warnings:
-            1. Insert an exception handler here; Maybe the node socket you want to send message has turned off and you
-               need to remove this node from stream nodes.
+            1. Insert an exception handler here; Maybe the node socket you want to send the message has turned off and
+            you need to remove this node from stream nodes.
 
         :param node:
         :type node Node
@@ -137,7 +138,7 @@ class Stream:
 
     def send_out_buf_messages(self, only_register=False):
         """
-        In this function we will send hole out buffers to their own clients.
+        In this function, we will send hole out buffers to their own clients.
 
         :return:
         """
