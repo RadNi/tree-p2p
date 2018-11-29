@@ -1,26 +1,19 @@
-# from  import Client
-# from Listener import Listener
-#
-#
-# # JSON read from 'file'
-#
-# def read_conf(file):
-#     return None
-#
-#
-# if __name__ == "__main__":
-#     ls = Listener()
-#
-#     cl = Client(ls)
-#
-#     address = read_conf("addr.conf")
-#
-#     cl.connect(address[0].ip, address[0].port)
 from src.Peer import Peer
 
 if __name__ == "__main__":
-    server = Peer("127.000.000.001", 5353, is_root=True)
-    server.run()
-
-    client = Peer("127.000.000.001", 3535, is_root=False, root_address=("127.000.000.001", 5353))
+    pass
+    #   Starting new non-root client:
+    #
+    # client = Peer("127.000.000.001", 21225, is_root=False, root_address=("000.000.000.000", 5353))
+    #
+    # client.start_user_interface()
+    # client.run()
+    #
+    #
+    #   Starting new root client:
+    #
+    # server = Peer("127.000.000.001", 5353, is_root=True)
+    # server.start_user_interface()
+    #
+    # server.run()
 
