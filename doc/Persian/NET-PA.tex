@@ -1,97 +1,203 @@
 \documentclass{article}
     \usepackage{amsmath}
     \usepackage{graphicx}
+    \usepackage{titlesec}
+    \usepackage{verbatim}
+    \usepackage{color}
+    \usepackage{framed}
+    
+    \usepackage{hyperref}
+    
+    \graphicspath{ {Pic/} }
+
     \usepackage{HandoutTemplate}
+    \usepackage{xcolor}
+    \hypersetup{
+    	colorlinks=true,
+    	linkcolor={red!50!black},
+    	citecolor={green!40!black},
+    	urlcolor={green!40!black}
+    }
     
+    % ------- Text Formating ------- %
+    \settextfont[Scale=1.1]{XB Zar}
+    \setlatintextfont{Linux Libertine}
+    % \setdigitfont{Linux Libertine}
+    
+    \renewcommand{\baselinestretch}{1.7}
+    \setlength{\parindent}{1.5em}
+    
+
+    % ------- Section Formatting ------- %
+    \titleformat{\section}
+        {\normalfont\Large\bfseries}
+        {\thesection}
+        {1em}
+    {}
+    
+
+    % ------- Math Formatting ------- %
     \DefaultMathsDigits
-    
-    \settextfont[Scale=1.1]{B Nazanin}
-    %\settextfont[Scale=1.1]{B Nazanin.ttf}
-    \setlatintextfont{Times New Roman}
-    \setdigitfont{Times New Roman}
-    %\setlatindigitfont{Times New Roman}
-    
-    
     \DeclareMathOperator{\var}{Var}
+
+
+    % ------- Code Formatting ------- %
+    \definecolor{shadecolor}{gray}{0.95}
+    
+    \newenvironment{changemargin}[2]
+    {%
+    \begin{list}{}{%
+      \setlength{\topsep}{0pt}%
+      \setlength{\leftmargin}{#1}%
+      \setlength{\rightmargin}{#2}%
+      \setlength{\listparindent}{\parindent}%
+    %   \setlength{\itemindent}{\parindent}%
+      \setlength{\parsep}{\parskip}%
+    }%
+    \item[]
+    }
+    {
+        \end{list}
+    }
+
+
+    \newenvironment{code}
+        {\LTR\snugshade\verbatim}
+        {\endverbatim\endsnugshade\RTL}
+  
+    \newcommand{\inlineCode}[1]{\lr{\colorbox{lightgray!20}{\texttt{#1}}}}
     
     \begin{document}
     \handout
-    {\lr{CE-40695}}
-    {۱}
-    {آذر ۱۳۹7}
-    {پیاده سازی یک شبکه     \lr{P2P}}
+    {\lr{CE-40443}}
+    {}
+    {پاییز ۱۳۹۷}
+    {پیاده‌سازی شبکه‌ی \lr{P2P}}
+    {۱ بهمن، ساعت ۵ صبح}
     
     \vspace{0.3cm}
-    \section{چکیده}
-هدف این فاز از پروژه پیاده سازی یک شبکه   \lr{peer to peer} است که در فاز بعدی قرار است یک \lr{block chain application}  روی آن اجرا شود. در این شبکه:
+     
+\section{چکیده}
+
+   هدف این پروژه پیاده‌سازی یک شبکه‌ی \lr{Peer to Peer} و واسط کاربری برای ارتباط با شبکه است.  این شبکه شامل دو جز اصلی است: 
+
+\begin{itemize}
+   \item   	یک \lr{Root} که در نقش \lr{DNS} عمل می‌کند.
+
+\item تعدادی \lr{Node}‌ که به صورت گراف همبند بدون دور (درخت) با ریشه‌ی \lr{Root} به یک‌دیگر وصل شده و تشکیل شبکه می‌دهند.
+   برنامه‌ی نوشته شده باید قابلیت اجرا شدن هم در نقش \lr{Root} و هم در نقش \lr{Peer} را داشته باشد و به گونه‌ای طراحی شود که تبادل پیام در شبکه قابل مشاهده باشد.
+\end{itemize}
+ 
+
+	\newpage
+\begin{center}
+	\vspace*{3cm}
+	\includegraphics[scale=0.9]{UML1}
+\end{center}
+
+\begin{center}
+	\vspace*{6cm}
+	\includegraphics[scale=0.9]{UML2}
+\end{center}
+	
+	
+
+
+\newpage
+\section{مقدمه}
+\lr{P2P} یا شبکه‌ی همتا به همتا توزیعی از معماری شبکه‌های کامپیوتری است که در آن هر \lr{Peer} هم نقش \lr{Client} و هم نقش \lr{Server} را بازی می‌کند. و از این طریق می‌تواند به تبادل پیام در شبکه‌ای از \lr{Peer}ها بپردازد. در این نوع شبکه‌ها بر خلاف شبکه‌های \lr{Client-Server}، سرور مرکزی وجود ندارد. \lr{Torrent}، \lr{Tor} و \lr{Bitcoin} مثال‌هایی شناخته شده از شبکه‌های \lr{P2P} هستند. نکته‌ای که حائز اهمیت است آن است که در عمل شبکه‌ای که به طور کامل \lr{P2P} باشد وجود ندارد و حتی در شبکه‌های \lr{P2P} هم \lr{Node}هایی وجود دارد که سبب پابرجایی شبکه هستند و حذف آن‌ها از شبکه سبب اخلال در شبکه می‌شود.
+
+
+
+\section{پروتکل شبکه}
+
+\subsection{\lr{Client}}
+   اولین گام پس از ورود هر \lr{Client} به شبکه رجیستر شدن آن در شبکه است. برای این کار \lr{Client} با فرستادن پیام \lr{Register Request} به \lr{Root} شبکه خود را در شبکه ثبت می‌کند.\\
+   در ادامه هر \lr{Client} باید آدرس \lr{Client} پدر (اولین همسایه‌) را از \lr{DNS} بگیرد. برای این کار \lr{Client} با فرستادن پیام \lr{Advertise} به \lr{Root} درخواست یک آدرس کرده و در جواب آن آدرسی از طرف \lr{DNS} (که در این شبکه همان \lr{Root} است) به \lr{Client} ارسال می‌شود.\\
+   حال \lr{Client} با فرستادن پیام \lr{join} به آدرسی که از \lr{Root}‌ دریافت کرده است، درخواست متصل شدن خود را به \lr{Client} مورد نظر اعلام می‌دارد. \lr{Client} پس از اتصال به اولین همسایه‌ی خود، جزئی از شبکه شده و می‌تواند پیام‌های خود را با دیگر کلاینت‌های داخل شبکه در قالب \lr{Broadcast} به اشتراک بگذارد.\\
+   هر \lr{Client} موظف است هر ۴ ثانیه یک بار با فرستادن پیام \lr{Reunion Hello} از طریق پدرش به \lr{Root}، و دریافت پاسخ\lr{Reunion Hello Back} از طریق همان مسیر و از طرف \lr{Root}، از اتصال به شبکه اطمینان حاصل نماید.\\
+   هر \lr{Client} در صورت دریافت پیام \lr{Reunion Hello}، آدرس خود را به انتهای پیام اضافه، فیلد \lr{Number of Entries} را به روزرسانی کرده و پیام را به پدرش می‌فرستد. همچنین کلاینت‌ها در صورت دریافت پیام\lr{Reunion Hello Back}، آدرس خود را از انتهای پیام برداشته، فیلد \lr{Number of Entries} را به روزرسانی کرده و پیام را به آدرس بعدی می‌فرستند.\\
+   در صورتی که پس از مدت زمان معینی (بدست آوردن این زمان به عهده‌ی خودتان است) \lr{Client} پاسخ پیام \lr{Reunion Hello} خود را دریافت نکرد، اتصال خود به شبکه را قطع شده فرض می‌کند و با فرستادن پیام \lr{Advertise Request}، درخواستی مبتنی بر گرفتن آدرسی جدید به \lr{Root} می‌فرستد.\\
+   نکته: در این شبکه عمق درخت حداکثر برابر ۸ است.\\
+   
+   
+   
+\subsection{\lr{Root}}
+اولین وظیفه‌ی \lr{Root} در قبال هر \lr{Client}، ثبت \lr{Client} در شبکه با پاسخ به پیام \lr{Register Request}  فرستاده شده از \lr{Client} است. \\
+از دیگر وظایف \lr{Root} فرستادن آدرس یک \lr{Client} (هر \lr{Client} بیشتر از دو فرزند ندارد) به عنوان \lr{Client} پدر در پاسخ پیام \lr{Advertise Request} است.\\
+آخرین وظیفه‌ی \lr{Root} انتظار به مدت لازم (بدست آوردن این زمان به عهده‌ی خودتان است) برای دریافت پیام \lr{Reunion Hello} و فرستادن پیام\lr{Reunion Hello Back} در پاسخ پیام دریافتی است. در صورتی که پس از گذشت زمان معین از \lr{Client} پیامی در قالب \lr{Reunion Hello} دریافت نشود، \lr{Root} آن \lr{Client} را حذف شده در نظر گرفته و دیگر آدرس آن \lr{Client} و زیر درخت مربوط به آن را Advertise نمی‌کند.\\
+
+
+
+
+\section{پیاده‌سازی}
+در این بخش به معرفی وظایف اشیا ساخته شده از هر کلاس، تابع‌های موجود در آن‌ها و همچنین نحوه گرفتن ورودی در آن‌ها می‌پردازیم.
+
+\subsection{\lr{Peer}}
+در این پروژه هر \lr{Node} موجود در شبکه از جنس \lr{Peer} است؛ چه \lr{Client} باشد چه \lr{Root}. به عبارتی ساده‌تر شبکه‌ی پیاده‌سازی شده عملاً اجتماعی از چندین \lr{Peer} است که به نحوی به یکدیگر متصل‌اند (شبکه گرافی همبند است).  \\
+\lr{Peer} همچنین وظیفه‌ی تولید \lr{Packet} با استفاده از پیام‌های ورودی \lr{Stream} یا به صورت دلخواه به کمک \lr{PacketFactory} را دارد. تبدیل \lr{Packet} به پیام و تحویل آن به \lr{Stream} جهت ارسال آن در شبکه نیز از وظایف \lr{Peer} می‌باشد. علاوه بر این انجام \lr{action} هر \lr{Packet} به عهده‌ی \lr{Peer} است.
+
+
+
+
+\subsection{\lr{Stream}}   
+\lr{Stream} در سطح شبکه پیاده‌سازی شده و مربوط به لایه‌ی کاربردی نیست. وظیفه‌ی اصلی \lr{Stream} ارسال و دریافت پیام‌ها از طریق \lr{Node}های متفاوت ست. مدیریت در خصوص آن که هر \lr{Node} چه پیام‌هایی باید بفرستد، چه پیام‌هایی را از چه \lr{Node}هایی باید دریافت کند و در جواب آن‌ها چه پیام‌هایی را بفرستد، به عهده‌ی \lr{Stream} است. \\
+\lr{Stream} با توجه به مقصد پیام، بافر را به \lr{Node} مورد نظر می‌رساند. \lr{Node} پیام را از طریق \lr{Stream} دریافت کرده و با طی روند خاصی پیام را تبدیل به بافر کرده و به \lr{Node} مورد نظر ارسال میکند. از طرفی بافر‌های ورودی هر \lr{Node} را تبدیل به پیام می‌کند و به \lr{Peer} تحویل می‌دهد.
+
+
+
+
+\subsection{\lr{Node}}
+\lr{Stream} برای کار با \lr{Peer}های دیگر از \lr{Node} استفاده می‌کند. به بیانی واضح‌تر هر \lr{Stream} شامل تعداد زیادی \lr{Node} می‌شود که هر کدام از این \lr{Node}ها دارای یک سوکت است که این سوکت به سوکت سرور \lr{Peer} دیگر متصل است. هر \lr{Node} دو بافر ورودی و خروجی دارد. در بافر ورودی پیام‌ّهای فرستاده شده و در بافر خروجی پیام‌هایی که باید فرستاده شوند وجود دارند.
+
+
+
+\subsection{\lr{Packet}}
+تمامی پیام‌هایی که در شبکه انتقال می‌یابند از جنس \lr{Packet} هستند. \lr{Packet} شی‌ای است برای \lr{Peer} قابل فهم است. اما هر \lr{Packet} قبل از انتقال پارس شده و به بافر تبدیل می‌شود و این بافر است که در شبکه انتقال می‌یابد. پس بافری که \lr{Peer} از \lr{Stream} دریافت می‌کند، لازم است به \lr{Packet} تبدیل شود تا قابل فهم شود.
+ساختار هر \lr{Packet} در ادامه مشخص شده است:
+\begin{itemize}
+\newpage
+	\item \lr{Register Request}\\\\
+		\includegraphics{RegisterRequest}
+	\item \lr{Register Response}\\\\
+		\includegraphics{RegisterResponse}	
+	\item \lr{Advertise Request}\\\\
+		\includegraphics{AdvertiseRequest}	
+	\item \lr{Advertise Response}\\\\
+		\includegraphics{AdvertiseResponse}	
+	\item \lr{Join}\\\\
+		\includegraphics{Join}
+	\item \lr{Message}\\\\
+		\includegraphics{Message}
+	\item \lr{Reunion Hello}\\\\
+		\includegraphics{ReunionHello}	
+\newpage
+	\item \lr{Reunion Hello Back}\\\\
+		\includegraphics{ReunionHelloBack}	
+\end{itemize}
+
+
+
+\subsection{\lr{PacketFactory}}
+هر \lr{Peer} برای تولید \lr{Packet} به \lr{PacketFactory} نیاز دارد. Packetهای تولید شده، توسط این کلاس به بافر تبدیل شده و برای انتقال از طریق \lr{Peer} به \lr{Stream} داده می‌شود.
+
+
+
+\subsection{\lr{UserInterface}}
+همان‌طور که از نام این کلاس پیداست، وظیفه‌ی آن ایجاد یک واسط بین برنامه و کاربر است. از طریق این کلاس کاربر می‌تواند عملکرد \lr{Peer} را کنترل کرده و دستور ایجاد \lr{Packet}های متفاوت را بدهد.
+
+
+
+\newpage
+ \section{نکات دیگر}
     \begin{itemize}
-\item	یک \lr{root}  در نقش \lr{DNS Server}  وجود دارد.
-\item	 تعدادی پیام جهت ارتباط  \lr{node} ها با یکدیگر و تشکیل یک گراف همبند بدون دور از آن ها (درخت) رد و بدل میشود. 
-\item	ارتباط کاربر با شبکه از طریق یک واسط کاربری انجام میگیرد.
-    \end{itemize}
-جهت تست این شبکه، باید قابلیت اجرا شدن هم در نقش \lr{root (DNS server)} و هم در نقش \lr{client} را داشته باشید و در نقش  و نحوه رد و بدل شدن پیامها و عملیات مختلف انجام شده در شبکه را مشاهده نمایید.\\
-    \section{مقدمه}  
-\lr{P2P}‌ ساده شده عبارت \lr{Peer to Peer}‌ یا معادل فارسی آن همتا به همتا توزیعی از معماری شبکه های کامپیوتری است که در آن \lr{peer}‌ ها هم در نقش \lr{client}‌ و هم در نقش \lr{server}‌ ظاهر میشوند و به \lr{peer}‌ های دیگر میتوانند اطلاعات بفرستد یا از آنها اطلاعات بگیرند. در این شبکه ها برخلاف شبکه های \lr{client-server}‌ سرور مرکزی وجود ندارد تا باعث شود کلاینت ها برای دسترسی به منابع سرور از آن اطاعت کنند.
-\lr{Bitcoin, Tor , Torrent}‌و ... نمونه هایی از شبکه های \lr{P2P}‌ شناخته شده هستند. عملاً یک شبکه‌ی \lr{P2P}‌ نمی‌تواند وجود داشته باشد. و معمولا یک سری \lr{node}‌  هستند که دارند \lr{maintain}‌ می‌کنند و اگر آنها نباشند به شبکه آسیب می‌رسد
-  \section{پروتکل پروژه}
-	\subsection{نقش کلاینت ها}
-اولین قدم رجیستر شدن هر کلاینت در شبکه است. برای این کار کلاینت با فرستادن یک پیام رجیستر به \lr{root}‌, خودش را رجیستر میکند. برای این کار کلاینت با فرستادن بک پیام رجیستر به روت خودش را در شبکه رجیستر میکند.\\
-در ادامه هر کلاینت باید آدرس اولین همسایه خود را از \lr{DNS}‌ بگیرد. برای این کار کلاینت با فرستادن یک پیام در قالب \lr{advertise}‌ به روت شبکه درخواست بک آدرس میکند که در جواب \lr{DNS}‌ هم یک آدرس برمیگرداند. زمانی که از یک کلاینت که قبلا \lr{advertise}‌ شده پیام \lr{advertise}‌ می آید, روت در جواب به آن, آدرس هیچکدام از همسایه از همسایه های \lr{client}‌ را نمی فرستد و به جای آن آدرس جدید میفرستد.\\
-کلاینت بعد از پیدا کردن اولین همسابه خود با فرستادن یک \lr{join packet}‌, به اطلاع آن میدهد که درخواست متصل شدن دارد.\\
-در این شبکه همه موظف هستند که پیام های دریافتی را از طریق کانکشن ها به همه ارسال کنند.\\
-بعد از متصل شدن به اولین همسایه, کلاینت میتواند پیام های خود را به صورت \lr{broadcast}‌ به شبکه ارسال کند.\\
-بعد از اتصال به همسایه هر \lr{node}‌ موظف است هر 4 ثانیه یک بار از طریق همسایه خود به روت یک پیام \lr{reunion hello}‌ ارسال کند.\\
-روت انتظار دارد این پیام هر 36 ثانیه یک بار از هر کلاینت به او برسد در غیر این صورت فرض میکند این کلاینت در شبکه وجود ندارد و دیگر آن را \lr{advertise}‌ نمیکند.\\
-هر کلاینتی که پیام \lr{reunion hello}‌ به دستش میرسد باید آدرش خود را به ته پیام بچسباند, \lr{field number of entities}‌ را آپدیت کند و به پدرش ارسال کند. و اگر هم \lr{reunion hello back}‌ رسید, آدرس خودش را از پیام بر میدارد, \lr{field number of entities}‌ را آپدیت میکند و به نفر بعدی میدهد.\\
-لازم به ذکر است که در این شبکه عمق درخت حداکثر 8 فرض شده است.\\
-	\subsection{نقش روت}
-اولین وظیفه روت رچیستر کردن \lr{client}‌ ها در شبکه با جواب دادن به \lr{register request}‌ آن ها است.\\
-در گام بعدی روت وظیه دارد جواب \lr{advertise request}‌ کلاینت ها را با دادن آدرس یک \lr{peer}‌, با فرض اینکه در گراف اتصالات تشکیل شده هیچ \lr{peer}‌ ای وجود ندارد که بیشتر از 2 فرزند داشته باشد, به آن ها دهد.\\
-آخرین وطیفه روت انتظار برای رسیدن یک \lr{reuninon hello}‌ به ازای هر \lr{client}‌ در مدت زمان 36 ثانیه و برگرداندن یک پیام \lr{reuninon hello back}‌ به آنهاست. اگر \lr{reunion hello}‌ در این مدت نرسید, روت دیگر آن \lr{node}‌ و فرزندانش را \lr{advertise}‌ نمیکند.
-
-    \section{توضیحات پیاده سازی}
-در ادامه به معرفی وظایف اشیاء ساخته شده از هر کلاس و تابعهای موجود در آنها و همچنین نحوه گرفتن ورودی در آنها میپردازیم.
-	\subsection{\lr{Peer}}
- \lr{Stream}  موجود در \lr{constructor}‌ این کلاس، یک \lr{server\_ip} و یک \lr{server\_port} را وردوی میگیرد که \lr{ip} و \lr{port} همان سرور خودمان هستند. مقدار \lr{parent} چنانچه ما \lr{root} باشیم \lr{none} است و در غیر این صورت هنگامی که درخواست \lr{join} را ارسال میکنیم مشخص میشود. \lr{Packets} هم همان بسته هایی است که دریافت کرده و باید به آن ها رسیدگی کنیم. \lr{Neighbours} همان بچه های ما هستند. هر \lr{peer} یک \lr{UserInterface} و یک \lr{PacketFactory} هم دارد. اگر \lr{root} باشیم، به \lr{network\_nodes} احتیاج داریم که تمامی \lr{node} های این شبکه را در بر میگیرد؛ همچنین به \lr{registered\_nodes} جهت ثبت \lr{node} هایی که به واسطه ما در شبکه \lr{register} کرده اند احتیاج داریم. اگر هم ‌\lr{root}نباشیم، \lr{root} را مشخص کرده و به \lr{stream} هم \lr{root} را اضافه میکنیم (یعنی یک \lr{register\_node} در \lr{root} اضافه میکنیم.).
-پیاده سازی تابع \lr{start\_user\_interface} به این صورت است که تنها \lr{user\_interface} را اجرا میکند. پس از آن، برنامه منتظر دستور کاربر میماند. دستورات کاربر به فرمت زیر هستند:
-    \begin{itemize}
-\item	\lr{ new\_register\_packet :1}
-\item	\lr{ new\_advertise\_packet :2}
-\item	 \lr{ send\_broadcast\_packet :3}
-    \end{itemize}
-که بر اساس عدد وارد شده توسط کاربر، عملیات نظیر شده به آن در تابع \lr{handle\_user\_interface\_buffer} اجرا میشود.
-در تابع ، \lr{run}\lr{read\_in\_buf} مربوط به \lr{stream} را میخوانیم، بسته ها را میسازیم و به آنها رسیدگی میکنیم و در همان لحظه این بافر را پاک میکنیم تا به یک پیام دو بار رسیدگی نکنیم. پس از آن به  \lr{user interface}رسیدگی میکنیم و هر بسته ای که احتیاج داریم بفرستیم را میفرستیم و برای یک دوره زمانی، استراحت \lr{(sleep!)} میکنیم. 
-برای فرستادن یک \lr{broadcast packet}، از تابع \lr{send\_broadcast\_packet} استفاده میکنیم.
-تابعی به اسم \lr{handle\_packet} وجود دارد که برای بررسی بستهها مورد استفاده قرار میگیرد. به عنوان نمونه، طول هر بسته در آن چک می¬شود.
-در تابع \lr{check\_registered} یک آدرس ورودی میگیریم و چک میکنیم که آن \lr{node} در بین \lr{registered\_node} ها وجود دارد یا خیر.
-در تابع \lr{handle\_advertise\_packet} اول چک میکنیم که نوع بسته دریافت شده چیست؛ اگر از نوع \lr{request} باشد، باید حتما \lr{root} باشیم تا بتوانیم آن را بررسی کنیم (در غیر این صورت، آن را دور می ریزیم.). در این صورت، اگر \lr{register} شده بود، از یکی از همسایه های آن را پیدا میکنیم تا به آن \lr{advertise request} بفرستیم.  
-
-
-	\subsection{\lr{Stream}}
-	در تابع     \lr{constructor} این کلاس ابتدا با متد \lr{is\_valid} فرمت های \lr{IP} و \lr{Port} را چک میکنیم تا مطمئن شویم به صورت همان فرمت مورد نظر هستند. \lr{server\_in\_buf} همان بافری هست که روی سرور نوشته میشود و هر چند وقت یک بار بایستی چک شود. \lr{Callback Function (cb)} نیز پیام های جدید را به ته \lr{server\_in\_buf} میچسباند \lr{(append)} و در نهایت \lr{Ack} برمیگرداند. این \lr{Ack} باعث میشود هر جا که سوکتی وسط کار قطع شود بفهمد قطع شده است. سپس \lr{tcpserver} را مسازیم, در یک \lr{thread} قرار میدهیم و آن را اجرا میکنیم. \lr{self.nodes} تمام نود هایی هستند که درون ما هستند.\\
-\lr{get\_server\_address} آدرس سرور را با آن فرمتی که میخواهیم به ما میدهد.
-\\ 
-\lr{clear\_in\_buf} بافر سرور را پاک میکند.
-\\
-\lr{add\_node} نود اضافه میکند.
-\\
-\lr{remove\_node} نود مشخص شده را از آرایه پاک میکند و سپس  متد \lr{close} نود را اجاره میکند.
-\\
-\lr{get\_node\_by\_server} آی پی و پورت سرور  یک نود را میگیرد و نود را برمیگرداند. سپس با \lr{parse} کردن آن را به فرمت مد نظر تبدیل میکند.
-\\
-\lr{add\_message\_to\_out\_buffer} با گرفتن یک آدرس و پیام نود را پیدا میکند و در \lr{out\_buffer} مینویسد.
-\\
-\lr{read\_in\_buf} وظیفه دارد \lr{read\_in\_buf} را برگرداند.
-\\
-\lr{send\_message\_to\_node} بافرهای توی نود را با استفاده از کال کردن تابع\lr{send\_message}  خودش ارسال میکند.
-\\
-\lr{send\_out\_buf\_messages} پیام تمامی نود ها را ارسال میکند. 
-\\
-	\subsection{\lr{Node}}
-در \lr{constructor} این آبجکت ابتدا \lr{IP/Port} سرور با \lr{parse} شدن به فرمت مورد نظر در می آیند.\lr{out\_buff} بافری هست که قراره روی کلاینتش بنویسیم برود. با \lr{is\_register\_connection} چک میکنیم رجیستر هست یا خیر. در آخر یک \lr{try/catch} برای سوکت کلاینت قرار میدهیم تا اگر نودی در آن وسط \lr{deatach} شد \lr{exception} بخورد و از \lr{out\_buffer} پاک مشود.
-\\
-\lr{send\_message} به ازای هر بافر یک \lr{self.client.send} میکند و اگر \lr{Ack} برگشت یعنی پیام ارسال شده است.
-\\
+    \item برای پیاده‌سازی پروژه تنها از زبان پایتون می‌توانید استفاده کنید.
+    \item گروه‌ها به صورت دو نفره است.
+    \item در فایل پیوست تابع‌هایی که برای هر کلاس نیاز است پیاده‌سازی شود، توضیح داده شده است.
+    \item فایل‌های تحویل دادنی را به فرمت \lr{.zip} درآورده و در سامانه‌ی کوئرا بارگذاری نمایید.
+    \item نام فایل ارسالی باید به فرمت \lr{CN\_Project\_STDID1\#\_STDID2\#} باشد.
+    \
+	\end{itemize}
     \vfill
     \vspace{1cm}
     $\hfill$ موفق باشید
