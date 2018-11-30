@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6840 64-bit) (preloaded format=xelatex 2018.10.19)  30 NOV 2018 20:32
+This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6840 64-bit) (preloaded format=xelatex 2018.10.19)  30 NOV 2018 20:57
 entering extended mode
 **./Net-PA.tex
 (Net-PA.tex
@@ -1289,43 +1289,112 @@ LaTeX Font Info:    Font shape `TU/XBZar(0)/bx/n' will be
 scii-print.def"
 File: se-ascii-print.def 2016/05/16 v1.11 stringenc: Printable ASCII characters
 
-) [1
+)
+LaTeX Font Info:    Font shape `TU/XBZar(0)/m/n' will be
+(Font)              scaled to size 13.20007pt on input line 101.
+LaTeX Font Info:    Font shape `TU/XBZar(0)/bx/n' will be
+(Font)              scaled to size 13.20007pt on input line 101.
+
+Underfull \hbox (badness 10000) in paragraph at lines 102--109
+[][]
+ []
+
+[1
 
 ]
-File: Pic/UML1.png Graphic file (type bmp)
-<Pic/UML1.png>
-File: Pic/UML2.png Graphic file (type bmp)
-<Pic/UML2.png>
- [2] [3]
-LaTeX Font Info:    Font shape `TU/XBZar(0)/m/n' will be
-(Font)              scaled to size 13.20007pt on input line 114.
-LaTeX Font Info:    Font shape `TU/XBZar(0)/bx/n' will be
-(Font)              scaled to size 13.20007pt on input line 114.
-
-Underfull \hbox (badness 10000) in paragraph at lines 115--122
+Underfull \hbox (badness 10000) in paragraph at lines 113--116
 [][]
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 126--129
-[][]
- []
-
-[4] [5] [6]
+[2] [3]
 File: Pic/RegisterRequest.png Graphic file (type bmp)
 <Pic/RegisterRequest.png>
 
-Underfull \hbox (badness 10000) in paragraph at lines 160--162
+Underfull \hbox (badness 10000) in paragraph at lines 147--149
 [][]
  []
 
 
-Overfull \hbox (46.31134pt too wide) in paragraph at lines 160--162
+Overfull \hbox (46.31134pt too wide) in paragraph at lines 147--149
 [][][][] []
  []
 
 File: Pic/RegisterResponse.png Graphic file (type bmp)
 <Pic/RegisterResponse.png>
+
+Underfull \hbox (badness 10000) in paragraph at lines 149--151
+[][]
+ []
+
+
+Overfull \hbox (46.31134pt too wide) in paragraph at lines 149--151
+[][][][] []
+ []
+
+File: Pic/AdvertiseRequest.png Graphic file (type bmp)
+<Pic/AdvertiseRequest.png>
+
+Underfull \hbox (badness 10000) in paragraph at lines 151--153
+[][]
+ []
+
+
+Overfull \hbox (46.31134pt too wide) in paragraph at lines 151--153
+[][][][] []
+ []
+
+File: Pic/AdvertiseResponse.png Graphic file (type bmp)
+<Pic/AdvertiseResponse.png>
+
+Underfull \hbox (badness 10000) in paragraph at lines 153--155
+[][]
+ []
+
+
+Overfull \hbox (46.31134pt too wide) in paragraph at lines 153--155
+[][][][] []
+ []
+
+File: Pic/Join.png Graphic file (type bmp)
+<Pic/Join.png>
+
+Underfull \hbox (badness 10000) in paragraph at lines 155--157
+[][]
+ []
+
+
+Overfull \hbox (46.31134pt too wide) in paragraph at lines 155--157
+[][][][] []
+ []
+
+[4]
+File: Pic/Message.png Graphic file (type bmp)
+<Pic/Message.png>
+
+Underfull \hbox (badness 10000) in paragraph at lines 157--159
+[][]
+ []
+
+
+Overfull \hbox (46.31134pt too wide) in paragraph at lines 157--159
+[][][][] []
+ []
+
+File: Pic/ReunionHello.png Graphic file (type bmp)
+<Pic/ReunionHello.png>
+
+Underfull \hbox (badness 10000) in paragraph at lines 159--161
+[][]
+ []
+
+
+Overfull \hbox (46.31134pt too wide) in paragraph at lines 159--161
+[][][][] []
+ []
+
+[5]
+File: Pic/ReunionHelloBack.png Graphic file (type bmp)
+<Pic/ReunionHelloBack.png>
 
 Underfull \hbox (badness 10000) in paragraph at lines 162--164
 [][]
@@ -1336,97 +1405,35 @@ Overfull \hbox (46.31134pt too wide) in paragraph at lines 162--164
 [][][][] []
  []
 
-File: Pic/AdvertiseRequest.png Graphic file (type bmp)
-<Pic/AdvertiseRequest.png>
-
-Underfull \hbox (badness 10000) in paragraph at lines 164--166
-[][]
- []
-
-
-Overfull \hbox (46.31134pt too wide) in paragraph at lines 164--166
-[][][][] []
- []
-
-File: Pic/AdvertiseResponse.png Graphic file (type bmp)
-<Pic/AdvertiseResponse.png>
-
-Underfull \hbox (badness 10000) in paragraph at lines 166--168
-[][]
- []
-
-
-Overfull \hbox (46.31134pt too wide) in paragraph at lines 166--168
-[][][][] []
- []
-
-File: Pic/Join.png Graphic file (type bmp)
-<Pic/Join.png>
-
-Underfull \hbox (badness 10000) in paragraph at lines 168--170
-[][]
- []
-
-
-Overfull \hbox (46.31134pt too wide) in paragraph at lines 168--170
-[][][][] []
- []
-
-[7]
-File: Pic/Message.png Graphic file (type bmp)
-<Pic/Message.png>
-
-Underfull \hbox (badness 10000) in paragraph at lines 170--172
-[][]
- []
-
-
-Overfull \hbox (46.31134pt too wide) in paragraph at lines 170--172
-[][][][] []
- []
-
-File: Pic/ReunionHello.png Graphic file (type bmp)
-<Pic/ReunionHello.png>
-
-Underfull \hbox (badness 10000) in paragraph at lines 172--174
-[][]
- []
-
-
-Overfull \hbox (46.31134pt too wide) in paragraph at lines 172--174
-[][][][] []
- []
-
-[8]
-File: Pic/ReunionHelloBack.png Graphic file (type bmp)
-<Pic/ReunionHelloBack.png>
-
-Underfull \hbox (badness 10000) in paragraph at lines 175--177
-[][]
- []
-
-
-Overfull \hbox (46.31134pt too wide) in paragraph at lines 175--177
-[][][][] []
- []
-
-[9] [10]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 204.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 204.
+[6]
+File: Pic/UML1.png Graphic file (type bmp)
+<Pic/UML1.png>
+File: Pic/UML2.png Graphic file (type bmp)
+<Pic/UML2.png>
+ [7] [8] [9]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 207.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 207.
  (Net-PA.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 204.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 204.
-Package rerunfilecheck Info: File `Net-PA.out' has not changed.
-(rerunfilecheck)             Checksum: 7043CE5C95E0D18D91B7670A4219AF7E.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 204.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 207.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 207.
+
+
+Package rerunfilecheck Warning: File `Net-PA.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `Net-PA.out':
+(rerunfilecheck)             Before: 48A2F0FC34E68BCC55885E6F9A0D3E9E
+(rerunfilecheck)             After:  B354900D1A74722C05A1690998267298.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 207.
  ) 
 Here is how much of TeX's memory you used:
  32114 strings out of 427796
  621363 string characters out of 3147232
- 740485 words of memory out of 3000000
+ 741485 words of memory out of 3000000
  35682 multiletter control sequences out of 15000+200000
  534857 words of font info for 62 fonts, out of 3000000 for 9000
  1328 hyphenation exceptions out of 8191
  62i,6n,71p,1102b,443s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on Net-PA.pdf (10 pages).
+Output written on Net-PA.pdf (9 pages).
