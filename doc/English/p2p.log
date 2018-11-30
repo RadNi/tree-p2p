@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.10.30)  24 NOV 2018 15:47
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2018.10.30)  30 NOV 2018 15:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -806,35 +806,29 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <9> on input line 77.
  [2
 
-]
-Overfull \vbox (8.07735pt too high) has occurred while \output is active []
-
-
-[3] [4
-
-] [5
+] [3] [4
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 129--135
+Underfull \hbox (badness 10000) in paragraph at lines 128--134
 
  []
 
-[6
+[5
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 159--160
+Underfull \hbox (badness 10000) in paragraph at lines 158--159
 
  []
 
-[7] [8] [9] (./p2p.aux) ) 
+[6] [7] [8] (./p2p.aux) ) 
 Here is how much of TeX's memory you used:
- 19397 strings out of 492649
- 402429 string characters out of 6133383
+ 19377 strings out of 492649
+ 402045 string characters out of 6133383
  716571 words of memory out of 5000000
- 22921 multiletter control sequences out of 15000+600000
+ 22901 multiletter control sequences out of 15000+600000
  10534 words of font info for 37 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,10n,84p,511b,1228s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,10n,84p,468b,1228s stack positions out of 5000i,500n,10000p,200000b,80000s
 <c:/texlive/2018/texmf-dist/fonts/type1/public/amsfont
 s/cm/cmbx10.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx
 12.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb><c:
@@ -845,10 +839,10 @@ nts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2018/texmf-dist/fonts/type1/
 public/amsfonts/cm/cmr9.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmti12.pfb><c:/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mtt9.pfb>
-Output written on p2p.pdf (10 pages, 166531 bytes).
+Output written on p2p.pdf (9 pages, 162936 bytes).
 PDF statistics:
- 107 PDF objects out of 1000 (max. 8388607)
- 66 compressed objects within 1 object stream
+ 104 PDF objects out of 1000 (max. 8388607)
+ 64 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  114 words of extra memory for PDF output out of 10000 (max. 10000000)
 

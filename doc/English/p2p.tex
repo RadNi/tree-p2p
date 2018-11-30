@@ -74,13 +74,13 @@ Dr. Mahdi \textsc{Jafari} % Supervisor's Name
 \\
 \begin{tikzpicture}
 %---------------------------Stream--------------------------
-\umlclass[x=3, y=5, anchor=north]{Stream}{-_server_in_buf : dictionary \\+messages_dic :dict\\+nodes : dictionary\\+ip\\+port}{-__init__()\\+get\_server\_address()\\ +add\_node()\\+is\_valid()\\+remove\_node()\\+get\_node\_by\_server()\\+add\_message\_to\_out\_buff()\\+remove\_node\_by\_server\_info()\\+read\_in\_buf()\\+send\_messages\_to\_node()\\+send\_out\_buf\_messages()}
+\umlclass[x=3, y=5, anchor=north]{Stream}{-_server_in_buf : dictionary \\+ip\\+port}{-callback()\\+get_server_address()\\ +add_node()\\+clear_in_buff()\\+remove_node()\\+get_node_by_server()\\+add_message_to_out_buff()\\+read_in_buf()\\+send_messages_to_node()\\+send_out_buf_messages()}
 
 %--------------------------Packet Factory----------
-\umlclass[x=-3, y=-2, anchor=north]{Packet Factory}{}{+parse\_buffer()\\+new\_reunion\_packet()\\+new\_advertise\_packet( )\\+new_join_packet()\\+new\_register\_packet()\\+new_message_packet()}
+\umlclass[x=-3, y=0, anchor=north]{Packet Factory}{}{+parse\_buffer()\\+new\_reunion\_packet()\\+new\_advertise\_packet( )\\+new_join_packet()\\+new\_register\_packet()\\+new_message_packet()}
 
 %----------------------------Peer--------------------------
-\umlclass[x=0, y=-6, anchor=north]{Peer}{-\_is\_root\\+stream\\+parent\\+packets\\+neighbours\\-_user_interface\\-_user_interface_buffer\\-_broadcast_packets\\+packet_factory\\+network_nodes}{+start_user_interface()\\+handle_user_interface_buffer()\\+run()\\+handle_packet()\- __handle_advertise_packet()\\- __handle_register_packet()\\-  __handle_message_packet()\\-  __handle_reunion_packet()\\-__handle_join_packet()\\- __get_neighbour()}
+\umlclass[x=0, y=-6, anchor=north]{Peer}{}{+start_user_interface()\\+handle_user_interface_buffer()\\+run()\\+run_reunion_daemon()\\+send_broadcast_packet()\\+handle_packet()\\__check_registered\\- __handle_advertise_packet()\\- __handle_register_packet()\\-__check_neighbour()\\-  __handle_message_packet()\\-  __handle_reunion_packet()\\-__handle_join_packet()\\- __get_neighbour()}
 %-----------------------------------------------------------
 \umlassoc[arm2=-1.2cm]{Peer}{Packet Factory}
 \umlassoc[arm2=-1.2cm]{Peer}{Stream}
@@ -89,7 +89,7 @@ Dr. Mahdi \textsc{Jafari} % Supervisor's Name
 \begin{tikzpicture}
 %------------------------------------------------------------------------
 %----------------------------Packet-----------------------------------------
-\umlclass[x=-4, y=-8, anchor=north]{Packet}{- _buf: \\- _header:\\-_version:\\-_type: String\\-_length: \\-_source_server_ip\\-_source_server_port\\-_body: String\\}{+ get\_header()\\+ get\_version()\\+ get\_type()\\+ get\_length()\\+ get\_body()\\+ get_buf()\\+ get_source_server_ip()\\+get_source_server_port()\\+get_source_server_address()}
+\umlclass[x=-4, y=-8, anchor=north]{Packet}{- _buf: bytearray}{+ get\_header()\\+ get\_version()\\+ get\_type()\\+ get\_length()\\+ get\_body()\\+ get_buf()\\+ get_source_server_ip()\\+get_source_server_port()\\+get_source_server_address()}
 %----------------------------Reunion----------------------------------------
 %%\umlclass[x=+1.5, y=-11, anchor=north]{Reunion}{}{get\_destination()}
 %----------------------------Advertise---------------------------------------
@@ -110,18 +110,17 @@ Dr. Mahdi \textsc{Jafari} % Supervisor's Name
 %%\umlinherit[arm2=-1.2cm]{Register Request}{Packet}
 %%\umlinherit[arm2=-1.2cm]{Register Response}{Packet}
 \end{tikzpicture}
-\clearpage
 \begin{tikzpicture}
 %----------------------------User Interface---------------------------------
-\umlclass[x=0, y=0, anchor=north]{userInterface}{}{}
+\umlclass[x=0, y=0, anchor=north]{userInterface}{+buffer: byte}{+run()}
 %----------------------------Semi Node---------------------------------
-\umlclass[x=3, y=0, anchor=north]{SemiNode}{}{-__inti__()\\+get_ip()\\+get_port()\\+get_address()\\+parse_ip()\\+parse_port()}
+%%\umlclass[x=3, y=0, anchor=north]{SemiNode}{}{-__inti__()\\+get_ip()\\+get_port()\\+get_address()\\+parse_ip()\\+parse_port()}
 %----------------------------Graph Node---------------------------------
-\umlclass[x=0, y=-2, anchor=north]{GraphNode}{}{-__init__()\\+set_parent()\\+set_address()\\-__reset()\\+add_child}
+%%\umlclass[x=0, y=-2, anchor=north]{GraphNode}{}{-__init__()\\+set_parent()\\+set_address()\\-__reset()\\+add_child}
 %----------------------------Network Node---------------------------------
-\umlclass[x=3, y=-5, anchor=north]{NetworkGraph}{}{-__inti__()\\+find_live_node\\+find_node()\\+turn_on_node()\\+turn_off_node\\+remove_node()\\+add_node()}
+%%\umlclass[x=3, y=-5, anchor=north]{NetworkGraph}{}{-__inti__()\\+find_live_node\\+find_node()\\+turn_on_node()\\+turn_off_node\\+remove_node()\\+add_node()}
 %----------------------------Node--------------------------------------------
-\umlclass[x=0, y=-10, anchor=north]{Node}{}{+ send_message()\\+add_message_to_out_buff()\\+close()\\+get_sever_address()\\+get_standard_server_address()\\+parse_ip()\\+parse_port()}
+\umlclass[x=0, y=-5, anchor=north]{Node}{-server_ip\\-server_port\\out_buff: byte}{+ send_message()\\+add_message_to_out_buff()\\+close()\\+get_sever_address()\\+parse_ip()\\+parse_port()}
 \end{tikzpicture}
 \clearpage
 \section{Objects}

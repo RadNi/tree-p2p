@@ -3,25 +3,25 @@
 \contentsline {paragraph}{}{2}
 \contentsline {section}{\numberline {2}UML model}{2}
 \contentsline {paragraph}{}{2}
-\contentsline {section}{\numberline {3}Objects}{6}
+\contentsline {section}{\numberline {3}Objects}{5}
+\contentsline {paragraph}{}{5}
+\contentsline {subsection}{\numberline {3.1}Stream}{5}
+\contentsline {paragraph}{}{5}
+\contentsline {subsection}{\numberline {3.2}Peer}{5}
+\contentsline {subsection}{\numberline {3.3}Packet Factory}{6}
+\contentsline {paragraph}{packetFactory()}{6}
+\contentsline {subsection}{\numberline {3.4}Packet}{6}
 \contentsline {paragraph}{}{6}
-\contentsline {subsection}{\numberline {3.1}Stream}{6}
 \contentsline {paragraph}{}{6}
-\contentsline {subsection}{\numberline {3.2}Peer}{6}
-\contentsline {subsection}{\numberline {3.3}Packet Factory}{7}
-\contentsline {paragraph}{packetFactory()}{7}
-\contentsline {subsection}{\numberline {3.4}Packet}{7}
+\contentsline {subsection}{\numberline {3.5}Interface}{7}
+\contentsline {paragraph}{reunion(packet)}{7}
+\contentsline {subsection}{\numberline {3.6}Node}{7}
 \contentsline {paragraph}{}{7}
-\contentsline {paragraph}{}{7}
-\contentsline {subsection}{\numberline {3.5}Interface}{8}
-\contentsline {paragraph}{reunion(packet)}{8}
-\contentsline {subsection}{\numberline {3.6}Node}{8}
+\contentsline {subsection}{\numberline {3.7}Graph Node}{7}
+\contentsline {paragraph}{reg\relax $\@@underline {\hbox {\hspace {.05in}}}\mathsurround \z@ $\relax req()}{7}
+\contentsline {subsection}{\numberline {3.8}Network Node}{7}
+\contentsline {paragraph}{reg\relax $\@@underline {\hbox {\hspace {.05in}}}\mathsurround \z@ $\relax res()}{7}
+\contentsline {subsection}{\numberline {3.9}Semi Node}{8}
 \contentsline {paragraph}{}{8}
-\contentsline {subsection}{\numberline {3.7}Graph Node}{8}
-\contentsline {paragraph}{reg\relax $\@@underline {\hbox {\hspace {.05in}}}\mathsurround \z@ $\relax req()}{8}
-\contentsline {subsection}{\numberline {3.8}Network Node}{8}
-\contentsline {paragraph}{reg\relax $\@@underline {\hbox {\hspace {.05in}}}\mathsurround \z@ $\relax res()}{8}
-\contentsline {subsection}{\numberline {3.9}Semi Node}{9}
-\contentsline {paragraph}{}{9}
-\contentsline {subsection}{\numberline {3.10}}{9}
-\contentsline {paragraph}{}{9}
+\contentsline {subsection}{\numberline {3.10}}{8}
+\contentsline {paragraph}{}{8}
