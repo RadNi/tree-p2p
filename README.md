@@ -1,2 +1,14 @@
 # Blockchain
-a Peer to Peer network for Blockchain
+A Peer to Peer network for Blockchain
+## Abstract
+The purpose of this project in the first phase is to implement a P2P network where there is a root node which plays role of a DNS server and client nodes which send messages to each other to make the conncetion alive.
+In the next phase we are going to to run a blockchain application on Our Network.(coming soon!)
+## Inroduction
+P2P stands for Peer-to-Peer is a distributed application architecture that partitions tasks or workloads between peers. Peers are equally privileged, equipotent participants in the application. They are said to form a peer-to-peer network of nodes. Torrent, Tor, Bitcoin etc. are most famous samples of P2P networks.
+## Project Protocol
+### Role of Client
+The fisrt step for each client is to become registered on the network by sneding a Register Request to root. 
+### Role of Root
+The first role of Root is to register clients in the network by responing to their Register Request message.
+## Implementation Details
+
