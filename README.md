@@ -5,10 +5,17 @@ The purpose of this project in the first phase is to implement a P2P network whe
 In the next phase we are going to to run a blockchain application on Our Network.(coming soon!)
 ## Inroduction
 P2P stands for Peer-to-Peer is a distributed application architecture that partitions tasks or workloads between peers. Peers are equally privileged, equipotent participants in the application. They are said to form a peer-to-peer network of nodes. Torrent, Tor, Bitcoin etc. are most famous samples of P2P networks.
-## Project Protocol
-### Role of Client
+## Network Protocol
+### Client
 The fisrt step for each client is to become registered on the network by sneding a Register Request to root. 
-### Role of Root
+### Root
 The first role of Root is to register clients in the network by responing to their Register Request message.
-## Implementation Details
+## Implementation
+In this section we are  going to describe role of object, their methods and
+### Peer
+### Stream
+### Node
+### Packet
+### PacketFactory
+### UserInterface
 
