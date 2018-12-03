@@ -6,11 +6,11 @@
 
                                                 **  NEW Packet Format  **
      __________________________________________________________________________________________________________________
-    |        Version(2 Char/2 Bytes)       |       Type(2 Chars/2 Bytes)       |        Length(8 Chars/4 Bytes)        |
+    |           Version(2 Bytes)         |         Type(2 Bytes)         |           Length(Long int/4 Bytes)          |
     |------------------------------------------------------------------------------------------------------------------|
     |                                        Source Server IP(12 Chars/8 Bytes)                                        |
     |------------------------------------------------------------------------------------------------------------------|
-    |                                        Source Server Port(5 Chars/4 Bytes)                                       |
+    |                                           Source Server Port(4 Bytes)                                            |
     |------------------------------------------------------------------------------------------------------------------|
     |                                                    ..........                                                    |
     |                                                       BODY                                                       |
@@ -21,12 +21,12 @@
         For now version is 1
     
     Type:
-        01: Register
-        02: Advertise
-        03: Join
-        04: Message
-        05: Reunion
-                e.g: type = '02' => Advertise packet.
+        1: Register
+        2: Advertise
+        3: Join
+        4: Message
+        5: Reunion
+                e.g: type = '2' => Advertise packet.
     Length:
         This field shows the character numbers for Body of the packet.
 
@@ -37,15 +37,14 @@
 
     ***** For example: ******
 
-    version = 01
-    type = 04
-    length = 00000012
-    ip = '192.168.001.029'
-    port = '06500'
-    Body = 'Hello World!'
+    version = 1                 b'\x00\x01'
+    type = 4                    b'\x00\x04'
+    length = 12                 b'\x00\x00\x00\x0c'
+    ip = '192.168.001.001'      b'\x00\xc0\x00\xa8\x00\x01\x00\x01'
+    port = '65000'              b'\x00\x00\\xfd\xe8'
+    Body = 'Hello World!'       b'Hello World!'
 
-    Bytes = b'\x00\x01\x00\x04\x00\x00\x00\x0c\x00\xc0\x00\xa8\x00\x01\x00\x1d\x00\x00\x19dHello World!'
-    String = 01040000001219216800102906500Hello World!
+    Bytes = b'\x00\x01\x00\x04\x00\x00\x00\x0c\x00\xc0\x00\xa8\x00\x01\x00\x01\x00\x00\xfd\xe8Hello World!'
 
 
 
