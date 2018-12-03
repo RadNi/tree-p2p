@@ -37,7 +37,7 @@
 
     ***** For example: ******
 
-    version = 1
+    version = 01
     type = 04
     length = 00000012
     ip = '192.168.001.029'
@@ -45,7 +45,7 @@
     Body = 'Hello World!'
 
     Bytes = b'\x00\x01\x00\x04\x00\x00\x00\x0c\x00\xc0\x00\xa8\x00\x01\x00\x1d\x00\x00\x19dHello World!'
-    String = 1040000001219216800102906500Hello World!
+    String = 01040000001219216800102906500Hello World!
 
 
 
