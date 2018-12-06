@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6840 64-bit) (preloaded format=xelatex 2018.10.19)  6 DEC 2018 23:43
+This is XeTeX, Version 3.14159265-2.6-0.99999 (MiKTeX 2.9.6840 64-bit) (preloaded format=xelatex 2018.10.19)  7 DEC 2018 00:11
 entering extended mode
 **./NET-PA.tex
 (NET-PA.tex
@@ -1423,7 +1423,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 209.
 Here is how much of TeX's memory you used:
  32114 strings out of 427796
  621363 string characters out of 3147232
- 741485 words of memory out of 3000000
+ 741483 words of memory out of 3000000
  35682 multiletter control sequences out of 15000+200000
  534857 words of font info for 62 fonts, out of 3000000 for 9000
  1328 hyphenation exceptions out of 8191
