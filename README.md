@@ -1,12 +1,17 @@
-## Welcome to GitHub Pages
+## A Simple Peer To Peer Network Implementation
 
-You can use the [editor on GitHub](https://github.com/RadNi/Blockchain/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+This project aims to implement a P2P network with the specific properties below:
 
-### Markdown
+* There is a Root node which acts as a DNS Server.
+* Nodes connect together through messages they sent.
+* User-to-network connection is done through a user interface.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+To test this network, you need to be able to run both in the role (server DNS (root) and in the role of the client, and see the role and way of rejecting messages and various operations performed on the network).
+
+### What is a P2P network
+
+Peer-to-peer (P2P) computing or networking is a distributed application architecture that partitions tasks or workloads between peers. Peers are equally privileged, equipotent participants in the application. They are said to form a peer-to-peer network of nodes.
 
 ```markdown
 Syntax highlighted code block
