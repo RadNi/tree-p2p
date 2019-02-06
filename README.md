@@ -17,6 +17,8 @@ Peer-to-peer (P2P) computing or networking is a distributed application architec
 
 #### Peer
 
+In this project, any Node in the network is Peer; whether it is a client or root. In other words, the deployed network is actually a combination of several peers that are connected in some way (the network graph is connected).
+
 #### Stream
 
 #### Node
